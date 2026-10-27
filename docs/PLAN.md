@@ -79,8 +79,10 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
 - [~] 6 Automation: `deploy.yml` builds, tests and deploys on every push to `main` (skeleton live at
       https://ccnl-dartmouth.github.io/ccnl-website/); failures open/close alert issues (`ccnl/alerts.py`);
       `uptime.yml` (6-hourly) and `links.yml` (weekly, `ccnl/linkcheck.py`) added; see `docs/OPERATIONS.md`.
-      Still to do by hand: `lab-members` team, `ALERT_MENTIONS` variable, `main` ruleset, UptimeRobot,
-      and a real end-to-end alert drill.
+      Build-failure alert drilled end to end (Oct 2026): a broken person file failed the build, the live site
+      stayed up (200), issue #1 opened with the plain-language error, and closed itself on the next good deploy.
+      Not yet run: `links.yml` and `uptime.yml` (start each once from the Actions tab: Run workflow).
+      Still to do by hand: `lab-members` team, `ALERT_MENTIONS` variable, `main` ruleset, UptimeRobot.
 - [ ] 2 Content audit (partly done during structure design), 7 design, 8 migration,
       9 member testing, 10 docs, 11 launch, 12 handover
 
