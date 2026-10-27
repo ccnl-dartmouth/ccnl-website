@@ -32,7 +32,6 @@ jobs:
         if: steps.fetch.outcome == 'failure'
         env:
           GH_TOKEN: ${{ github.token }}
-          ALERT_MENTIONS: ${{ vars.ALERT_MENTIONS }}
         run: >
           python3 -m ccnl.alerts open --label site-down
           --title "The website is not responding"

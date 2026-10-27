@@ -81,8 +81,11 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       `uptime.yml` (6-hourly) and `links.yml` (weekly, `ccnl/linkcheck.py`) added; see `docs/OPERATIONS.md`.
       Build-failure alert drilled end to end (Oct 2026): a broken person file failed the build, the live site
       stayed up (200), issue #1 opened with the plain-language error, and closed itself on the next good deploy.
-      Not yet run: `links.yml` and `uptime.yml` (start each once from the Actions tab: Run workflow).
-      Still to do by hand: `lab-members` team, `ALERT_MENTIONS` variable, `main` ruleset, UptimeRobot.
+      Alerts are tiered (quiet first issue mentioning only the committer; `escalate.yml` mentions the team after
+      3 days of build failure or 14 days of dead links, and team + PI after 12 h of site-down).
+      Not yet run: `links.yml`, `uptime.yml`, `escalate.yml` (start each once from the Actions tab: Run workflow).
+      Still to do by hand: `lab-members` team, variables `ALERT_MENTIONS_TEAM` / `ALERT_MENTIONS_PI`,
+      `main` ruleset, UptimeRobot.
 - [ ] 2 Content audit (partly done during structure design), 7 design, 8 migration,
       9 member testing, 10 docs, 11 launch, 12 handover
 

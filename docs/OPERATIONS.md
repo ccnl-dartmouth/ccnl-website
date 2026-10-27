@@ -5,28 +5,36 @@ tokens are used anywhere; everything runs on GitHub's built-in token.
 
 ## How problems reach people
 
-| Problem | Detected by | What happens |
-|---|---|---|
-| A commit breaks the build or tests | `deploy.yml` (every push to `main`) | The site is **not** updated (the last good version stays live). An issue labelled `build-failure` is opened with the error message; people mentioned in it get an email. The issue closes itself on the next successful deploy. |
-| GitHub Pages deploy fails | `deploy.yml` | Same issue, with a note to re-run the workflow. |
-| The site stops answering | `uptime.yml` (every 6 hours) | Issue labelled `site-down`; closes itself when the site is back. |
-| Dead links on the site | `links.yml` (Mondays) | Issue labelled `dead-links` listing each dead link and the page that has it. Sites that block bots are listed as "could not verify" and never open an issue. |
+Alerts are **tiered so nobody is spammed**. Every alert starts as a quiet issue. It only reaches
+more people if it is still open after a while; anything that fixes itself, or that the person who
+caused it fixes, never goes further.
 
-Repeated failures add a comment to the existing issue instead of opening duplicates.
+| Problem | Detected by | First alert (quiet) | Escalation if still open |
+|---|---|---|---|
+| A commit breaks the build or tests | `deploy.yml` (every push to `main`) | Issue `build-failure` with the error message; mentions **only the person who pushed**. The site is not updated, but the live site is fine. | After **3 days**: team mentioned once |
+| GitHub Pages deploy fails | `deploy.yml` | Same issue, with a note to re-run the workflow | Same |
+| The site stops answering | `uptime.yml` (every 6 hours) | Issue `site-down`; mentions nobody | After **12 hours** (two missed checks): **team and PI** mentioned |
+| Dead links on the site | `links.yml` (Mondays) | Issue `dead-links` listing each link and its page; mentions nobody. Sites that block bots are only listed as "could not verify". | After **14 days**: team mentioned |
 
-### Who gets the emails (one-time setup)
+Every issue closes itself with a comment when the problem is gone. Repeated failures add a comment
+to the existing issue instead of opening duplicates. The escalation check is `escalate.yml`, which
+runs every 6 hours and mentions people only once per issue (it adds the label `escalated`).
+To change the waiting times, edit the `--after-hours` numbers in `escalate.yml`.
+
+### Who gets escalation emails (one-time setup)
 
 1. Create the team `lab-members` in the org (Teams -> New team) and add everyone.
-2. In the repo: Settings -> Secrets and variables -> Actions -> **Variables** -> New repository variable:
-   `ALERT_MENTIONS` = `@ccnl-dartmouth/lab-members @<PI-github-username>`
-   (separate with spaces). Everyone listed gets an email when an alert issue is opened. The person
-   who pushed the broken commit is mentioned automatically.
+2. In the repo: Settings -> Secrets and variables -> Actions -> **Variables** -> New repository variable. Add two:
+   - `ALERT_MENTIONS_TEAM` = `@ccnl-dartmouth/lab-members`
+   - `ALERT_MENTIONS_PI` = `@<PI-github-username>`
+   The PI is only mentioned when the site itself is down, not for build or link problems.
 3. Each person must have email notifications on for mentions (GitHub -> Settings -> Notifications).
-   Anyone who also wants every alert can click Watch -> Custom -> Issues on the repo.
+   Anyone who wants every alert can click Watch -> Custom -> Issues on the repo; nobody has to.
 4. The PI's address must be reachable after you leave: check it when you hand over.
 
-If `ALERT_MENTIONS` is not set, only the person who pushed is mentioned and GitHub also emails
-them its own "workflow failed" message.
+If the variables are not set, escalation does nothing; the person who pushed still gets the quiet
+first alert (and GitHub's own "workflow failed" email). The external uptime monitor below is the
+fast channel for a downed site.
 
 ## Uptime monitoring
 
@@ -71,8 +79,12 @@ Do this after changing anything in `.github/workflows/` or `ccnl/alerts.py` (and
 real mailing setup):
 
 1. Commit a deliberately bad file, e.g. `content/people/test-person.md` containing `name: x`.
-2. Within a couple of minutes: the Actions run turns red, an issue `The website build failed`
-   appears with the error text, and the people in `ALERT_MENTIONS` get an email.
+2. Within a couple of minutes: the Actions run turns red and an issue `The website build failed`
+   appears with the error text, mentioning only you.
 3. Delete the file. The next run goes green and the issue closes itself.
 
-Run `links.yml` and `uptime.yml` by hand from the Actions tab (*Run workflow*) to see them work.
+To test escalation without waiting 3 days: open an issue labelled `build-failure` by hand, then run
+`escalate.yml` from the Actions tab with a temporarily lowered `--after-hours` (e.g. 0), or just
+check that its log says "Escalated issues: none" when nothing is due.
+
+Run `links.yml`, `uptime.yml` and `escalate.yml` by hand from the Actions tab (*Run workflow*) to see them work.

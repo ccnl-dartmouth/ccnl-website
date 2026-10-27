@@ -1,14 +1,24 @@
-"""Open and close GitHub issues from CI so failures reach people by email.
+"""Open, escalate and close GitHub issues from CI so failures reach people by email.
 
-GitHub emails everyone mentioned in (or watching) a new issue, so an issue is a zero-secret way to
-alert the lab. Issues for one problem are not duplicated: a repeat failure adds a comment, and the
-issue closes itself when things work again. Uses the `gh` CLI that GitHub's runners provide.
+GitHub emails everyone mentioned in (or watching) an issue, so an issue is a zero-secret way to
+alert people. Alerts are tiered to avoid spam:
 
-    python3 -m ccnl.alerts open  --label build-failure --title "..." --summary "..." --log-file ci.log
-    python3 -m ccnl.alerts close --label build-failure --comment "Fixed."
+  1. `open`: a quiet issue. It mentions only the person who pushed the broken commit (if any).
+  2. `escalate`: if the issue is still open after a set time, comment once and mention the team
+     (and for a downed site, the PI). A problem that fixes itself never bothers them.
+  3. `close`: the issue closes itself with a comment when things work again.
+
+One problem is one issue: a repeat failure adds a comment instead of a duplicate. Uses the `gh`
+CLI that GitHub's runners provide.
+
+    python3 -m ccnl.alerts open     --label build-failure --title "..." --summary "..." --log-file ci.log
+    python3 -m ccnl.alerts escalate --label build-failure --after-hours 72 --mentions-env ALERT_MENTIONS_TEAM --message "..."
+    python3 -m ccnl.alerts close    --label build-failure --comment "Fixed."
 """
 
 import argparse
+import datetime
+import json
 import os
 import subprocess
 import sys
@@ -33,9 +43,8 @@ def build_body(summary, log_text=None, details=None, env=None, max_lines=60):
         lines.append(f"- Commit: {server}/{repo}/commit/{sha}{who}")
     if run_id and repo:
         lines.append(f"- Run: {server}/{repo}/actions/runs/{run_id}")
-    mentions = " ".join(m for m in [f"@{actor}" if actor and not actor.endswith("[bot]") else "", env.get("ALERT_MENTIONS", "")] if m)
-    if mentions:
-        lines.append(f"- cc: {mentions}")
+    if actor and not actor.endswith("[bot]"):
+        lines.append(f"- cc: @{actor}")  # only the person who pushed; the team is mentioned on escalation
     lines += ["", HELP_TEXT, ""]
     if details:
         lines += [details.strip(), ""]
@@ -73,6 +82,40 @@ def close_alerts(label, comment):
         gh("issue", "close", str(number), "--comment", comment)
 
 
+ESCALATED = "escalated"
+
+
+def mentions_from_env(names, env=None):
+    env = os.environ if env is None else env
+    return " ".join(env.get(name, "").strip() for name in names if env.get(name, "").strip())
+
+
+def due_for_escalation(issues, after_hours, now):
+    """Issues (dicts with number, createdAt, labels) that are old enough and not yet escalated."""
+    due = []
+    for issue in issues:
+        if ESCALATED in [label["name"] for label in issue.get("labels", [])]:
+            continue
+        created = datetime.datetime.fromisoformat(issue["createdAt"].replace("Z", "+00:00"))
+        age_hours = (now - created).total_seconds() / 3600
+        if age_hours >= after_hours:
+            due.append((issue["number"], age_hours))
+    return due
+
+
+def escalate_alerts(label, after_hours, mentions, message, now=None):
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    issues = json.loads(gh("issue", "list", "--label", label, "--state", "open", "--json", "number,createdAt,labels") or "[]")
+    due = due_for_escalation(issues, after_hours, now)
+    if due:
+        gh("label", "create", ESCALATED, "--color", "B60205", "--description", "Team notified", "--force")
+    for number, age in due:
+        body = f"{mentions}\n\n{message}\n\n(This has been open for about {age / 24:.1f} days.)".strip()
+        gh("issue", "comment", str(number), "--body", body)
+        gh("issue", "edit", str(number), "--add-label", ESCALATED)
+    return [number for number, _ in due]
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -86,7 +129,21 @@ def main(argv=None):
     cl = sub.add_parser("close")
     cl.add_argument("--label", required=True)
     cl.add_argument("--comment", required=True)
+    es = sub.add_parser("escalate")
+    es.add_argument("--label", required=True)
+    es.add_argument("--after-hours", type=float, required=True)
+    es.add_argument("--mentions-env", nargs="+", required=True, help="names of environment variables holding @mentions")
+    es.add_argument("--message", required=True)
     args = parser.parse_args(argv)
+
+    if args.command == "escalate":
+        mentions = mentions_from_env(args.mentions_env)
+        if not mentions:
+            print("No mentions configured (see docs/OPERATIONS.md); nobody to escalate to.")
+            return 0
+        done = escalate_alerts(args.label, args.after_hours, mentions, args.message)
+        print("Escalated issues:", done or "none")
+        return 0
 
     if args.command == "open":
         log = Path(args.log_file).read_text(errors="replace") if args.log_file and Path(args.log_file).is_file() else None

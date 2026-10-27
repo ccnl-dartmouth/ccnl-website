@@ -1,5 +1,6 @@
 """Tests for the alert issue text and the link checker (run against a local HTTP server, no internet)."""
 
+import datetime
 import http.server
 import re
 import threading
@@ -22,11 +23,12 @@ ENV = {
 # ----- alert issue body
 
 
-def test_body_links_run_commit_and_mentions_people():
+def test_first_alert_mentions_only_the_person_who_pushed():
     body = alerts.build_body("The build failed.", log_text="ERROR  people/x.md: bad", env=ENV)
     assert "https://github.com/ccnl-dartmouth/ccnl-website/actions/runs/42" in body
     assert "https://github.com/ccnl-dartmouth/ccnl-website/commit/abc123" in body
-    assert "@student1" in body and "@ccnl-dartmouth/lab-members" in body
+    assert "@student1" in body
+    assert "lab-members" not in body  # the team is only mentioned on escalation
     assert "ERROR  people/x.md: bad" in body
     assert "last good version" in body
 
@@ -43,7 +45,7 @@ def test_body_cannot_be_broken_by_backticks_in_log():
 
 
 def test_body_does_not_mention_bots_and_works_without_a_log():
-    env = {**ENV, "GITHUB_ACTOR": "github-actions[bot]", "ALERT_MENTIONS": ""}
+    env = {**ENV, "GITHUB_ACTOR": "github-actions[bot]"}
     body = alerts.build_body("Weekly check failed.", env=env)
     assert "@github-actions" not in body and "cc:" not in body
     assert "```" not in body
@@ -94,6 +96,69 @@ def test_close_alerts_closes_every_open_issue(monkeypatch):
     alerts.close_alerts("build-failure", "Fixed")
     closed = [c[2] for c in calls if c[:2] == ("issue", "close")]
     assert closed == ["3", "5"]
+
+
+# ----- escalation
+
+NOW = datetime.datetime(2026, 11, 10, 12, 0, tzinfo=datetime.timezone.utc)
+
+
+def issue(number, created, labels=()):
+    return {"number": number, "createdAt": created, "labels": [{"name": n} for n in labels]}
+
+
+def test_only_old_unescalated_issues_are_due():
+    issues = [
+        issue(1, "2026-11-10T08:00:00Z"),                       # 4 hours old: still quiet
+        issue(2, "2026-11-06T12:00:00Z"),                       # 4 days old: due
+        issue(3, "2026-11-01T12:00:00Z", labels=["escalated"]),  # already escalated
+    ]
+    due = alerts.due_for_escalation(issues, after_hours=72, now=NOW)
+    assert [n for n, _ in due] == [2]
+
+
+def test_boundary_is_inclusive():
+    assert alerts.due_for_escalation([issue(1, "2026-11-07T12:00:00Z")], 72, NOW)  # exactly 72h
+    assert not alerts.due_for_escalation([issue(1, "2026-11-07T12:00:01Z")], 72, NOW)
+
+
+def test_mentions_come_from_named_env_vars():
+    env = {"ALERT_MENTIONS_TEAM": "@org/team", "ALERT_MENTIONS_PI": " @pi ", "OTHER": "@no"}
+    assert alerts.mentions_from_env(["ALERT_MENTIONS_TEAM"], env) == "@org/team"
+    assert alerts.mentions_from_env(["ALERT_MENTIONS_TEAM", "ALERT_MENTIONS_PI"], env) == "@org/team @pi"
+    assert alerts.mentions_from_env(["MISSING"], env) == ""
+
+
+def test_escalation_comments_once_and_labels(monkeypatch):
+    calls = []
+
+    def fake_gh(*args):
+        calls.append(args)
+        if args[:2] == ("issue", "list"):
+            return '[{"number": 9, "createdAt": "2026-11-01T00:00:00Z", "labels": []}]'
+        return ""
+
+    monkeypatch.setattr(alerts, "gh", fake_gh)
+    done = alerts.escalate_alerts("build-failure", 72, "@org/team", "Still broken.", now=NOW)
+    assert done == [9]
+    comment = next(c for c in calls if c[:2] == ("issue", "comment"))
+    assert "@org/team" in comment[-1] and "Still broken." in comment[-1]
+    assert any(c[:2] == ("issue", "edit") and "escalated" in c for c in calls)
+
+
+def test_escalation_does_nothing_when_nothing_is_due(monkeypatch):
+    calls = []
+    monkeypatch.setattr(alerts, "gh", lambda *a: calls.append(a) or "[]")
+    assert alerts.escalate_alerts("site-down", 12, "@pi", "x", now=NOW) == []
+    assert not any(c[:2] in (("issue", "comment"), ("label", "create")) for c in calls)
+
+
+def test_cli_without_configured_mentions_is_a_noop(monkeypatch, capsys):
+    monkeypatch.delenv("ALERT_MENTIONS_TEAM", raising=False)
+    monkeypatch.setattr(alerts, "gh", lambda *a: pytest.fail("gh must not be called"))
+    code = alerts.main(["escalate", "--label", "x", "--after-hours", "1", "--mentions-env", "ALERT_MENTIONS_TEAM", "--message", "m"])
+    assert code == 0
+    assert "nobody to escalate to" in capsys.readouterr().out
 
 
 # ----- link checker
@@ -217,7 +282,7 @@ def test_workflow_files_are_valid_yaml_with_expected_triggers():
     import yaml
 
     root = Path(__file__).resolve().parent.parent / ".github" / "workflows"
-    for name in ("deploy.yml", "links.yml", "uptime.yml"):
+    for name in ("deploy.yml", "links.yml", "uptime.yml", "escalate.yml"):
         data = yaml.safe_load((root / name).read_text())
         assert "jobs" in data
         assert "on" in data or True in data  # PyYAML reads the key `on` as boolean True

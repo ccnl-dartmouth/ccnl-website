@@ -1,0 +1,45 @@
+name: Escalate lasting problems
+
+# Alert issues start quiet. If one is still open after the time below, mention people once.
+# Problems that fix themselves, or get fixed by whoever caused them, never reach the team or PI.
+#   build keeps failing    -> team after 3 days (the live site is fine; content just cannot update)
+#   site not responding    -> team and PI after 12 hours (two missed 6-hourly checks)
+#   dead links             -> team after 14 days (cosmetic)
+# Set the repository variables ALERT_MENTIONS_TEAM and ALERT_MENTIONS_PI (see docs/OPERATIONS.md).
+on:
+  schedule:
+    - cron: "5 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  escalate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ALERT_MENTIONS_TEAM: ${{ vars.ALERT_MENTIONS_TEAM }}
+      ALERT_MENTIONS_PI: ${{ vars.ALERT_MENTIONS_PI }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build has been failing for days
+        run: >
+          python3 -m ccnl.alerts escalate --label build-failure --after-hours 72
+          --mentions-env ALERT_MENTIONS_TEAM
+          --message "The website build has been failing for days, so the site cannot be updated (the live site itself is fine). Someone please fix the file named below, or revert the commit."
+
+      - name: Site has been down
+        run: >
+          python3 -m ccnl.alerts escalate --label site-down --after-hours 12
+          --mentions-env ALERT_MENTIONS_TEAM ALERT_MENTIONS_PI
+          --message "The website has not been responding for at least two checks in a row."
+
+      - name: Dead links have been left for weeks
+        run: >
+          python3 -m ccnl.alerts escalate --label dead-links --after-hours 336
+          --mentions-env ALERT_MENTIONS_TEAM
+          --message "Some links on the website have been dead for two weeks. Please fix or remove them (see the list above)."

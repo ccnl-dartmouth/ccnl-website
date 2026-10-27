@@ -1,8 +1,9 @@
 name: Build and deploy
 
 # Every push to main builds the site and, only if the build succeeds, publishes it.
-# A failed build leaves the previous version of the site live and opens an alert issue
-# (GitHub emails the people mentioned in it); the issue closes itself on the next good deploy.
+# A failed build leaves the previous version of the site live and opens a quiet alert issue that
+# mentions only the person who pushed. escalate.yml mentions the team if it stays open for days;
+# the issue closes itself on the next good deploy.
 on:
   push:
     branches: [main]
@@ -53,7 +54,6 @@ jobs:
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
-          ALERT_MENTIONS: ${{ vars.ALERT_MENTIONS }}
         run: >
           python3 -m ccnl.alerts open --label build-failure
           --title "The website build failed"
@@ -85,7 +85,6 @@ jobs:
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
-          ALERT_MENTIONS: ${{ vars.ALERT_MENTIONS }}
         run: >
           python3 -m ccnl.alerts open --label build-failure
           --title "The website build failed"
