@@ -228,3 +228,14 @@ def test_stylesheet_alternates_research_figures_and_centers_the_intro(sandbox):
     css = (sandbox.build() and (sandbox.out / "static" / "style.css")).read_text()
     assert ".theme:nth-of-type(even) .theme-fig { order: 2; }" in css
     assert "text-align: center" in css.split(".intro {")[1].split("}")[0]
+
+
+def test_current_groups_share_a_wrapping_container_but_alumni_and_collaborators_do_not(sandbox):
+    html = sandbox.build().page("people/index.html")
+    wrapper = html.split('<div class="people-groups">')[1].split("</main>")[0]
+    groups = wrapper.split("<h2>Alumni</h2>")[0]
+    assert groups.count('class="people-group"') == 4  # PI, postdocs, grad students, undergraduates
+    assert "<h2>Principal Investigator</h2>" in groups and "<h2>Postdoctoral Scholars</h2>" in groups
+    assert 'class="people-group"' not in wrapper.split("<h2>Alumni</h2>")[1]
+    css = (sandbox.out / "static" / "style.css").read_text()
+    assert ".people-groups { display: flex; flex-wrap: wrap;" in css

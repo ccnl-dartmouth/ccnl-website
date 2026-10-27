@@ -226,7 +226,8 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 
 - **Home:** photo hero with the lab name and affiliation in a solid green card centered on the image, intro text,
   four entry cards. The hero uses a generated placeholder (`static/hero-default.svg`) until the lab adds a real photo.
-- **People:** photo grid by role (initial in a circle when there is no photo); alumni as a plain list.
+- **People:** current groups (PI, postdocs, grad students, undergraduates) sit side by side while they fit and
+  wrap onto new rows as they fill up; photo cards (initial in a circle when there is no photo); alumni as a plain list.
   Profile page: details card (photo, role, years, links) beside the bio.
 - **Publications:** semi-dense list by year; each entry has the BibTeX-derived text on the left (authors colored by
   role, title, venue, link buttons, collapsible abstract) and a right-aligned thumbnail (own image or generic filler).

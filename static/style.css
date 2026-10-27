@@ -86,7 +86,10 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .entry p { margin: 0; color: var(--muted); }
 
 /* ---- people ---- */
-.person-grid { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.75rem 1.25rem; grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr)); }
+.people-groups { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0 3.5rem; }
+.people-group { flex: 0 1 auto; max-width: 100%; }
+.person-grid { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 1.75rem 1.25rem; }
+.person-card { width: 10.5rem; }
 .person-card p { margin: 0; }
 .person-name { font-weight: 600; margin-top: .6rem !important; }
 .avatar { display: block; border-radius: 8px; object-fit: cover; background: var(--soft); }

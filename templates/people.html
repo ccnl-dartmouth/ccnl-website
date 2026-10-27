@@ -4,16 +4,19 @@
 {% block content %}
 <h1>People</h1>
 {% set collaborators = site.people_groups|selectattr("role", "equalto", "collaborator")|list %}
+{# Current groups sit side by side while they fit (e.g. PI next to postdocs) and wrap onto new rows as they fill up. #}
+<div class="people-groups">
 {% for g in site.people_groups if g.role != 'collaborator' %}
-<section>
-  <h2>{{ g.title }}</h2>
-  <ul class="person-grid">
-    {% for p in g.people %}{{ m.person_card(p) }}{% endfor %}
-  </ul>
-</section>
+  <section class="people-group">
+    <h2>{{ g.title }}</h2>
+    <ul class="person-grid">
+      {% for p in g.people %}{{ m.person_card(p) }}{% endfor %}
+    </ul>
+  </section>
 {% else %}
-<p>Lab members will appear here.</p>
+  <p>Lab members will appear here.</p>
 {% endfor %}
+</div>
 
 {% if site.alumni %}
 <section>
