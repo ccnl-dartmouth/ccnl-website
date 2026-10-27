@@ -65,7 +65,8 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
 - [x] 4 Core build: `build.py` + `ccnl/` (loading, validation, images, rendering), templates, placeholder CSS,
       `sample_content/`, smoke tests. Validation already gives friendly errors; phase 5 adds the full test suite.
 - [~] 6 Automation: `.github/workflows/deploy.yml` builds, tests and deploys to Pages on every push to
-      `main` (first version). Still to do: failure alert emails to the PI/lab, uptime monitor, weekly link
+      `main` (first version; first run succeeded Oct 2026; skeleton live at
+      https://ccnl-dartmouth.github.io/ccnl-website/). Still to do: failure alert emails to the PI/lab, uptime monitor, weekly link
       check, `main` ruleset requiring the build check.
 - [ ] 2 Content audit (partly done during structure design), 5 tests, 7 design, 8 migration,
       9 member testing, 10 docs, 11 launch, 12 handover
