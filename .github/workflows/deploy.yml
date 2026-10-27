@@ -1,7 +1,8 @@
 name: Build and deploy
 
 # Every push to main builds the site and, only if the build succeeds, publishes it.
-# A failed build leaves the previous version of the site live.
+# A failed build leaves the previous version of the site live and opens an alert issue
+# (GitHub emails the people mentioned in it); the issue closes itself on the next good deploy.
 on:
   push:
     branches: [main]
@@ -11,6 +12,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  issues: write
 
 concurrency:
   group: pages
@@ -34,14 +36,29 @@ jobs:
 
       # Build first so a content mistake shows the plain-language error message in the log.
       - name: Build the site
-        run: python build.py --base-path "/${{ github.event.repository.name }}"
+        run: |
+          set -o pipefail
+          python build.py --base-path "/${{ github.event.repository.name }}" 2>&1 | tee ci.log
 
       - name: Run tests
-        run: python -m pytest
+        run: |
+          set -o pipefail
+          python -m pytest 2>&1 | tee -a ci.log
 
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+
+      - name: Alert about the failed build
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ALERT_MENTIONS: ${{ vars.ALERT_MENTIONS }}
+        run: >
+          python3 -m ccnl.alerts open --label build-failure
+          --title "The website build failed"
+          --summary "The website did **not** update because the build or tests failed."
+          --log-file ci.log
 
   deploy:
     needs: build
@@ -51,5 +68,25 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/checkout@v4
+
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Close the alert issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          python3 -m ccnl.alerts close --label build-failure
+          --comment "Fixed: the website was deployed successfully (${{ github.sha }})."
+
+      - name: Alert about the failed deploy
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ALERT_MENTIONS: ${{ vars.ALERT_MENTIONS }}
+        run: >
+          python3 -m ccnl.alerts open --label build-failure
+          --title "The website build failed"
+          --summary "The site built but could not be **deployed** to GitHub Pages. Re-run the workflow from the Actions tab; if it keeps failing, check https://www.githubstatus.com."

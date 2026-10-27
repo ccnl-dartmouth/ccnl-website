@@ -1,0 +1,54 @@
+name: Weekly link check
+
+# Finds dead links in the published content. Does not touch the live site; it only opens
+# (or closes) an issue. GitHub disables scheduled workflows in a public repo after 60 days
+# without repository activity; any commit re-arms them (see docs/OPERATIONS.md).
+on:
+  schedule:
+    - cron: "23 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  links:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - run: pip install -r requirements.txt
+
+      - run: python build.py
+
+      - name: Check external links
+        id: check
+        continue-on-error: true
+        run: python3 -m ccnl.linkcheck --site _site --report links.md
+
+      - name: Open or update the dead-links issue
+        if: steps.check.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ALERT_MENTIONS: ${{ vars.ALERT_MENTIONS }}
+        run: >
+          python3 -m ccnl.alerts open --label dead-links
+          --title "Dead links on the website"
+          --summary "The weekly link check found links that no longer work."
+          --details-file links.md
+
+      - name: Close the dead-links issue
+        if: steps.check.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          python3 -m ccnl.alerts close --label dead-links
+          --comment "All links work again."

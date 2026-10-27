@@ -42,7 +42,9 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
 ## Open items
 
 - [x] Dartmouth web support replied on the hostname (see Decisions).
-- [ ] Reply from web support on whether sites.dartmouth.edu can redirect or only show a "we've moved" page.
+- [x] Web support: sites.dartmouth.edu can redirect, but only as one global rule: every `/ccnl` URL goes to a
+      single new page (not page-to-page). They do it on request via the ticket; ask at launch (phase 11).
+      Alternative: we are admins of the old site, so we can instead leave a "we've moved" page there.
 - [ ] PI's GitHub username; list of lab members' GitHub usernames.
 - [ ] Long-lived contact email for the org (PI or lab list address).
 - [ ] Get admin access to the old WordPress site.
@@ -74,10 +76,11 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       EXIF strip, HEIC, corrupt/oversized), atomic output, base path, CLI exit codes. Each runs against a
       throwaway copy of `sample_content/` broken in one specific way. Known gap: BibTeX errors name the file
       and entry key but not a line number (the parser does not report them).
-- [~] 6 Automation: `.github/workflows/deploy.yml` builds, tests and deploys to Pages on every push to
-      `main` (first version; first run succeeded Oct 2026; skeleton live at
-      https://ccnl-dartmouth.github.io/ccnl-website/). Still to do: failure alert emails to the PI/lab, uptime monitor, weekly link
-      check, `main` ruleset requiring the build check.
+- [~] 6 Automation: `deploy.yml` builds, tests and deploys on every push to `main` (skeleton live at
+      https://ccnl-dartmouth.github.io/ccnl-website/); failures open/close alert issues (`ccnl/alerts.py`);
+      `uptime.yml` (6-hourly) and `links.yml` (weekly, `ccnl/linkcheck.py`) added; see `docs/OPERATIONS.md`.
+      Still to do by hand: `lab-members` team, `ALERT_MENTIONS` variable, `main` ruleset, UptimeRobot,
+      and a real end-to-end alert drill.
 - [ ] 2 Content audit (partly done during structure design), 7 design, 8 migration,
       9 member testing, 10 docs, 11 launch, 12 handover
 
@@ -94,8 +97,9 @@ once 3 is fixed; 9 needs 5, 6, 8; 11 needs the Dartmouth reply (can launch on gi
 - [x] 1.4 Create public repo `ccnl-website`.
 - [ ] 1.5 Create team `lab-members` with Write on the repo; org default permission Read; invite members.
 - [x] 1.6 Settings -> Pages -> Source: GitHub Actions (done). Enforce HTTPS and custom domain later.
-- [ ] 1.7 Ruleset on `main`: block force-push and deletion; require the build check, no required reviewers
-      (finish after the workflow has run once, phase 6).
+- [ ] 1.7 Ruleset on `main`: block force-push and deletion ONLY. Do not require status checks or pull
+      requests: required checks reject direct pushes/web-editor commits, defeating the hands-off design,
+      and a failed build already cannot deploy. See `docs/OPERATIONS.md`.
 - [x] 1.8 Clone locally (this folder), add `.gitignore`, README stub, this plan, `CLAUDE.md`; first commit; pushed to origin.
 - [ ] 1.9 Write `docs/OWNERSHIP.md` (owners, alert email, domain contact, monitor account, offboarding).
 
