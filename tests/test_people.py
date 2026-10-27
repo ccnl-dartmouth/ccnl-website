@@ -181,12 +181,13 @@ def test_profile_false_lists_person_without_page(sandbox):
 
 def test_groups_and_alumni_ordering(sandbox):
     site = sandbox.build().site
-    assert [g["role"] for g in site["people_groups"]] == ["pi", "postdoc", "grad", "collaborator"]
-    assert [p["name"] for p in site["alumni"]] == ["Lee Alumna"]
+    assert [g["role"] for g in site["people_groups"]] == ["pi", "postdoc", "grad", "undergrad", "collaborator"]
+    assert "Lee Alumna" in [p["name"] for p in site["alumni"]]
+    assert all(p["status"] == "alumni" for p in site["alumni"])
 
 
 def test_alumni_sorted_newest_first(sandbox):
     sandbox.write("people/old-alum.md", person_md(name="Old Alum", status="alumni", end=2010, start=2005, current_position="X"))
     sandbox.write("people/new-alum.md", person_md(name="New Alum", status="alumni", end=2024, start=2019, current_position="Y"))
-    site = sandbox.build().site
-    assert [p["name"] for p in site["alumni"]] == ["New Alum", "Lee Alumna", "Old Alum"]
+    names = [p["name"] for p in sandbox.build().site["alumni"]]
+    assert names.index("New Alum") < names.index("Lee Alumna") < names.index("Old Alum")

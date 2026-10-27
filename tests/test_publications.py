@@ -121,7 +121,7 @@ def test_preprints_are_separate_and_published_sorted_newest_first(sandbox):
     assert html.index("Preprints") < html.index("Published papers")
     years = [p["year"] for p in result.site["publications"]]
     assert years == sorted(years, reverse=True)
-    assert [p["preprint"] for p in result.site["publications"]].count(True) == 1
+    assert [p["preprint"] for p in result.site["publications"]].count(True) == 2
 
 
 def test_doi_becomes_link(sandbox):

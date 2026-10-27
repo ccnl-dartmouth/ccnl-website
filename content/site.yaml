@@ -1,5 +1,6 @@
 nav:
   - {label: Home, page: home}
+  - {label: Research, page: research}
   - {label: People, page: people}
   - {label: Publications, page: publications}
   - {label: Contact, page: contact}

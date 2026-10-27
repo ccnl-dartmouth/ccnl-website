@@ -104,7 +104,7 @@ def test_person_without_photo_gets_an_initial(sandbox):
 def test_profile_page_shows_details_card_and_bio(sandbox):
     html = sandbox.build().page("people/pat-investigator/index.html")
     assert 'aria-label="Details"' in html and "Principal Investigator" in html and "2015" in html
-    assert "Pat studies learning" in html
+    assert "Pat is the (fictional) principal investigator" in html
 
 
 # ----- fonts and static files

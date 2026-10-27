@@ -90,7 +90,7 @@ def test_about_page_rejects_front_matter_fields(sandbox):
 
 def test_research_order_and_title(sandbox):
     site = sandbox.build().site
-    assert [t["title"] for t in site["research"]] == ["Adaptive learning", "Context-dependent choice", "Circuit models"]
+    assert [t["title"] for t in site["research"]] == ["Adaptive learning", "Context-dependent choice", "Circuit models", "Naturalistic behavior"]
 
 
 def test_research_theme_requires_title(sandbox):
@@ -108,11 +108,11 @@ def test_research_image_is_processed_and_has_anchor(sandbox):
     assert (sandbox.out / "images" / "research" / "learning.jpg").is_file()
     html = result.page("research/index.html")
     assert 'id="learning"' in html
-    assert 'alt="Placeholder figure for the learning theme"' in html
+    assert 'alt="Made-up line plot of three learning curves rising at different rates"' in html
 
 
 def test_research_image_without_description_warns(sandbox):
-    sandbox.edit("research/learning.md", "image_alt: Placeholder figure for the learning theme\n", "")
+    sandbox.edit("research/learning.md", "image_alt: Made-up line plot of three learning curves rising at different rates\n", "")
     result = sandbox.build()
     assert result.ok, result.errors
     assert result.has_warning("learning.md", "image_alt")

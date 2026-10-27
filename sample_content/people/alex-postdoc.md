@@ -8,4 +8,4 @@ links:
   github: alex-postdoc
   website: https://example.org/alex
 ---
-Alex builds models of reward learning.
+Alex builds models of reward learning and how learning rates adapt to volatility.
