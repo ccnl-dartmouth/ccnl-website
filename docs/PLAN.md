@@ -1,0 +1,69 @@
+# CCNL website rebuild: plan
+
+Rebuild of https://sites.dartmouth.edu/ccnl/ (WordPress, Oxygen 0.6.0 theme) as a static
+site on GitHub Pages that lab members can update themselves.
+
+## Decisions so far
+
+- **Hosting:** GitHub Pages, deployed from GitHub Actions.
+- **GitHub org:** `ccnl-dartmouth` (owners: Peter Duggins + the PI; members on a Write team).
+  Repo: `ccnl-website`. Org, not a personal account, so ownership survives turnover.
+- **Generator:** custom Python build (Jinja2, PyYAML, Markdown, bibtexparser, Pillow). Not Jekyll/Hugo/Astro.
+  Reason: content is text, pictures and links only; structure will be frozen; students must get
+  plain-language errors for bad images and BibTeX.
+- **Maintenance model:** no required reviewers. `main` requires a passing build; a failed build
+  leaves the last good site live. Members fix their own breakage. Failure and downtime alerts go to
+  the PI and the lab.
+- **Editing model:** members edit their own files in the GitHub web editor (or git push). No local
+  setup needed; the build runs in Actions.
+- **Domain:** requested a `dartmouth.edu` hostname (e.g. ccnl.dartmouth.edu) via Dartmouth web
+  support (email sent, awaiting reply). Fallback: `ccnl-dartmouth.github.io` plus a redirect or
+  notice on the old WordPress site. Build must support a base path until the domain is live.
+- **Old site:** the PI has approved admin access to the WordPress site for the migration.
+
+## Open items
+
+- [ ] Reply from Dartmouth web support (hostname, policy, redirect). Send them the final org name: `ccnl-dartmouth`.
+- [ ] PI's GitHub username; list of lab members' GitHub usernames.
+- [ ] Long-lived contact email for the org (PI or lab list address).
+- [ ] Get admin access to the old WordPress site.
+
+## Phases
+
+| # | Phase | Output |
+|---|---|---|
+| 0 | Decisions | Org name, go-ahead (done except Dartmouth reply) |
+| 1 | GitHub setup | Org, repo, team, Pages, protections |
+| 2 | Content audit | Inventory of old pages, people, papers, images |
+| 3 | Structure design | Data schemas, repo layout, validation rules (then frozen) |
+| 4 | Core build | Python build, placeholder styling, local preview |
+| 5 | Validation and tests | Friendly errors, pytest with broken fixtures |
+| 6 | Automation | Actions build/deploy, failure alerts, uptime monitor, link check |
+| 7 | Design | Reference sites, HTML/CSS, responsive, accessible |
+| 8 | Content migration | Scripted + manual copy, members review own pages |
+| 9 | Member testing | Non-owner account, deliberate failures, alerts confirmed |
+| 10 | Documentation | Student README (3 recipes), maintainer docs |
+| 11 | Launch | Custom domain + HTTPS, redirect from old site, update external links |
+| 12 | Handover | PI is owner, alerts reach PI, OWNERSHIP.md complete |
+
+Dependencies: 3 gates everything after it; 1 runs alongside 2 and 3; 5 and 6 need 4; 7 can start
+once 3 is fixed; 9 needs 5, 6, 8; 11 needs the Dartmouth reply (can launch on github.io first).
+
+## Phase 1 substeps
+
+- [ ] 1.1 Org name chosen: `ccnl-dartmouth` (`ccnl` and `soltanilab` are taken).
+- [ ] 1.2 Create the org (Free plan) with a long-lived contact email.
+- [ ] 1.3 Add the PI as owner; keep owners to 2-3 people. Require 2FA for members.
+- [ ] 1.4 Create public repo `ccnl-website`.
+- [ ] 1.5 Create team `lab-members` with Write on the repo; org default permission Read; invite members.
+- [ ] 1.6 Settings -> Pages -> Source: GitHub Actions. Enforce HTTPS. Custom domain later.
+- [ ] 1.7 Ruleset on `main`: block force-push and deletion; require the build check, no required reviewers
+      (finish after the workflow has run once, phase 6).
+- [ ] 1.8 Clone locally (this folder), add `.gitignore`, README stub, this plan, `CLAUDE.md`; first commit.
+- [ ] 1.9 Write `docs/OWNERSHIP.md` (owners, alert email, domain contact, monitor account, offboarding).
+
+## Risks
+
+- Dartmouth declines or delays the hostname: launch on github.io, redirect from the old site.
+- Alerts that silently don't fire: test each with a deliberate failure in phase 9.
+- Turnover: documentation and the handover checklist keep it running.
