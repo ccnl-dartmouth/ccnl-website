@@ -28,6 +28,8 @@ To change the waiting times, edit the `--after-hours` numbers in `escalate.yml`.
    - `ALERT_MENTIONS_TEAM` = `@ccnl-dartmouth/lab-members`
    - `ALERT_MENTIONS_PI` = `@<PI-github-username>`
    The PI is only mentioned when the site itself is down, not for build or link problems.
+   (TODO: the PI needs a GitHub account first. Until then leave `ALERT_MENTIONS_PI` unset and add
+   him as an email contact on the external uptime monitor instead.)
 3. Each person must have email notifications on for mentions (GitHub -> Settings -> Notifications).
    Anyone who wants every alert can click Watch -> Custom -> Issues on the repo; nobody has to.
 4. The PI's address must be reachable after you leave: check it when you hand over.

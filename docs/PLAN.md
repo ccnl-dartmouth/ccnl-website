@@ -45,7 +45,11 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
 - [x] Web support: sites.dartmouth.edu can redirect, but only as one global rule: every `/ccnl` URL goes to a
       single new page (not page-to-page). They do it on request via the ticket; ask at launch (phase 11).
       Alternative: we are admins of the old site, so we can instead leave a "we've moved" page there.
-- [ ] PI's GitHub username; list of lab members' GitHub usernames.
+- [ ] **TODO: PI has no known GitHub account yet.** Needed before handover: ask him to create one (use his
+      dartmouth.edu address + 2FA), then add him as an org owner (1.3) and set the repo variable
+      `ALERT_MENTIONS_PI`. Until then he can still be alerted about a downed site by email through the
+      external UptimeRobot monitor (no GitHub account needed); add him as an alert contact there.
+- [ ] List of lab members' GitHub usernames.
 - [ ] Long-lived contact email for the org (PI or lab list address).
 - [ ] Get admin access to the old WordPress site.
 
