@@ -1,7 +1,6 @@
 ---
 title: Adaptive learning
 order: 1
-image: learning.jpg
 image_alt: Made-up line plot of three learning curves rising at different rates
 ---
 How do people and animals adjust what they learn when the world keeps changing? We build and test models in which

@@ -96,6 +96,7 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .avatar-card { width: 100%; aspect-ratio: 1; }
 .avatar-profile { width: 100%; max-width: 16rem; aspect-ratio: 1; }
 .avatar.placeholder { display: flex; align-items: center; justify-content: center; font: 600 3rem var(--serif); color: var(--green); border: 1px solid var(--line); }
+.alumni-group { margin: 1.5rem 0 .5rem; color: var(--muted); font-family: var(--sans); font-weight: 600; font-size: 1rem; }
 .alumni { list-style: none; padding: 0; margin: 0; columns: 18rem; column-gap: 2rem; }
 .alumnus { break-inside: avoid; padding: .35rem 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; }
 .alumnus-name { font-weight: 600; }

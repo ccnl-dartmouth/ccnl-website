@@ -1,7 +1,6 @@
 ---
 title: Context-dependent choice
 order: 2
-image: choice.jpg
 image_alt: Made-up scatter plot of points clustered along a rising diagonal
 ---
 The value we assign to an option depends on what else is on offer. We study how the set of alternatives, the range of

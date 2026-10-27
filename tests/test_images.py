@@ -10,7 +10,7 @@ from ccnl.problems import Problems
 
 def add_person_with_photo(sandbox, data, ext="jpg"):
     sandbox.write("people/new-person.md", person_md())
-    sandbox.write(f"people/new-person.{ext}", data)
+    sandbox.write(f"images/new-person.{ext}", data)
 
 
 def test_large_photo_is_shrunk(sandbox):

@@ -78,7 +78,7 @@ def test_failure_found_while_processing_images_also_keeps_previous_site(sandbox)
     before = (sandbox.out / "index.html").read_text()
 
     sandbox.write("people/new-person.md", person_md())
-    sandbox.write("people/new-person.jpg", b"garbage")  # only detected when images are processed
+    sandbox.write("images/new-person.jpg", b"garbage")  # only detected when images are processed
     assert not sandbox.build().ok
     assert (sandbox.out / "index.html").read_text() == before
     assert not (sandbox.root / "_site.tmp").exists()

@@ -199,13 +199,13 @@ def test_status_must_be_preprint(sandbox):
 def test_image_field_must_exist_with_exact_name(sandbox):
     sandbox.write("publications/new.bib", bib(image="cover.png"))
     assert sandbox.build().has_error("new.bib", "image 'cover.png' was not found")
-    sandbox.write("publications/Cover.png", image_bytes(fmt="PNG"))
+    sandbox.write("images/Cover.png", image_bytes(fmt="PNG"))
     assert sandbox.build().has_error("new.bib", "must match the file name exactly", "Cover.png")
 
 
 def test_thumbnail_is_processed(sandbox):
     sandbox.write("publications/new.bib", bib(image="cover.png"))
-    sandbox.write("publications/cover.png", image_bytes((2000, 1000), fmt="PNG"))
+    sandbox.write("images/cover.png", image_bytes((2000, 1000), fmt="PNG"))
     result = sandbox.build()
     assert result.ok, result.errors
     assert (sandbox.out / "images" / "publications" / "new2024.png").is_file()

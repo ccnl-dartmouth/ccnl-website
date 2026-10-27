@@ -18,12 +18,15 @@
 {% endfor %}
 </div>
 
-{% if site.alumni %}
+{% if site.alumni_groups %}
 <section>
   <h2>Alumni</h2>
+  {% for g in site.alumni_groups %}
+  <h3 class="alumni-group">{{ g.title }}</h3>
   <ul class="alumni">
-    {% for p in site.alumni %}{{ m.alumnus(p) }}{% endfor %}
+    {% for p in g.people %}{{ m.alumnus(p) }}{% endfor %}
   </ul>
+  {% endfor %}
 </section>
 {% endif %}
 

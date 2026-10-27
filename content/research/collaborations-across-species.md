@@ -1,7 +1,6 @@
 ---
 title: Collaborations across species
 order: 4
-image: collaborations-across-species.jpg
 image_alt: Placeholder illustration, to be replaced with a figure from this line of research
 ---
 A central part of our research involves collaboration with experimentalists who study relevant questions across different species (rodents, non-human primates, and humans) and use a wide range of methods such as electrophysiology, MEG, fMRI, psychophysics, and behavioral economics.

@@ -84,13 +84,13 @@ if __name__ == "__main__":
              ((110, 70, 150), (190, 140, 110)), ((30, 120, 120), (110, 75, 55)), ((150, 110, 30), (240, 215, 190)),
              ((90, 100, 110), (200, 160, 130))]
     for (slug, (bg, skin)) in zip(("pat-investigator", "alex-postdoc", "sam-student", "robin-student", "casey-student", "morgan-student", "devon-undergrad"), tones):
-        portrait(ROOT / "people" / f"{slug}.jpg", bg, skin)
+        portrait(ROOT / "images" / f"{slug}.jpg", bg, skin)
 
     for i, (slug, kind) in enumerate((("learning", "lines"), ("choice", "scatter"), ("models", "raster"), ("behavior", "bars"))):
-        figure(ROOT / "research" / f"{slug}.jpg", kind, 10 + i)
+        figure(ROOT / "images" / f"{slug}.jpg", kind, 10 + i)
 
-    for i, (name, kind) in enumerate((("context", "bars"), ("models", "raster"), ("choice-fig", "scatter"), ("learning-fig", "lines"), ("heat-fig", "heat"))):
-        figure(ROOT / "publications" / f"{name}.jpg", kind, 40 + i, size=(800, 600))
+    for i, (name, kind) in enumerate((("2024-student-context", "bars"), ("2021-alumna-models", "raster"), ("2026-casey-exploration", "scatter"), ("2025-jordan-adaptation", "lines"), ("2022-sam-risk", "heat"))):
+        figure(ROOT / "images" / f"{name}.jpg", kind, 40 + i, size=(800, 600))
 
     logo(ROOT / "images" / "funder-one.png", (30, 60, 120), "FUNDER")
     logo(ROOT / "images" / "funder-two.png", (120, 60, 30), "GRANT")

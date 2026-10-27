@@ -265,3 +265,33 @@ def test_script_opens_a_section_named_in_the_url_hash(sandbox):
     sandbox.build()
     js = (sandbox.out / "static" / "site.js").read_text()
     assert "hashchange" in js and "DETAILS" in js
+
+
+# ----- alumni subsections
+
+
+def test_alumni_are_split_into_subsections_by_role_in_the_same_order_as_current_members(sandbox):
+    html = sandbox.build().page("people/index.html")
+    alumni = html.split("<h2>Alumni</h2>")[1].split("</section>")[0]
+    postdocs, grads, undergrads = (alumni.index(f'<h3 class="alumni-group">{t}</h3>') for t in
+                                   ("Postdoctoral Scholars", "Graduate Students", "Undergraduate Students"))
+    assert postdocs < grads < undergrads
+    assert postdocs < alumni.index("Quinn Alumnus") < grads                      # postdoc alumnus
+    assert grads < alumni.index("Lee Alumna") < undergrads                       # grad alumna
+    assert grads < alumni.index("Sage Alumna") < undergrads
+    assert alumni.index("Blake Alumnus") > undergrads                            # undergraduate alumnus
+
+
+def test_alumni_subsections_are_newest_first_and_empty_ones_are_not_shown(sandbox):
+    for slug in ("quinn-alumnus", "blake-alumnus"):
+        sandbox.remove(f"people/{slug}.md")  # no postdoc or undergraduate alumni left
+    alumni = sandbox.build().page("people/index.html").split("<h2>Alumni</h2>")[1].split("</section>")[0]
+    assert "Postdoctoral Scholars" not in alumni and "Undergraduate Students" not in alumni
+    assert alumni.index("Lee Alumna") < alumni.index("Sage Alumna")  # 2021 before 2014
+
+
+def test_no_alumni_means_no_alumni_section(sandbox):
+    for path in sandbox.dir.joinpath("people").glob("*.md"):
+        if "status: alumni" in path.read_text():
+            path.unlink()
+    assert "<h2>Alumni</h2>" not in sandbox.build().page("people/index.html")

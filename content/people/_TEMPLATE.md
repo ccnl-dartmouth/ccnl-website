@@ -16,5 +16,5 @@ start: 2025             # the year you joined
 #   email: you@dartmouth.edu
 ---
 Write a few sentences about yourself here, in Markdown. You can use headings like
-"## Research" and add links. Put your photo next to this file with the same name,
-e.g. jane-doe.jpg. This note and everything above are just examples.
+"## Research" and add links. Upload your photo to content/images/ with the same
+name as this file, e.g. jane-doe.jpg. This note and everything above are just examples.

@@ -18,8 +18,12 @@ If something goes wrong, see [When something goes wrong](#when-something-goes-wr
   maintainer to add you with **Write** access. GitHub will ask you to turn on two-factor authentication.
 - The website's files live at https://github.com/ccnl-dartmouth/ccnl-website. Everything you edit is in the
   `content` folder.
-- **Only edit your own files:** your page in `content/people/` and the papers you add in `content/publications/`.
-  Please don't change other people's files, or anything outside `content/`.
+- **Only edit your own files:** your page in `content/people/`, your photo in `content/images/`, and the papers you add
+  in `content/publications/` (with their optional thumbnails in `content/images/`). Please don't change other people's
+  files, or anything outside `content/`.
+- **One rule for pictures:** every picture goes in the one folder `content/images/` and has the **same name** as the
+  page or paper it belongs to (lowercase). `jane-doe.md` goes with `jane-doe.jpg`, and `2026-doe-paper.bib` goes with
+  `2026-doe-paper.jpg`. There are no subfolders.
 - **Everything you upload is public**, including the original version of your photo.
 
 ### How saving works
@@ -95,8 +99,9 @@ your bio, so you don't need to repeat them.
    fine (up to 25 MB). JPG, PNG, WEBP and iPhone HEIC photos all work.
 2. **Name the file exactly like your page, in lowercase.** If your page is `jane-doe.md`, the picture must be
    `jane-doe.jpg` (or `.png`, `.webp`, `.heic`). Capital letters matter: `Jane-Doe.JPG` will not work.
-3. Go to https://github.com/ccnl-dartmouth/ccnl-website/tree/main/content/people, click **Add file**, then **Upload
-   files**, drag your picture in, and click **Commit changes**.
+3. Go to https://github.com/ccnl-dartmouth/ccnl-website/tree/main/content/images (the `images` folder, not the
+   `people` folder), click **Add file**, then **Upload files**, drag your picture in, and click **Commit changes**. No
+   other change is needed: the website pairs the photo with your page by name.
 
 To replace a picture, upload a new one with the same name.
 
@@ -164,12 +169,17 @@ A complete example (the lines after `year` are all optional):
 | `corresponding = {Soltani}` | marks corresponding authors, shown with a yellow highlight |
 | `status = {preprint}` | lists the paper under "Preprints" |
 | `note = {...}` | a short note shown under the venue, for example "Highlighted in Nature" |
-| `image = {figure.jpg}` | a thumbnail for this paper (see below); without it a generic picture is used |
+| `image = {figure.jpg}` | optional: use this file from `content/images/` instead of the one named like the paper's file (see "A thumbnail" below) |
 
 ### A thumbnail (optional)
 
-Upload a picture to the **same folder** (`content/publications`) and add `image = {figure.jpg}` to the paper's
-`.bib` file with exactly that file name, including capital letters.
+Papers without a thumbnail get a generic picture. To add your own (a figure from the paper, for example), upload it
+to https://github.com/ccnl-dartmouth/ccnl-website/tree/main/content/images (the same `images` folder as photos) and
+give it **the same name as the paper's `.bib` file**. For `2026-doe-learning-under-uncertainty.bib` upload
+`2026-doe-learning-under-uncertainty.jpg`. No other change is needed.
+
+To use a picture with a different name, or one picture for several papers, upload it to `content/images` under any
+name and add `image = {shared-figure.jpg}` to each of those `.bib` files.
 
 ### Good to know
 
@@ -226,7 +236,11 @@ in the meantime. A GitHub issue titled "The website build failed" is also opened
 | `unknown field 'rol' (did you mean 'role'?)` | fix the spelling of the line |
 | `missing required field 'role'` | add the line shown in the message |
 | `... is not valid YAML` | a value with a colon in it needs quotes, for example `current_position: "Lab: Example"` |
-| `rename the image to 'jane-doe.jpg'` | the picture name must be lowercase and match your page name |
+| `rename the image to 'jane-doe.jpg'` | the picture name must be lowercase and match your page name (or the paper's `.bib` name) |
+| `images do not go in this folder` | a picture was uploaded next to the text files: move it to `content/images/` |
+| `this image doesn't match any person, paper or research theme` | a warning: the picture's name doesn't match any page or paper, so it isn't shown; rename it |
+| `the name '...' belongs to both a person and a ...` | two kinds of file share a name, so the picture can't be paired; rename one of the files |
+| `there are two images named '...'` | `jane-doe.jpg` and `jane-doe.png` both exist: delete one |
 | `contains GPS location data` | remove the location from the original photo and upload it again (see section 2) |
 | `no valid BibTeX entry found` | the `.bib` file is empty or has unbalanced `{ }` braces or a missing comma |
 | `contains 2 entries` | put each paper in its own `.bib` file |

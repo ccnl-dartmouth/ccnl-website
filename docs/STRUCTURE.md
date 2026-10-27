@@ -54,7 +54,7 @@ content/
     salience-choice.md
   teaching/
     psyc-50-02-decision-making.md
-  images/                  # site-wide images (funder logos, banners); referenced from lab.yaml
+  images/                  # ALL pictures: photos, thumbnails, research figures (paired by name), logos, hero
 sample_content/            # fake lab with every content type; used for previews and tests
 templates/                 # Jinja2 HTML
 static/                    # CSS, small JS
@@ -107,7 +107,7 @@ links:                # all optional
 Bio in Markdown. Optional "## Research" section.
 ```
 
-- Photo: `<slug>.jpg|png|webp|heic` next to the `.md`; missing photo gets an initial in a circle. A photo that contains GPS location data triggers a warning (the original stays public in the repository).
+- Photo: `content/images/<slug>.jpg|png|webp|heic` (same name as the `.md`); missing photo gets an initial in a circle. A photo that contains GPS location data triggers a warning (the original stays public in the repository).
 - A profile page also lists the person's papers automatically (matched from the BibTeX author names by last name
   and first initial), grouped like the main Publications page; only the page's owner is highlighted (bold blue).
 - Collaborators are listed at the bottom of the People page as a compact list (name linked to their site,
@@ -128,7 +128,7 @@ One standard BibTeX entry per file (paste from Google Scholar or the journal). O
 | `status` | `preprint`, or omitted for published |
 | `note` | short press/recognition note |
 | `abstract` | shown in a collapsible "Abstract" section on the Publications page |
-| `image` | optional thumbnail filename next to the `.bib`; papers without one get a generic filler (`static/pub-placeholder.svg`) |
+| `image` | optional: a file in `content/images/` other than the one named like the `.bib` file (see "Images" below); papers without a thumbnail get a generic filler (`static/pub-placeholder.svg`) |
 
 ### Research themes: `content/research/<slug>.md`
 
@@ -136,8 +136,8 @@ One standard BibTeX entry per file (paste from Google Scholar or the journal). O
 ---
 title: Adaptive learning and decision making
 order: 1                 # lower first
-image: figure.png        # optional, same folder
 image_alt: Diagram of ...  # describe the figure (screen readers); the build warns if missing
+# The figure is content/images/<this file's name>.jpg; an optional `image: other.jpg` line names a different file there.
 ---
 Short description in Markdown. Link to papers by BibTeX key if wanted.
 ```
@@ -229,7 +229,7 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 - **Home:** photo hero with the lab name and affiliation in a solid green card centered on the image, intro text,
   four entry cards. The hero uses a generated placeholder (`static/hero-default.svg`) until the lab adds a real photo.
 - **People:** current groups (PI, postdocs, grad students, undergraduates) sit side by side while they fit and
-  wrap onto new rows as they fill up; photo cards (initial in a circle when there is no photo); alumni as a plain list.
+  wrap onto new rows as they fill up; photo cards (initial in a circle when there is no photo); alumni as plain lists in subsections by role (postdoctoral scholars, graduate students, undergraduates, in that order; empty ones are left out).
   Profile page: details card (photo, role, years, links) beside the bio.
 - **Publications:** semi-dense list by year; each entry has the BibTeX-derived text on the left (authors styled by
   role, title, venue, link buttons, collapsible abstract; no year after the authors since the list is grouped by year) and a right-aligned thumbnail (own image or generic filler).
@@ -248,3 +248,28 @@ A weekly scheduled link check (separate from the build) reports dead links witho
   latin and latin-ext subsets.
 - **Accessibility target:** WCAG 2.2 AA: skip link, landmarks, visible focus, contrast, alt text prompts,
   keyboard-operable abstract disclosure, reduced-motion friendly, usable at 200% zoom.
+
+## Images: one folder, paired by name (decided Oct 2026)
+
+Every picture goes directly in `content/images/` (no subfolders) and is paired with its page or paper **by name**:
+
+| Picture | File name | Pairs with |
+|---|---|---|
+| Profile photo | `content/images/jane-doe.jpg` | `content/people/jane-doe.md` |
+| Paper thumbnail | `content/images/2026-doe-paper.jpg` | `content/publications/2026-doe-paper.bib` |
+| Research figure | `content/images/adaptive-learning.jpg` | `content/research/adaptive-learning.md` |
+| Logos, hero photo | any name | named in `lab.yaml` / `home.md` |
+
+- No `image:` line is needed when the names match. For papers and research themes an optional `image` line names
+  any file in `content/images/` instead (for example one figure shared by several papers, or a differently named file).
+- Names are what tell the kinds apart: people are `first-last`, papers start with the year, research themes are topic
+  words. If one name is used by two kinds of file and a picture has that name, the build stops (the picture cannot be
+  paired); without such a picture there is no problem.
+- Reported mistakes: wrong capitals (error), two files with the same name (error), a name shared by two kinds (error),
+  an image that matches nothing and is not named in `lab.yaml`/`home.md`/an `image` line (warning, not shown), and an
+  image left in `content/people/`, `content/publications/`, `content/research/` and the other text folders (warning,
+  not used).
+- Only logos and the hero photo are published as "site" images (`images/site/`); photos, thumbnails and figures are
+  resized and published with their page. The original files in the repository are public, so remove GPS data first.
+- One folder means one upload page to remember and no near-identical `people` folders to confuse; the cost is one long
+  alphabetical list (GitHub's file finder, key `t`, finds a file by name).

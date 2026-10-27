@@ -95,6 +95,11 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       drop PDF links); (5) Join text is from 2023 (build warns it is stale); stale "next offering" dates for courses
       were dropped; (6) Not migrated: News (17 items, dropped by decision), alumni individual profile pages (one had a
       personal email), media-coverage links (kept as a plain-text note), an Outlook tracking link.
+- [~] 10b Images: ALL pictures live flat in `content/images/` and are paired with pages/papers by name (see
+      STRUCTURE.md "Images"). Earlier the same day they were briefly in per-kind subfolders; changed because
+      `content/people` vs `content/images/people` was confusing. Existing images (including Peter's trial photo and
+      thumbnail) moved with `git mv`; only logos and the hero are published as site images. Not yet run or pushed.
+      Peter's paper (Duggins & Eliasmith, Psychological Review) was corrected from 2025 to 2024: file `duggins2024spiking.bib`, key, year and its thumbnail `duggins2024spiking_thumb.png`.
 - [~] 10 Documentation: contributor guide written (`docs/ADD-YOUR-CONTENT.md`: bio, profile picture, papers, profile
       fields, troubleshooting) and linked from the README; `tests/test_docs.py` builds the guide's examples so it
       cannot drift. Next: Peter follows the guide himself as a test; then a maintainer/handover page.

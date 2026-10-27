@@ -47,7 +47,8 @@ def process_site_images(site, out_dir, root, problems):
         logo_stems.add(Path(site["lab"]["institution_logo"]).stem)
     if site_images.is_dir():
         for path in sorted(site_images.iterdir()):
-            if path.suffix.lower() in IMAGE_EXTS and not path.name.startswith("."):
+            # only logos and the hero are published as "site" images; photos and thumbnails are handled with their pages
+            if path.name in site["site_image_names"] and path.suffix.lower() in IMAGE_EXTS:
                 max_px = 480 if path.stem in logo_stems else 2000  # logos are shown about 48px tall
                 process_image(path, images_out / "site", path.stem, max_px, where_of(path, root), problems)
     hero = site["home"].get("hero_image") if site["home"] else None

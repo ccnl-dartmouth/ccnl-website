@@ -9,7 +9,7 @@ You can update your bio, photo, links and papers in your web browser, with nothi
 
 **[Add your own content: step-by-step guide](docs/ADD-YOUR-CONTENT.md)**
 
-In short: your page is a file in `content/people/` (copy `_TEMPLATE.md` if you don't have one), your photo goes next to it
+In short: your page is a file in `content/people/` (copy `_TEMPLATE.md` if you don't have one), your photo goes in `content/images/`
 with the same name, and each paper is one `.bib` file in `content/publications/`. After you save ("commit") a change,
 the site rebuilds in 2 to 3 minutes; the Actions tab shows a green check when it is live, or an error message naming
 the file to fix. A broken change never takes the site down.

@@ -1,7 +1,6 @@
 ---
 title: Circuit models
 order: 3
-image: models.jpg
 image_alt: Made-up spike raster with rows of tick marks in two colors
 ---
 Models from synapses to systems that explain behavior and neural data while making testable predictions. We ask how

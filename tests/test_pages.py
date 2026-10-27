@@ -99,7 +99,7 @@ def test_research_theme_requires_title(sandbox):
 
 
 def test_research_image_must_exist(sandbox):
-    sandbox.edit("research/learning.md", "image: learning.jpg", "image: missing.jpg")
+    sandbox.edit("research/learning.md", "order: 1\n", "order: 1\nimage: missing.jpg\n")
     assert sandbox.build().has_error("learning.md", "image 'missing.jpg' was not found")
 
 

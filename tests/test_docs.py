@@ -49,10 +49,12 @@ def test_every_error_message_quoted_in_the_guide_still_exists_in_the_code():
         "entries. Use one .bib file per paper",
         "is also used in",
         "who is not among the authors",
+        "do not go in this folder",
+        "match any person, paper or research theme",
     ]
     for phrase in quoted:
         assert phrase in code, phrase
     for phrase in ("lowercase letters, digits and hyphens", "unknown field", "missing required field", "is not valid YAML",
                    "rename the image to", "contains GPS location data", "no valid BibTeX entry found", "is also used in",
-                   "who is not among the authors"):
+                   "who is not among the authors", "do not go in this folder", "match any person, paper or research theme"):
         assert phrase in GUIDE, phrase

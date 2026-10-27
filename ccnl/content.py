@@ -198,7 +198,7 @@ def split_email(address, where, problems):
 
 
 def list_md(directory, where_of_dir, problems, extra_ok=()):
-    """Markdown files in a collection folder (sorted); warns about files that will be ignored."""
+    """Markdown files in a collection folder (sorted); warns about files that will be ignored (images go in content/images/)."""
     files = []
     for path in sorted(Path(directory).iterdir()):
         if path.name.startswith((".", "_")) or path.name.lower() == "readme.md" or path.is_dir():
@@ -206,50 +206,87 @@ def list_md(directory, where_of_dir, problems, extra_ok=()):
         suffix = path.suffix.lower()
         if suffix == ".md":
             files.append(path)
-        elif suffix in IMAGE_EXTS or suffix in extra_ok:
+        elif suffix in IMAGE_EXTS:
+            problems.warn(
+                f"{where_of_dir}/{path.name}",
+                "images do not go in this folder, so this one is not used. Move it to content/images/.",
+            )
+        elif suffix in extra_ok:
             continue
         else:
             problems.warn(
-                f"{where_of_dir}/{path.name}", "this file type is ignored by the site. Use a .md file (or an image) here."
+                f"{where_of_dir}/{path.name}", "this file type is ignored by the site. Use a .md file here."
             )
     return files
 
 
-def find_same_name_images(directory, slugs, where_of_dir, problems):
-    """Map slug -> image path for images named like the slug (case mismatches are errors)."""
+def scan_images(content_dir):
+    """All pictures directly in content/images/: stem -> [paths]. Pictures are paired with pages and papers by name."""
     found = {}
-    for path in sorted(Path(directory).iterdir()):
-        if path.suffix.lower() not in IMAGE_EXTS or path.name.startswith("."):
-            continue
-        stem = path.stem
-        if stem in slugs:
-            if stem in found:
-                problems.error(
-                    f"{where_of_dir}/{path.name}",
-                    f"there are two images named '{stem}'. Keep one and delete the other.",
-                )
-            else:
-                found[stem] = path
-        elif stem.lower() in slugs:
-            problems.error(
-                f"{where_of_dir}/{path.name}",
-                f"rename the image to '{stem.lower()}{path.suffix.lower()}' (lowercase, same name as the .md file). "
-                "GitHub is case-sensitive, so 'Photo.JPG' and 'photo.jpg' are different files.",
-            )
-        else:
-            problems.warn(f"{where_of_dir}/{path.name}", "this image has no matching .md file with the same name, so it is not used.")
+    folder = Path(content_dir) / "images"
+    if folder.is_dir():
+        for path in sorted(folder.iterdir()):
+            if path.is_file() and path.suffix.lower() in IMAGE_EXTS and not path.name.startswith("."):
+                found.setdefault(path.stem, []).append(path)
     return found
 
 
-def resolve_field_image(directory, filename, where, problems):
-    path = Path(directory) / str(filename)
+def own_image(images, stem):
+    """The picture named like `stem`, if there is exactly one (problems are reported by check_images)."""
+    paths = images.get(stem, [])
+    return paths[0] if len(paths) == 1 else None
+
+
+def check_images(images, root, content_dir, slugs_by_kind, referenced, problems):
+    """Report images that cannot be paired: ambiguous names, wrong capitals, duplicates and unused pictures.
+
+    `slugs_by_kind` maps 'person' / 'paper' / 'research theme' to the names of their files; `referenced` holds image
+    file names used explicitly (logos in lab.yaml, the hero in home.md, `image:` lines).
+    """
+    where_dir = where_of(Path(content_dir) / "images", root)
+    owners = {}
+    for kind, slugs in slugs_by_kind.items():
+        for slug in slugs:
+            owners.setdefault(slug, []).append(kind)
+    for stem, paths in sorted(images.items()):
+        kinds = owners.get(stem, [])
+        for index, path in enumerate(paths):
+            where = f"{where_dir}/{path.name}"
+            if len(kinds) > 1:
+                problems.error(
+                    where,
+                    f"the name '{stem}' belongs to both a {kinds[0]} and a {kinds[1]}, so this image cannot be paired. "
+                    "Rename one of the two files.",
+                )
+            elif kinds:
+                if index > 0:
+                    problems.error(where, f"there are two images named '{stem}'. Keep one and delete the other.")
+            elif path.name in referenced:
+                continue
+            elif stem.lower() in owners:
+                problems.error(
+                    where,
+                    f"rename the image to '{stem.lower()}{path.suffix.lower()}' (lowercase, same name as the page or paper it belongs to). "
+                    "GitHub is case-sensitive, so 'Photo.JPG' and 'photo.jpg' are different files.",
+                )
+            else:
+                problems.warn(
+                    where,
+                    "this image doesn't match any person, paper or research theme, and isn't used in lab.yaml or home.md, "
+                    "so it isn't shown. Rename it to match the page or paper it belongs to.",
+                )
+
+
+def resolve_field_image(directory, filename, where, problems, hint="content/images/"):
+    directory = Path(directory)
+    path = directory / str(filename)
     if path.is_file():
         return path
-    for other in Path(directory).iterdir():
+    for other in (directory.iterdir() if directory.is_dir() else ()):
         if other.name.lower() == str(filename).lower():
             problems.error(where, f"'image: {filename}' must match the file name exactly; the file is called '{other.name}'.")
             return None
-    problems.error(where, f"image '{filename}' was not found next to this file. Upload it to the same folder, or fix the name.")
+    problems.error(where, f"image '{filename}' was not found in {hint}. Upload it there, or fix the name.")
     return None
 
 
@@ -398,21 +435,26 @@ RESEARCH_SPEC = {
 }
 
 
-def load_research(content_dir, root, problems):
+def load_research(content_dir, root, problems, images):
     folder = Path(content_dir) / "research"
     themes = []
     if not folder.is_dir():
         return themes
     where_dir = where_of(folder, root)
-    for path in list_md(folder, where_dir, problems):
+    files = list_md(folder, where_dir, problems)
+    for path in files:
         where = where_of(path, root)
         check_slug(path, where, problems)
         meta, body = read_front_matter(path, where, problems)
         if meta is None:
             continue
         clean = check_meta(meta, where, RESEARCH_SPEC, problems)
-        image_src = resolve_field_image(folder, clean["image"], where, problems) if clean["image"] else None
-        if clean["image"] and not clean["image_alt"]:
+        # the figure is content/images/<same name as the theme file>.jpg, or the file named in `image:`
+        if clean["image"]:
+            image_src = resolve_field_image(Path(content_dir) / "images", clean["image"], where, problems)
+        else:
+            image_src = own_image(images, path.stem)
+        if image_src and not clean["image_alt"]:
             problems.warn(where, "add `image_alt:` describing the figure in a sentence, for people who use screen readers.")
         themes.append(
             {
@@ -421,6 +463,7 @@ def load_research(content_dir, root, problems):
                 "order": clean["order"] if clean["order"] is not None else 1000,
                 "html": render_markdown(body),
                 "image_src": image_src,
+                "image_name": clean["image"],
                 "image": None,
                 "image_alt": clean["image_alt"] or "",
                 "where": where,
@@ -478,15 +521,13 @@ def build_person_links(links, where, problems):
     return out, email
 
 
-def load_people(content_dir, root, problems):
+def load_people(content_dir, root, problems, images):
     folder = Path(content_dir) / "people"
     people = []
     if not folder.is_dir():
         return people
     where_dir = where_of(folder, root)
     files = list_md(folder, where_dir, problems)
-    slugs = {p.stem for p in files}
-    photos = find_same_name_images(folder, slugs, where_dir, problems)
     for path in files:
         where = where_of(path, root)
         check_slug(path, where, problems)
@@ -518,7 +559,7 @@ def load_people(content_dir, root, problems):
                 "links": links,
                 "email": email,
                 "html": render_markdown(body),
-                "photo_src": photos.get(path.stem),
+                "photo_src": own_image(images, path.stem),  # content/images/<same name as the profile file>.jpg
                 "photo": None,
                 "where": where,
             }
@@ -535,6 +576,16 @@ def years_label(start, end, status):
     if end:
         return f"until {end}"
     return ""
+
+
+def group_alumni(alumni):
+    """Alumni (already newest first) split into subsections by role, in the same order as the current groups."""
+    groups = []
+    for role in ROLES:
+        members = [p for p in alumni if p["role"] == role]
+        if members:
+            groups.append({"role": role, "title": ROLE_GROUP_TITLES[role], "people": members})
+    return groups
 
 
 def group_people(people):
@@ -585,16 +636,19 @@ def name_list(value):
     return [n.strip() for n in re.split(r"\s*[;,]\s*|\s+and\s+", clean_bib_text(value)) if n.strip()]
 
 
-def load_publications(content_dir, root, problems):
+def load_publications(content_dir, root, problems, images):
     folder = Path(content_dir) / "publications"
     pubs, seen_keys = [], {}
     if not folder.is_dir():
         return pubs
     where_dir = where_of(folder, root)
     for path in sorted(folder.iterdir()):
-        if path.name.startswith((".", "_")) or path.is_dir() or path.suffix.lower() in IMAGE_EXTS:
+        if path.name.startswith((".", "_")) or path.is_dir():
             continue
         where = where_of(path, root)
+        if path.suffix.lower() in IMAGE_EXTS:
+            problems.warn(where, "images do not go in this folder, so this one is not used. Move it to content/images/.")
+            continue
         if path.suffix.lower() != ".bib":
             problems.warn(where, "this file type is ignored by the site. Publications must be .bib files.")
             continue
@@ -672,7 +726,11 @@ def load_publications(content_dir, root, problems):
             doi = entry["doi"].strip()
             links.insert(0, {"label": "DOI", "url": doi if doi.startswith("http") else f"https://doi.org/{doi}"})
 
-        image_src = resolve_field_image(folder, entry["image"].strip(), where, problems) if entry.get("image") else None
+        # the thumbnail is content/images/<same name as the .bib file>.jpg, or the file named in `image =`
+        if entry.get("image"):
+            image_src = resolve_field_image(Path(content_dir) / "images", entry["image"].strip(), where, problems)
+        else:
+            image_src = own_image(images, path.stem)
         pubs.append(
             {
                 "key": key,
@@ -688,6 +746,7 @@ def load_publications(content_dir, root, problems):
                 "abstract": clean_bib_text(entry.get("abstract", "")),
                 "preprint": preprint,
                 "image_src": image_src,
+                "image_name": entry["image"].strip() if entry.get("image") else None,
                 "image": None,
                 "where": where,
             }
@@ -832,9 +891,10 @@ def load_site(content_dir, root, problems, today=None):
     about = load_text_page(content_dir, root, "about", problems, "about" in nav_pages, today, allowed=())
     join = load_text_page(content_dir, root, "join", problems, False, today, allowed=("recruiting", "updated"))  # shown on the Contact page
 
-    research = load_research(content_dir, root, problems)
-    people = load_people(content_dir, root, problems)
-    publications = load_publications(content_dir, root, problems)
+    images = scan_images(content_dir)
+    research = load_research(content_dir, root, problems, images)
+    people = load_people(content_dir, root, problems, images)
+    publications = load_publications(content_dir, root, problems, images)
     resources = load_resources(content_dir, root, problems)
     teaching = load_teaching(content_dir, root, problems, today)
 
@@ -848,6 +908,21 @@ def load_site(content_dir, root, problems, today=None):
                     item["where"],
                     f"`paper: {item['paper']}` does not match any publication. Use the BibTeX key (the text after `@article{{` in the .bib file).",
                 )
+
+    # Pictures used by name elsewhere (logos, hero, `image:` lines) are exempt from the "unused picture" warning
+    site_image_names = {f["logo"] for f in lab.get("funders", []) if f.get("logo")}
+    for name in (lab.get("institution_logo"), (home or {}).get("hero_image")):
+        if name:
+            site_image_names.add(name)
+    bib_stems = {p.stem for p in (content_dir / "publications").glob("*.bib") if not p.name.startswith((".", "_"))} if (content_dir / "publications").is_dir() else set()
+    check_images(
+        images,
+        root,
+        content_dir,
+        {"person": {p["slug"] for p in people}, "paper": bib_stems, "research theme": {t["slug"] for t in research}},
+        site_image_names | {x["image_name"] for x in research + publications if x.get("image_name")},
+        problems,
+    )
 
     style_authors(publications, people)
     for person in people:  # each profile page lists the person's own papers (newest first, as loaded)
@@ -867,9 +942,11 @@ def load_site(content_dir, root, problems, today=None):
         "people": people,
         "people_groups": people_groups,
         "alumni": alumni,
+        "alumni_groups": group_alumni(alumni),
         "publications": publications,
         "author_roles": author_roles(publications),
         "resources": resources,
         "teaching": teaching,
+        "site_image_names": sorted(site_image_names),
         "today": today,
     }

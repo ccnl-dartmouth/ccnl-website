@@ -119,7 +119,7 @@ def test_email_is_obfuscated_in_html(sandbox):
 
 def test_photo_with_matching_name_is_used_and_resized(sandbox):
     sandbox.write("people/new-person.md", person_md())
-    sandbox.write("people/new-person.jpg", image_bytes((3000, 2000)))
+    sandbox.write("images/new-person.jpg", image_bytes((3000, 2000)))
     result = sandbox.build()
     assert result.ok, result.errors
     from PIL import Image
@@ -131,23 +131,23 @@ def test_photo_with_matching_name_is_used_and_resized(sandbox):
 
 def test_photo_name_case_mismatch_is_an_error(sandbox):
     sandbox.write("people/new-person.md", person_md())
-    sandbox.write("people/New-Person.JPG", image_bytes())
+    sandbox.write("images/New-Person.JPG", image_bytes())
     result = sandbox.build()
     assert result.has_error("New-Person.JPG", "rename the image to 'new-person.jpg'", "case-sensitive")
 
 
 def test_two_photos_for_one_person(sandbox):
     sandbox.write("people/new-person.md", person_md())
-    sandbox.write("people/new-person.jpg", image_bytes())
-    sandbox.write("people/new-person.png", image_bytes(fmt="PNG"))
+    sandbox.write("images/new-person.jpg", image_bytes())
+    sandbox.write("images/new-person.png", image_bytes(fmt="PNG"))
     assert sandbox.build().has_error("new-person", "two images")
 
 
 def test_orphan_image_warns(sandbox):
-    sandbox.write("people/someone-else.jpg", image_bytes())
+    sandbox.write("images/someone-else.jpg", image_bytes())
     result = sandbox.build()
     assert result.ok
-    assert result.has_warning("someone-else.jpg", "no matching .md")
+    assert result.has_warning("someone-else.jpg", "doesn't match any person, paper or research theme")
 
 
 def test_person_without_photo_is_fine(sandbox):
