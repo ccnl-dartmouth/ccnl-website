@@ -51,15 +51,17 @@ once 3 is fixed; 9 needs 5, 6, 8; 11 needs the Dartmouth reply (can launch on gi
 
 ## Phase 1 substeps
 
-- [ ] 1.1 Org name chosen: `ccnl-dartmouth` (`ccnl` and `soltanilab` are taken).
-- [ ] 1.2 Create the org (Free plan) with a long-lived contact email.
-- [ ] 1.3 Add the PI as owner; keep owners to 2-3 people. Require 2FA for members.
-- [ ] 1.4 Create public repo `ccnl-website`.
+- [x] 1.1 Org name chosen: `ccnl-dartmouth` (`ccnl` and `soltanilab` are taken).
+- [x] 1.2 Create the org (Free plan). Currently owned by Peter's personal account with his gmail as
+      contact email; change the contact email before handover (org Settings -> Profile).
+- [ ] 1.3 Add the PI as owner (deferred); keep owners to 2-3 people. Require 2FA for members
+      (do this BEFORE inviting members, or non-2FA members get removed).
+- [x] 1.4 Create public repo `ccnl-website`.
 - [ ] 1.5 Create team `lab-members` with Write on the repo; org default permission Read; invite members.
-- [ ] 1.6 Settings -> Pages -> Source: GitHub Actions. Enforce HTTPS. Custom domain later.
+- [x] 1.6 Settings -> Pages -> Source: GitHub Actions (done). Enforce HTTPS and custom domain later.
 - [ ] 1.7 Ruleset on `main`: block force-push and deletion; require the build check, no required reviewers
       (finish after the workflow has run once, phase 6).
-- [ ] 1.8 Clone locally (this folder), add `.gitignore`, README stub, this plan, `CLAUDE.md`; first commit.
+- [x] 1.8 Clone locally (this folder), add `.gitignore`, README stub, this plan, `CLAUDE.md`; first commit; pushed to origin.
 - [ ] 1.9 Write `docs/OWNERSHIP.md` (owners, alert email, domain contact, monitor account, offboarding).
 
 ## Risks
