@@ -26,6 +26,12 @@ site on GitHub Pages that lab members can update themselves.
   If a dartmouth.edu name becomes required, revisit host.dartmouth.edu; first ask: can the account
   belong to a department/PI, is automated deploy (SFTP/SSH) allowed, how does its Git feature work.
 - **Old site:** the PI has approved admin access to the WordPress site for the migration.
+- **Custom domain (deferred to launch, phase 11):** a .com/.org (~$10-15/yr) can be added later by
+  pointing DNS at GitHub Pages and setting the workflow base path to empty. Checked Oct 2026 (RDAP):
+  `ccnl.org/.com/.net`, `ccnlab.org/.com` are taken; `soltanilab.org/.com`, `soltani-lab.org`,
+  `ccnl-lab.org`, `ccnl-dartmouth.org/.com` looked unregistered. Registrant must be the PI/department/lab
+  (not a personal account), with lab email, 2FA and auto-renew; avoid "dartmouth" in the name unless
+  Dartmouth approves. `.edu` is not available to labs.
 
 ## Design references
 
@@ -64,11 +70,15 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
 - [x] 0 Decisions, 1 GitHub setup (remaining: PI as owner, 2FA, team/invites, `main` ruleset), 3 Structure design
 - [x] 4 Core build: `build.py` + `ccnl/` (loading, validation, images, rendering), templates, placeholder CSS,
       `sample_content/`, smoke tests. Validation already gives friendly errors; phase 5 adds the full test suite.
+- [x] 5 Validation and tests: 101 pytest tests (`tests/`) cover every validation rule, image handling (resize,
+      EXIF strip, HEIC, corrupt/oversized), atomic output, base path, CLI exit codes. Each runs against a
+      throwaway copy of `sample_content/` broken in one specific way. Known gap: BibTeX errors name the file
+      and entry key but not a line number (the parser does not report them).
 - [~] 6 Automation: `.github/workflows/deploy.yml` builds, tests and deploys to Pages on every push to
       `main` (first version; first run succeeded Oct 2026; skeleton live at
       https://ccnl-dartmouth.github.io/ccnl-website/). Still to do: failure alert emails to the PI/lab, uptime monitor, weekly link
       check, `main` ruleset requiring the build check.
-- [ ] 2 Content audit (partly done during structure design), 5 tests, 7 design, 8 migration,
+- [ ] 2 Content audit (partly done during structure design), 7 design, 8 migration,
       9 member testing, 10 docs, 11 launch, 12 handover
 
 Dependencies: 3 gates everything after it; 1 runs alongside 2 and 3; 5 and 6 need 4; 7 can start
