@@ -2,17 +2,40 @@
 {% block title %}Resources &middot; {{ lab.name }}{% endblock %}
 {% block content %}
 <h1>Resources</h1>
-<p class="prose">Code, data and tools from our work. Please cite the associated paper and respect each package's license.</p>
-<ul class="stack">
-{% for r in site.resources %}
-  <li class="card">
-    <h2>{{ r.title }}</h2>
-    {% if r.paper_pub %}<p class="meta">Paper: {{ r.paper_pub.title }} ({{ r.paper_pub.year }}), <em>{{ r.paper_pub.venue }}</em></p>{% endif %}
-    <div class="prose">{{ r.html|safe }}</div>
-    {% if r.links %}<ul class="pub-links">{% for l in r.links %}<li><a href="{{ l.url }}">{{ l.label }}<span class="sr-only"> for {{ r.title }}</span></a></li>{% endfor %}</ul>{% endif %}
-  </li>
-{% else %}
-  <li>Resources will appear here.</li>
-{% endfor %}
-</ul>
+
+{% if site.resources %}
+<section id="code-data">
+  <h2>Code and data</h2>
+  <p class="prose">Code, data and tools from our work. Please cite the associated paper and respect each package's license.</p>
+  <ul class="stack">
+  {% for r in site.resources %}
+    <li class="card">
+      <h3>{{ r.title }}</h3>
+      {% if r.paper_pub %}<p class="meta">Paper: {{ r.paper_pub.title }} ({{ r.paper_pub.year }}), <em>{{ r.paper_pub.venue }}</em></p>{% endif %}
+      <div class="prose">{{ r.html|safe }}</div>
+      {% if r.links %}<ul class="pub-links">{% for l in r.links %}<li><a href="{{ l.url }}">{{ l.label }}<span class="sr-only"> for {{ r.title }}</span></a></li>{% endfor %}</ul>{% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if site.teaching %}
+<section id="teaching">
+  <h2>Teaching</h2>
+  <ul class="stack">
+  {% for c in site.teaching %}
+    <li class="card">
+      <h3>{{ c.title }} <span class="meta">({{ c.code }})</span></h3>
+      <div class="prose">{{ c.html|safe }}</div>
+      {% if c.next_offering %}<p class="meta">Next offering: {{ c.next_offering }}</p>{% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if not site.resources and not site.teaching %}
+<p>Resources will appear here.</p>
+{% endif %}
 {% endblock %}

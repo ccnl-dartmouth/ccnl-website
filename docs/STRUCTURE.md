@@ -29,8 +29,7 @@ The old WordPress site is not being recreated; we keep its core information in a
 | People | `people/*.md` | Current and alumni, grouped by role; profile pages generated |
 | Publications | `publications/*.bib` | Preprints + published, by year |
 | Contact | `lab.yaml` + `join.md` | Address and email; the "Join us" section (recruiting banner + text per career stage) from `join.md` |
-| Resources | `resources/*.md` | Code, data, tutorials (replaces Codes & Datasets) |
-| Teaching | `teaching/*.md` | Courses |
+| Resources | `resources/*.md` + `teaching/*.md` | "Code and data" cards, then a "Teaching" section with the course cards (Teaching is not a separate page) |
 
 Deferred (can be added later without touching the rest): Participate / Active Studies, Press,
 Lab Photos. Dropped: News (stale since 2023; replaced by nothing for now).
@@ -80,7 +79,6 @@ nav:
   - {label: People, page: people}
   - {label: Publications, page: publications}
   - {label: Resources, page: resources}
-  - {label: Teaching, page: teaching}
   - {label: Contact, page: contact}
 ```
 
@@ -123,12 +121,12 @@ One standard BibTeX entry per file (paste from Google Scholar or the journal). O
 | Field | Meaning |
 |---|---|
 | `pdf`, `si`, `data`, `code`, `url` | link buttons |
-| `cofirst` | last names of co-first authors (the build adds the marker) |
+| `cofirst` | last names of co-first authors (shown in blue; no symbols) |
 | `corresponding` | last names of corresponding authors |
 | `status` | `preprint`, or omitted for published |
 | `note` | short press/recognition note |
 | `abstract` | shown in a collapsible "Abstract" section on the Publications page |
-| `image` | optional thumbnail filename next to the `.bib` (decorative; shown on Publications, not on Home) |
+| `image` | optional thumbnail filename next to the `.bib`; papers without one get a generic filler (`static/pub-placeholder.svg`) |
 
 ### Research themes: `content/research/<slug>.md`
 
@@ -216,7 +214,7 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 ## Decisions recorded
 
 - One `.bib` file per paper (errors stay local to one file).
-- Keep co-first and corresponding markers via `cofirst` / `corresponding` fields.
+- Co-first / corresponding authors are shown by text color in the author list (blue, orange, purple for both) with bold weight, screen-reader text and a legend, not by the old ° and * symbols.
 - Drop News. No selected-publications section on Home.
 - Join is not a page; its text lives on the Contact page (`join.md`).
 - No Research page of fixed length: themes are files, the count can change.
@@ -230,14 +228,17 @@ A weekly scheduled link check (separate from the build) reports dead links witho
   four entry cards. The hero uses a generated placeholder (`static/hero-default.svg`) until the lab adds a real photo.
 - **People:** photo grid by role (initial in a circle when there is no photo); alumni as a plain list.
   Profile page: details card (photo, role, years, links) beside the bio.
-- **Publications:** semi-dense list by year; each entry has an optional thumbnail, the BibTeX-derived text
-  (authors, title, venue, link buttons) and a collapsible abstract.
-- **Research:** one section per theme, figure alternating left/right (stacked on phones).
+- **Publications:** semi-dense list by year; each entry has the BibTeX-derived text on the left (authors colored by
+  role, title, venue, link buttons, collapsible abstract) and a right-aligned thumbnail (own image or generic filler).
+- **Research:** one section per theme with a large figure alternating left/right (stacked on phones). The real
+  site currently uses generated placeholder illustrations, to be replaced with real figures.
 - **Header:** only a centered navigation bar (no lab name at the left); order Home, Research, People, Publications,
-  Teaching, Resources, Contact.
+  Resources, Contact.
 - **Footer:** lab name and affiliation at the left; small SVG logos at the right (institution from
-  `institution_logo` in `lab.yaml`, funders from `funders[].logo`) on white chips so they work in dark mode.
-- **Teaching, Resources, Contact:** simple stacked entries; Contact also holds the Join text.
+  `institution_logo` in `lab.yaml`, funders from `funders[].logo`) on white chips so they work in dark mode; an optional
+  `credit` line in `lab.yaml` (required for the CC BY-SA Dartmouth D-Pine logo).
+- **Resources, Contact:** simple stacked entries; Resources also holds Teaching, Contact also holds the Join text.
+- **Home hero:** the lab name in large type, then the department and "Dartmouth College" on separate lines; intro text centered.
 - **Palette:** Dartmouth green `#00693e` (6.8:1 on white), ink `#1c1c1c`, amber `#f2a900` as decoration only;
   automatic dark mode following the system setting.
 - **Fonts:** Source Serif 4 headings, Inter body, self-hosted in `static/fonts/` (SIL OFL licenses included),

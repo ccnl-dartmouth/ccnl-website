@@ -39,21 +39,21 @@
 </li>
 {% endmacro %}
 
-{# One publication. With full=True it also shows the thumbnail and a collapsible abstract. #}
-{% macro publication(p, full=False) %}
-<li class="pub{% if full and p.image %} has-thumb{% endif %}">
-  {% if full and p.image %}<img class="pub-thumb" src="{{ url('images/' ~ p.image) }}" alt="" loading="lazy">{% endif %}
+{# One publication: text on the left, thumbnail (the paper's own image, or a generic filler) on the right. #}
+{% macro publication(p) %}
+<li class="pub">
   <div class="pub-body">
     <p class="pub-title">{{ p.title }}</p>
-    <p class="pub-authors">{% for a in p.authors %}{% if a.etal %}et al.{% else %}{{ a.last }} {{ a.initials }}{% if a.cofirst %}&deg;{% endif %}{% if a.corresponding %}*{% endif %}{% endif %}{{ ", " if not loop.last }}{% endfor %} ({{ p.year }})</p>
+    <p class="pub-authors">{% for a in p.authors %}{% if a.etal %}et al.{% else %}{% set role = 'both' if a.cofirst and a.corresponding else 'cofirst' if a.cofirst else 'corr' if a.corresponding else '' %}{% if role %}<span class="au au-{{ role }}">{{ a.last }} {{ a.initials }}<span class="sr-only"> ({{ 'co-first and corresponding author' if role == 'both' else 'co-first author' if role == 'cofirst' else 'corresponding author' }})</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{% endif %}{{ ", " if not loop.last }}{% endfor %} ({{ p.year }})</p>
     <p class="pub-venue"><em>{{ p.venue }}</em>{% if p.volume %} {{ p.volume }}{% if p.number %}({{ p.number }}){% endif %}{% endif %}{% if p.pages %}, {{ p.pages }}{% endif %}</p>
     {% if p.note %}<p class="pub-note">{{ p.note }}</p>{% endif %}
     {% if p.links %}
     <ul class="pub-links">{% for l in p.links %}<li><a href="{{ l.url }}">{{ l.label }}<span class="sr-only"> for {{ p.title }}</span></a></li>{% endfor %}</ul>
     {% endif %}
-    {% if full and p.abstract %}
+    {% if p.abstract %}
     <details class="pub-abstract"><summary>Abstract<span class="sr-only"> of {{ p.title }}</span></summary><p>{{ p.abstract }}</p></details>
     {% endif %}
   </div>
+  <img class="pub-thumb" src="{{ url('images/' ~ p.image) if p.image else url('static/pub-placeholder.svg') }}" alt="" loading="lazy">
 </li>
 {% endmacro %}

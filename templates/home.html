@@ -6,8 +6,9 @@
   <div class="hero-overlay">
     <div class="hero-card">
       <h1>{{ site.home.headline or lab.name }}</h1>
-      {% set affiliation = [lab.department, lab.institution]|select|join(', ') %}
-      {% if affiliation %}<p>{{ affiliation }}</p>{% endif %}
+      {% if lab.department or lab.institution %}
+      <p class="hero-affil">{% if lab.department %}<span>{{ lab.department }}</span>{% endif %}{% if lab.institution %}<span>{{ lab.institution }}</span>{% endif %}</p>
+      {% endif %}
     </div>
   </div>
 </section>

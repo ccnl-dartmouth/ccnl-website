@@ -92,6 +92,11 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       drop PDF links); (5) Join text is from 2023 (build warns it is stale); stale "next offering" dates for courses
       were dropped; (6) Not migrated: News (17 items, dropped by decision), alumni individual profile pages (one had a
       personal email), media-coverage links (kept as a plain-text note), an Outlook tracking link.
+- [~] 7c Design round 3 (Oct 2026): hero title larger with the department and Dartmouth College on separate lines;
+      intro centered; Teaching moved into Resources; footer uses the Dartmouth D-Pine mark (Wikimedia, CC BY-SA 4.0, credit
+      line in the footer) and the standard NIH logo; research page has generated placeholder illustrations in the
+      alternating layout; publications show co-first/corresponding authors by color (no ° or *) and a right-aligned
+      thumbnail on every entry (generic filler when the paper has none).
 - [~] 7b Design round 2 (Oct 2026): header is a centered nav only; hero card centered on the image with the
       affiliation; selected publications and funders removed from Home; Join moved into Contact; Teaching before
       Resources; SVG logos in the footer (Wikimedia Commons: NSF logo public domain, NIH logo public domain, Dartmouth

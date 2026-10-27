@@ -8,8 +8,9 @@ address:
   - Dartmouth College
   - Hanover, NH 03755
 email: alireza.soltani@dartmouth.edu
-institution_logo: dartmouth-logo.svg
+institution_logo: dartmouth-d.svg
 institution_url: https://www.dartmouth.edu
+credit: "Dartmouth D-Pine logo: Wikimedia Commons (File:Dartmouth_D-Pine.svg), CC BY-SA 4.0."
 funders:
   - name: National Science Foundation
     logo: nsf-logo.svg

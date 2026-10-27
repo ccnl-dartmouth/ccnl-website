@@ -3,6 +3,5 @@ nav:
   - {label: Research, page: research}
   - {label: People, page: people}
   - {label: Publications, page: publications}
-  - {label: Teaching, page: teaching}
   - {label: Resources, page: resources}
   - {label: Contact, page: contact}

@@ -16,7 +16,6 @@ PAGE_TEMPLATES = {
     "people": "people.html",
     "publications": "publications.html",
     "resources": "resources.html",
-    "teaching": "teaching.html",
     "contact": "contact.html",
 }
 

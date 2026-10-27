@@ -77,22 +77,44 @@ def test_corresponding_name_must_be_an_author(sandbox):
     assert sandbox.build().has_error("new.bib", "`corresponding`")
 
 
-def test_markers_are_rendered_and_legend_shown(sandbox):
+def test_author_roles_are_colored_not_marked(sandbox):
     sandbox.write("publications/new.bib", bib(cofirst="Doe, Investigator", corresponding="Investigator"))
     result = sandbox.build()
     assert result.ok, result.errors
     html = result.page("publications/index.html")
-    assert "Doe J&deg;" in html or "Doe J°" in html
-    assert "co-first authors" in html and "corresponding author" in html
+    block = html.split("A title")[1].split("</li>")[0]
+    assert 'class="au au-cofirst">Doe J<' in block          # co-first only
+    assert 'class="au au-both">Investigator P<' in block    # co-first and corresponding
+    assert "&deg;" not in block and "\u00b0" not in block and "*" not in block
 
 
-def test_no_legend_without_markers(sandbox):
-    sandbox.edit("publications/2024-student-context.bib", "  cofirst = {Student, Postdoc},\n", "")
-    sandbox.edit("publications/2024-student-context.bib", "  corresponding = {Investigator},\n", "")
-    sandbox.edit("publications/2025-postdoc-preprint.bib", "  corresponding = {Investigator},\n", "")
-    result = sandbox.build()
-    assert result.ok, result.errors
-    assert "co-first authors" not in result.page("publications/index.html")
+def test_corresponding_only_and_screen_reader_text(sandbox):
+    sandbox.write("publications/new.bib", bib(corresponding="Doe"))
+    block = sandbox.build().page("publications/index.html").split("A title")[1].split("</li>")[0]
+    assert 'class="au au-corr">Doe J<span class="sr-only"> (corresponding author)</span>' in block
+    assert "Investigator P" in block and 'au au-' not in block.split("Investigator P")[1][:20]
+
+
+def test_legend_lists_only_the_roles_that_occur(sandbox):
+    html = sandbox.build().page("publications/index.html")
+    legend = html.split('class="author-key')[1].split("</p>")[0]
+    assert "co-first author" in legend and "corresponding author" in legend and "co-first and corresponding" in legend
+    for name in ("2024-student-context", "2025-postdoc-preprint", "2012-investigator-range"):
+        text = sandbox.path(f"publications/{name}.bib").read_text()
+        text = "\n".join(line for line in text.splitlines() if not line.strip().startswith(("cofirst", "corresponding")))
+        sandbox.write(f"publications/{name}.bib", text)
+    assert "author-key" not in sandbox.build().page("publications/index.html")
+
+
+def test_every_publication_has_a_right_aligned_thumbnail_with_a_generic_fallback(sandbox):
+    html = sandbox.build().page("publications/index.html")
+    items = html.split('<li class="pub">')[1:]
+    assert len(items) == 12
+    for item in items:
+        assert item.index('class="pub-body"') < item.index('class="pub-thumb"')  # text first, thumbnail after (right column)
+        assert 'alt=""' in item.split('class="pub-thumb"')[1][:200]
+    assert "images/publications/student2024context.jpg" in html
+    assert html.count("static/pub-placeholder.svg") == 12 - 5  # sample has 5 papers with their own image
 
 
 def test_parse_authors_formats():

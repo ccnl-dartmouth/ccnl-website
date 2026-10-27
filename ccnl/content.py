@@ -32,7 +32,7 @@ ROLE_GROUP_TITLES = {
     "undergrad": "Undergraduate Students",
     "collaborator": "Collaborators",
 }
-PAGES = ("home", "about", "research", "people", "publications", "resources", "teaching", "contact")
+PAGES = ("home", "about", "research", "people", "publications", "resources", "contact")
 STALE_DAYS = 365
 
 SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -262,6 +262,7 @@ LAB_SPEC = {
     "institution": {},
     "institution_logo": {"example": "dartmouth-logo.svg"},
     "institution_url": {"example": "https://www.dartmouth.edu"},
+    "credit": {"example": "Logo: Wikimedia Commons, CC BY-SA 4.0"},
     "address": {"type": "list"},
     "email": {},
     "funders": {"type": "list"},
@@ -777,6 +778,12 @@ def load_teaching(content_dir, root, problems, today):
 # --------------------------------------------------------------------------- everything
 
 
+def author_roles(publications):
+    """Which author roles occur, for the legend on the Publications page."""
+    seen = {(bool(a.get("cofirst")), bool(a.get("corresponding"))) for p in publications for a in p["authors"]}
+    return {"cofirst": (True, False) in seen, "corresponding": (False, True) in seen, "both": (True, True) in seen}
+
+
 def load_site(content_dir, root, problems, today=None):
     today = today or datetime.date.today()
     content_dir = Path(content_dir)
@@ -822,8 +829,7 @@ def load_site(content_dir, root, problems, today=None):
         "people_groups": people_groups,
         "alumni": alumni,
         "publications": publications,
-        "has_cofirst": any(a.get("cofirst") for p in publications for a in p["authors"]),
-        "has_corresponding": any(a.get("corresponding") for p in publications for a in p["authors"]),
+        "author_roles": author_roles(publications),
         "resources": resources,
         "teaching": teaching,
         "today": today,

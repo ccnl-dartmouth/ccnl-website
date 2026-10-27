@@ -26,6 +26,8 @@ def test_real_content_builds(tmp_path):
     build(ROOT / "content", tmp_path / "site", ROOT / "templates", ROOT / "static", root=ROOT, today=TODAY, problems=problems)
     assert not problems.errors
     assert (tmp_path / "site" / "index.html").is_file()
+    research = (tmp_path / "site" / "research" / "index.html").read_text()
+    assert research.count('class="theme-fig"') == research.count('class="theme"') >= 1  # every theme has its image
 
 
 def test_sample_content_is_clean(sandbox):
@@ -36,12 +38,13 @@ def test_sample_content_is_clean(sandbox):
 
 def test_expected_pages_exist(sandbox):
     sandbox.build()
-    for page in ("people", "publications", "research", "resources", "teaching", "contact"):
+    for page in ("people", "publications", "research", "resources", "contact"):
         assert (sandbox.out / page / "index.html").is_file()
     assert (sandbox.out / "people" / "pat-investigator" / "index.html").is_file()
     assert (sandbox.out / "404.html").is_file()
     assert (sandbox.out / ".nojekyll").is_file()
     assert not (sandbox.out / "join").exists()  # Join lives on the Contact page
+    assert not (sandbox.out / "teaching").exists()  # Teaching lives on the Resources page
 
 
 def test_every_page_has_title_and_nav_and_no_template_leftovers(sandbox):

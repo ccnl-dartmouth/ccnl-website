@@ -10,12 +10,15 @@
   --soft: #f3f7f4;
   --line: #d6ddd8;
   --amber: #f2a900;
+  --au-cofirst: #1a5fb4;
+  --au-corr: #a24b00;
+  --au-both: #7b3fa0;
   --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --wrap: 70rem;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #151815; --ink: #ececec; --muted: #a9aea9; --green: #5fc08f; --on-green: #0b1a12; --soft: #1e231f; --line: #394039; }
+  :root { --bg: #151815; --ink: #ececec; --muted: #a9aea9; --green: #5fc08f; --on-green: #0b1a12; --soft: #1e231f; --line: #394039; --au-cofirst: #7fb2f0; --au-corr: #f0a860; --au-both: #c9a0ec; }
 }
 
 * { box-sizing: border-box; }
@@ -58,8 +61,7 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .footer-logos { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; padding: 0; margin: 0; }
 .footer-logos li { background: #ffffff; border-radius: 4px; padding: .4rem .65rem; display: flex; align-items: center; }
 .footer-logos a { display: flex; }
-.footer-logos img { display: block; height: 1.9rem; width: auto; max-width: none; }
-.footer-logos .logo-institution img { height: 1.1rem; }
+.footer-logos img { display: block; height: 2.1rem; width: auto; max-width: none; }
 .site-footer p { margin: 0 0 .25rem; }
 .footer-name { font: 600 1.05rem var(--serif); color: var(--ink); }
 .social { list-style: none; display: flex; gap: 1rem; padding: 0; margin: .4rem 0; }
@@ -68,10 +70,11 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .hero { position: relative; }
 .hero-img { display: block; width: 100%; height: clamp(16rem, 42vw, 28rem); object-fit: cover; }
 .hero-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-.hero-card { background: #00693e; color: #ffffff; padding: 1.5rem 2rem; width: min(36rem, 100%); text-align: center; border-top: 6px solid var(--amber); }
-.hero-card h1 { margin: 0 0 .5rem; font-size: clamp(1.5rem, 3.6vw, 2.1rem); color: inherit; }
+.hero-card { background: #00693e; color: #ffffff; padding: 1.75rem 2.25rem; width: min(40rem, 100%); text-align: center; border-top: 6px solid var(--amber); }
+.hero-card h1 { margin: 0 0 .6rem; font-size: clamp(1.9rem, 5vw, 3.1rem); line-height: 1.1; color: inherit; text-wrap: balance; }
 .hero-card p { margin: 0; font-size: 1rem; }
-.intro { margin: 2.5rem 0 2rem; font-size: 1.15rem; }
+.hero-affil span { display: block; }
+.intro { margin: 2.5rem auto 2rem; font-size: 1.15rem; text-align: center; }
 .entry-cards { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
 .entry { position: relative; border: 1px solid var(--line); border-top: 4px solid var(--green); border-radius: 4px; padding: 1.1rem 1.25rem; background: var(--soft); }
 .entry:hover { border-color: var(--green); }
@@ -104,26 +107,30 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 
 /* ---- publications ---- */
 .pubs { list-style: none; padding: 0; margin: 0 0 1rem; }
-.pub { display: block; padding: 1rem 0; border-bottom: 1px solid var(--line); }
-.pub.has-thumb { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 1.25rem; }
-.pub-thumb { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 4px; border: 1px solid var(--line); }
+.pub { display: grid; grid-template-columns: minmax(0, 1fr) 9rem; gap: 1.25rem; align-items: start; padding: 1rem 0; border-bottom: 1px solid var(--line); }
+.pub-thumb { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 4px; border: 1px solid var(--line); background: var(--soft); }
 .pub p { margin: 0 0 .2rem; }
 .pub-title { font-weight: 600; }
 .pub-authors, .pub-venue { color: var(--muted); font-size: .95rem; }
 .pub-note { font-size: .9rem; font-style: italic; }
+.au { font-weight: 600; }
+.au-cofirst { color: var(--au-cofirst); }
+.au-corr { color: var(--au-corr); }
+.au-both { color: var(--au-both); }
+.author-key span { margin-left: .5rem; }
 .pub-links { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; padding: 0; margin: .4rem 0 0; }
 .pub-links a { display: inline-block; padding: .1rem .65rem; border: 1px solid var(--green); border-radius: 999px; font-size: .85rem; text-decoration: none; }
 .pub-links a:hover { background: var(--green); color: var(--on-green); }
 .pub-abstract { margin-top: .5rem; }
 .pub-abstract summary { cursor: pointer; color: var(--green); font-size: .9rem; width: max-content; }
 .pub-abstract p { margin-top: .5rem; max-width: 46rem; font-size: .95rem; }
-.compact .pub { padding: .75rem 0; }
 .year { margin: 1.75rem 0 .25rem; color: var(--muted); font-family: var(--sans); font-weight: 600; font-size: 1rem; }
 
 /* ---- research ---- */
-.theme { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem 3rem; align-items: center; margin: 2.5rem 0; }
+.theme { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1.5rem 3rem; align-items: center; margin: 3rem 0; }
+.theme:nth-of-type(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
 .theme:nth-of-type(even) .theme-fig { order: 2; }
-.theme-fig { width: 100%; border-radius: 6px; border: 1px solid var(--line); }
+.theme-fig { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
 .theme-text h2 { margin-top: 0; }
 .theme:not(:has(.theme-fig)) { grid-template-columns: minmax(0, 1fr); }
 
@@ -132,13 +139,13 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .banner-open { border-left-color: var(--green); }
 .stack { list-style: none; padding: 0; display: grid; gap: 1rem; max-width: 50rem; }
 .card { border: 1px solid var(--line); border-radius: 4px; padding: 1rem 1.25rem; background: var(--soft); font-style: normal; }
-.card h2 { margin-top: 0; font-size: 1.25rem; }
+.card h3 { margin-top: 0; font-size: 1.25rem; }
 
 @media (max-width: 44rem) {
   .profile, .theme { grid-template-columns: minmax(0, 1fr); }
   .theme:nth-of-type(even) .theme-fig { order: 0; }
-  .pub.has-thumb { grid-template-columns: minmax(0, 1fr); }
-  .pub-thumb { max-width: 12rem; }
+  .pub { grid-template-columns: minmax(0, 1fr) 5.5rem; gap: 1rem; }
+  .theme:nth-of-type(even) { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: no-preference) {
   .entry, .pub-links a { transition: border-color .15s, background-color .15s; }

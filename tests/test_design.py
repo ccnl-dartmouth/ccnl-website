@@ -151,15 +151,28 @@ def test_header_is_a_centered_nav_without_the_lab_name(sandbox):
     assert 'aria-label="Main"' in header
 
 
-def test_nav_order_has_teaching_before_resources(sandbox):
+def test_nav_has_resources_and_contact_but_no_teaching_or_join(sandbox):
     html = sandbox.build().page("index.html")
-    assert html.index(">Teaching<") < html.index(">Resources<") < html.index(">Contact<")
-    assert ">Join<" not in html
+    assert html.index(">Publications<") < html.index(">Resources<") < html.index(">Contact<")
+    assert ">Teaching<" not in html and ">Join<" not in html
 
 
-def test_hero_card_shows_the_name_and_the_affiliation_not_the_tagline(sandbox):
+def test_teaching_is_a_section_of_the_resources_page(sandbox):
+    result = sandbox.build()
+    html = result.page("resources/index.html")
+    assert 'id="teaching"' in html and "Decision making" in html and "PSYC 50" in html
+    assert html.index('id="code-data"') < html.index('id="teaching"')
+    assert not (sandbox.out / "teaching").exists()
+
+
+def test_teaching_is_no_longer_a_page_name(sandbox):
+    sandbox.write("site.yaml", "nav:\n  - {label: Home, page: home}\n  - {label: Teaching, page: teaching}\n")
+    assert sandbox.build().has_error("site.yaml", "unknown page 'teaching'")
+
+
+def test_hero_card_shows_name_and_affiliation_on_separate_lines_not_the_tagline(sandbox):
     hero = sandbox.build().page("index.html").split('<div class="hero-overlay">')[1].split("</section>")[0]
-    assert "Department of Examples, Example University" in hero
+    assert "<span>Department of Examples</span><span>Example University</span>" in hero
     assert "A fake lab used to test the website build." not in hero
 
 
@@ -201,3 +214,17 @@ def test_missing_institution_logo_is_an_error(sandbox):
 def test_svg_footer_logos_are_published_unchanged(sandbox):
     sandbox.build()
     assert (sandbox.out / "images" / "site" / "institution-logo.svg").is_file()
+
+
+# ----- research layout
+
+
+def test_research_themes_alternate_with_a_figure_each(sandbox):
+    html = sandbox.build().page("research/index.html")
+    assert html.count('class="theme"') == 4 and html.count('class="theme-fig"') == 4
+
+
+def test_stylesheet_alternates_research_figures_and_centers_the_intro(sandbox):
+    css = (sandbox.build() and (sandbox.out / "static" / "style.css")).read_text()
+    assert ".theme:nth-of-type(even) .theme-fig { order: 2; }" in css
+    assert "text-align: center" in css.split(".intro {")[1].split("}")[0]

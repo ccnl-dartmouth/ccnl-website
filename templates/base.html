@@ -39,6 +39,7 @@
         <ul class="social">{% for s in lab.social %}<li><a href="{{ s.url }}">{{ s.label }}</a></li>{% endfor %}</ul>
         {% endif %}
         <p class="small">&copy; {{ year }} {{ lab.short_name }}</p>
+        {% if lab.credit %}<p class="small">{{ lab.credit }}</p>{% endif %}
       </div>
       {% set funder_logos = lab.funders|selectattr("logo")|list %}
       {% if lab.institution_logo or funder_logos %}
