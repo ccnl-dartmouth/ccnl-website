@@ -33,8 +33,8 @@ def test_pages_not_in_nav_are_not_built(sandbox):
     result = sandbox.build()
     assert result.ok, result.errors
     assert (sandbox.out / "people" / "index.html").is_file()
-    assert not (sandbox.out / "join").exists()
-    assert "Join us" not in result.page("index.html")  # call to action hidden without a Join page
+    assert not (sandbox.out / "research").exists()
+    assert 'href="/research/"' not in result.page("index.html")  # entry card hidden without that page
 
 
 def test_missing_lab_yaml(sandbox):
@@ -161,9 +161,9 @@ def test_bad_month_format(sandbox):
 
 
 def test_recruiting_switch(sandbox):
-    assert "currently recruiting" in sandbox.build().page("join/index.html")
+    assert "currently recruiting" in sandbox.build().page("contact/index.html")
     sandbox.edit("join.md", "recruiting: open", "recruiting: closed")
-    assert "not currently recruiting" in sandbox.build().page("join/index.html")
+    assert "not currently recruiting" in sandbox.build().page("contact/index.html")
     sandbox.edit("join.md", "recruiting: closed", "recruiting: maybe")
     assert sandbox.build().has_error("join.md", "'recruiting' must be one of: open, closed")
 

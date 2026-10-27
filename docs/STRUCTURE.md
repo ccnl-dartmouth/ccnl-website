@@ -23,18 +23,17 @@ The old WordPress site is not being recreated; we keep its core information in a
 
 | Section | Source | Notes |
 |---|---|---|
-| Home | `home.md` + `research/` + selected papers + `join.md` | Hero statement, research theme tiles, selected publications, call to action |
+| Home | `home.md` | Centered hero card (lab name + affiliation), intro text, entry cards (Research, Publications, People, Contact) |
 | About | `about.md` | Longer description, funding, affiliation |
 | Research | `research/*.md` | One file per theme: title, text, optional image |
 | People | `people/*.md` | Current and alumni, grouped by role; profile pages generated |
-| Publications | `publications/*.bib` | Preprints + published; `selected` ones also on Home |
-| Join | `join.md` | Recruiting info per career stage, with an open/closed switch |
+| Publications | `publications/*.bib` | Preprints + published, by year |
+| Contact | `lab.yaml` + `join.md` | Address and email; the "Join us" section (recruiting banner + text per career stage) from `join.md` |
 | Resources | `resources/*.md` | Code, data, tutorials (replaces Codes & Datasets) |
 | Teaching | `teaching/*.md` | Courses |
-| Contact | `lab.yaml` | Address, email, affiliation, social links |
 
 Deferred (can be added later without touching the rest): Participate / Active Studies, Press,
-Lab Photos. Dropped: News (stale since 2023; replaced by selected publications on Home).
+Lab Photos. Dropped: News (stale since 2023; replaced by nothing for now).
 
 ## Repo layout
 
@@ -80,7 +79,6 @@ nav:
   - {label: Research, page: research}
   - {label: People, page: people}
   - {label: Publications, page: publications}
-  - {label: Join, page: join}
   - {label: Resources, page: resources}
   - {label: Teaching, page: teaching}
   - {label: Contact, page: contact}
@@ -128,7 +126,6 @@ One standard BibTeX entry per file (paste from Google Scholar or the journal). O
 | `cofirst` | last names of co-first authors (the build adds the marker) |
 | `corresponding` | last names of corresponding authors |
 | `status` | `preprint`, or omitted for published |
-| `selected` | `true` to feature on Home |
 | `note` | short press/recognition note |
 | `abstract` | shown in a collapsible "Abstract" section on the Publications page |
 | `image` | optional thumbnail filename next to the `.bib` (decorative; shown on Publications, not on Home) |
@@ -170,7 +167,7 @@ updated: 2026-10
 Course description in Markdown.
 ```
 
-### Join: `content/join.md`
+### Join text (shown on the Contact page): `content/join.md`
 
 ```yaml
 ---
@@ -192,7 +189,7 @@ hero_alt: Lab members at the 2026 retreat   # describe the photo; the build warn
 Intro text in Markdown.
 ```
 
-The Research / People / Join cards on Home appear only for pages listed in `site.yaml`.
+The entry cards on Home (Research, Publications, People, Contact) appear only for pages listed in `site.yaml`.
 
 ### Lab-wide: `content/lab.yaml`, `about.md`
 
@@ -220,7 +217,8 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 
 - One `.bib` file per paper (errors stay local to one file).
 - Keep co-first and corresponding markers via `cofirst` / `corresponding` fields.
-- Drop News; feature selected publications on Home.
+- Drop News. No selected-publications section on Home.
+- Join is not a page; its text lives on the Contact page (`join.md`).
 - No Research page of fixed length: themes are files, the count can change.
 - Obfuscate email addresses in the build.
 - Warn on stale pages (12 months).
@@ -228,15 +226,18 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 
 ## Visual design (decided Oct 2026)
 
-- **Home:** photo hero with a solid green headline card, intro text, three entry cards, selected
-  publications, funders. The hero uses a generated placeholder (`static/hero-default.svg`) until the lab
-  adds a real photo.
+- **Home:** photo hero with the lab name and affiliation in a solid green card centered on the image, intro text,
+  four entry cards. The hero uses a generated placeholder (`static/hero-default.svg`) until the lab adds a real photo.
 - **People:** photo grid by role (initial in a circle when there is no photo); alumni as a plain list.
   Profile page: details card (photo, role, years, links) beside the bio.
 - **Publications:** semi-dense list by year; each entry has an optional thumbnail, the BibTeX-derived text
   (authors, title, venue, link buttons) and a collapsible abstract.
 - **Research:** one section per theme, figure alternating left/right (stacked on phones).
-- **Join, Resources, Teaching, Contact:** simple stacked entries.
+- **Header:** only a centered navigation bar (no lab name at the left); order Home, Research, People, Publications,
+  Teaching, Resources, Contact.
+- **Footer:** lab name and affiliation at the left; small SVG logos at the right (institution from
+  `institution_logo` in `lab.yaml`, funders from `funders[].logo`) on white chips so they work in dark mode.
+- **Teaching, Resources, Contact:** simple stacked entries; Contact also holds the Join text.
 - **Palette:** Dartmouth green `#00693e` (6.8:1 on white), ink `#1c1c1c`, amber `#f2a900` as decoration only;
   automatic dark mode following the system setting.
 - **Fonts:** Source Serif 4 headings, Inter body, self-hosted in `static/fonts/` (SIL OFL licenses included),

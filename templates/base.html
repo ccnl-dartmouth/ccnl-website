@@ -16,10 +16,6 @@
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="wrap header-inner">
-      <a class="brand" href="{{ url() }}">
-        <span class="brand-name">{{ lab.name }}</span>
-        {% if lab.department or lab.institution %}<span class="brand-sub">{{ [lab.department, lab.institution]|select|join(', ') }}</span>{% endif %}
-      </a>
       <nav aria-label="Main">
         <ul class="nav">
           {% for item in nav %}
@@ -35,13 +31,26 @@
   </main>
 
   <footer class="site-footer">
-    <div class="wrap">
-      <p class="footer-name">{{ lab.name }}</p>
-      {% if lab.department or lab.institution %}<p>{{ [lab.department, lab.institution]|select|join(', ') }}</p>{% endif %}
-      {% if lab.social %}
-      <ul class="social">{% for s in lab.social %}<li><a href="{{ s.url }}">{{ s.label }}</a></li>{% endfor %}</ul>
+    <div class="wrap footer-inner">
+      <div class="footer-info">
+        <p class="footer-name">{{ lab.name }}</p>
+        {% if lab.department or lab.institution %}<p>{{ [lab.department, lab.institution]|select|join(', ') }}</p>{% endif %}
+        {% if lab.social %}
+        <ul class="social">{% for s in lab.social %}<li><a href="{{ s.url }}">{{ s.label }}</a></li>{% endfor %}</ul>
+        {% endif %}
+        <p class="small">&copy; {{ year }} {{ lab.short_name }}</p>
+      </div>
+      {% set funder_logos = lab.funders|selectattr("logo")|list %}
+      {% if lab.institution_logo or funder_logos %}
+      <ul class="footer-logos" aria-label="Affiliation and funding">
+        {% if lab.institution_logo %}
+        <li class="logo-institution">{% if lab.institution_url %}<a href="{{ lab.institution_url }}">{% endif %}<img src="{{ url('images/' ~ lab.institution_logo) }}" alt="{{ lab.institution }}">{% if lab.institution_url %}</a>{% endif %}</li>
+        {% endif %}
+        {% for f in funder_logos %}
+        <li>{% if f.url %}<a href="{{ f.url }}">{% endif %}<img src="{{ url('images/' ~ f.logo) }}" alt="{{ f.name }}">{% if f.url %}</a>{% endif %}</li>
+        {% endfor %}
+      </ul>
       {% endif %}
-      <p class="small">&copy; {{ year }} {{ lab.short_name }}</p>
     </div>
   </footer>
 </body>

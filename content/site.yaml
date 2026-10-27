@@ -3,7 +3,6 @@ nav:
   - {label: Research, page: research}
   - {label: People, page: people}
   - {label: Publications, page: publications}
-  - {label: Join, page: join}
-  - {label: Resources, page: resources}
   - {label: Teaching, page: teaching}
+  - {label: Resources, page: resources}
   - {label: Contact, page: contact}

@@ -141,19 +141,6 @@ def test_status_must_be_preprint(sandbox):
     assert sandbox.build().has_error("new.bib", "`status` must be `preprint`")
 
 
-def test_selected_must_be_boolean(sandbox):
-    sandbox.write("publications/new.bib", bib(selected="maybe"))
-    assert sandbox.build().has_error("new.bib", "`selected` must be true or false")
-
-
-def test_selected_papers_appear_on_home(sandbox):
-    result = sandbox.build()
-    home = result.page("index.html")
-    assert "Selected publications" in home
-    assert "Context effects in Bayesian choice" in home
-    assert "A range-normalization model" not in home  # not selected
-
-
 def test_image_field_must_exist_with_exact_name(sandbox):
     sandbox.write("publications/new.bib", bib(image="cover.png"))
     assert sandbox.build().has_error("new.bib", "image 'cover.png' was not found")

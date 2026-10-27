@@ -50,11 +50,11 @@ def test_hero_without_description_warns(sandbox):
 
 def test_home_cards_follow_the_menu(sandbox):
     html = sandbox.build().page("index.html")
-    for target in ("research/", "people/", "join/"):
+    for target in ("research/", "publications/", "people/", "contact/"):
         assert f'href="/{target}"' in html
     sandbox.write("site.yaml", "nav:\n  - {label: Home, page: home}\n  - {label: People, page: people}\n")
     html = sandbox.build().page("index.html")
-    assert 'href="/people/"' in html and 'href="/join/"' not in html and 'href="/research/"' not in html
+    assert 'href="/people/"' in html and 'href="/contact/"' not in html and 'href="/research/"' not in html
 
 
 # ----- publications
@@ -73,11 +73,11 @@ def test_entry_without_abstract_has_no_details(sandbox):
     assert "<details" not in block
 
 
-def test_thumbnails_only_on_publications_page_not_on_home(sandbox):
+def test_thumbnails_are_on_the_publications_page_and_home_lists_no_papers(sandbox):
     result = sandbox.build()
     assert "images/publications/student2024context.jpg" in result.page("publications/index.html")
-    assert "pub-thumb" not in result.page("index.html")
-    assert "<details" not in result.page("index.html")  # home list is compact: no abstracts
+    home = result.page("index.html")
+    assert "Selected publications" not in home and "pub-thumb" not in home and "Context effects" not in home
 
 
 def test_link_buttons_have_unambiguous_names(sandbox):
@@ -139,3 +139,65 @@ def test_alumni_link_to_their_minimal_profile_pages(sandbox):
     html = sandbox.build().page("people/index.html")
     alumni = html.split("<h2>Alumni</h2>")[1].split("</section>")[0]
     assert 'href="/people/lee-alumna/"' in alumni and 'href="/people/quinn-alumnus/"' in alumni
+
+
+# ----- header, hero, footer, contact page
+
+
+def test_header_is_a_centered_nav_without_the_lab_name(sandbox):
+    html = sandbox.build().page("people/index.html")
+    header = html.split('<header class="site-header">')[1].split("</header>")[0]
+    assert 'class="brand"' not in header and "Sample Neuroscience Lab" not in header
+    assert 'aria-label="Main"' in header
+
+
+def test_nav_order_has_teaching_before_resources(sandbox):
+    html = sandbox.build().page("index.html")
+    assert html.index(">Teaching<") < html.index(">Resources<") < html.index(">Contact<")
+    assert ">Join<" not in html
+
+
+def test_hero_card_shows_the_name_and_the_affiliation_not_the_tagline(sandbox):
+    hero = sandbox.build().page("index.html").split('<div class="hero-overlay">')[1].split("</section>")[0]
+    assert "Department of Examples, Example University" in hero
+    assert "A fake lab used to test the website build." not in hero
+
+
+def test_contact_page_includes_the_join_section(sandbox):
+    result = sandbox.build()
+    html = result.page("contact/index.html")
+    assert 'id="join"' in html and "Join us" in html and "currently recruiting" in html
+    assert "Graduate students" in html  # the join.md text
+
+
+def test_contact_page_without_join_file_is_just_contact(sandbox):
+    sandbox.remove("join.md")
+    result = sandbox.build()
+    assert result.ok, result.errors
+    assert 'id="join"' not in result.page("contact/index.html")
+
+
+def test_join_is_no_longer_a_page(sandbox):
+    sandbox.write("site.yaml", "nav:\n  - {label: Home, page: home}\n  - {label: Join, page: join}\n")
+    assert sandbox.build().has_error("site.yaml", "unknown page 'join'")
+
+
+def test_footer_shows_institution_and_funder_logos_with_alt_text(sandbox):
+    footer = sandbox.build().page("index.html").split('<footer class="site-footer">')[1]
+    assert 'alt="Example University"' in footer and 'href="https://example.org"' in footer
+    assert 'alt="Example Science Foundation"' in footer and 'alt="Example Health Institute"' in footer
+    assert "Funding" not in sandbox.build().page("index.html").split("<footer")[0]  # not repeated on the page
+
+    sandbox.edit("lab.yaml", "    logo: funder-two.png\n", "")  # a funder without a logo is simply not shown here
+    footer = sandbox.build().page("index.html").split('<footer class="site-footer">')[1]
+    assert 'alt="Example Health Institute"' not in footer
+
+
+def test_missing_institution_logo_is_an_error(sandbox):
+    sandbox.edit("lab.yaml", "institution_logo: institution-logo.svg", "institution_logo: nope.svg")
+    assert sandbox.build().has_error("lab.yaml", "institution_logo 'nope.svg' was not found")
+
+
+def test_svg_footer_logos_are_published_unchanged(sandbox):
+    sandbox.build()
+    assert (sandbox.out / "images" / "site" / "institution-logo.svg").is_file()

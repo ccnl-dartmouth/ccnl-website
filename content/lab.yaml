@@ -8,10 +8,12 @@ address:
   - Dartmouth College
   - Hanover, NH 03755
 email: alireza.soltani@dartmouth.edu
+institution_logo: dartmouth-logo.svg
+institution_url: https://www.dartmouth.edu
 funders:
   - name: National Science Foundation
-    logo: nsf-logo.png
+    logo: nsf-logo.svg
     url: https://www.nsf.gov
-  - name: National Institutes of Health (NIDA)
-    logo: nida-logo.jpeg
-    url: https://nida.nih.gov
+  - name: National Institutes of Health
+    logo: nih-logo.svg
+    url: https://www.nih.gov

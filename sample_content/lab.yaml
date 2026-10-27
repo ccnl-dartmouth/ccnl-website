@@ -3,6 +3,8 @@ short_name: SNL
 tagline: A fake lab used to test the website build.
 department: Department of Examples
 institution: Example University
+institution_logo: institution-logo.svg
+institution_url: https://example.org
 address:
   - 123 Fake Hall
   - Example University

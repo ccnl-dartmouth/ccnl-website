@@ -32,7 +32,7 @@ ROLE_GROUP_TITLES = {
     "undergrad": "Undergraduate Students",
     "collaborator": "Collaborators",
 }
-PAGES = ("home", "about", "research", "people", "publications", "join", "resources", "teaching", "contact")
+PAGES = ("home", "about", "research", "people", "publications", "resources", "teaching", "contact")
 STALE_DAYS = 365
 
 SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -260,6 +260,8 @@ LAB_SPEC = {
     "tagline": {},
     "department": {},
     "institution": {},
+    "institution_logo": {"example": "dartmouth-logo.svg"},
+    "institution_url": {"example": "https://www.dartmouth.edu"},
     "address": {"type": "list"},
     "email": {},
     "funders": {"type": "list"},
@@ -293,6 +295,11 @@ def load_lab(content_dir, root, problems):
     lab["address"] = [str(line) for line in (lab["address"] or [])]
     if lab["email"]:
         lab["email"] = split_email(lab["email"], where, problems)
+    if lab["institution_url"]:
+        lab["institution_url"] = check_url(lab["institution_url"], where, "institution_url", problems)
+    if lab["institution_logo"] and not (Path(content_dir) / "images" / lab["institution_logo"]).is_file():
+        problems.error(where, f"institution_logo '{lab['institution_logo']}' was not found in content/images/.")
+        lab["institution_logo"] = None
     funders = []
     for i, item in enumerate(lab["funders"] or [], 1):
         if not isinstance(item, dict) or not item.get("name"):
@@ -543,7 +550,6 @@ def group_people(people):
 
 # ----- publications
 
-PUB_EXTRA_SPEC_FIELDS = ("pdf", "si", "data", "code", "url", "cofirst", "corresponding", "status", "selected", "note", "image")
 VENUE_FIELDS = ("journal", "booktitle", "howpublished", "publisher", "school", "institution")
 LINK_LABELS = (("pdf", "PDF"), ("si", "SI"), ("data", "Data"), ("code", "Code"), ("url", "Link"))
 
@@ -664,9 +670,6 @@ def load_publications(content_dir, root, problems):
             links.insert(0, {"label": "DOI", "url": doi if doi.startswith("http") else f"https://doi.org/{doi}"})
 
         image_src = resolve_field_image(folder, entry["image"].strip(), where, problems) if entry.get("image") else None
-        selected_raw = entry.get("selected", "").strip().lower()
-        if selected_raw not in ("", "true", "false", "yes", "no"):
-            problems.error(where, f"entry '{key}': `selected` must be true or false (got '{selected_raw}').")
         pubs.append(
             {
                 "key": key,
@@ -681,7 +684,6 @@ def load_publications(content_dir, root, problems):
                 "note": clean_bib_text(entry.get("note", "")),
                 "abstract": clean_bib_text(entry.get("abstract", "")),
                 "preprint": preprint,
-                "selected": selected_raw in ("true", "yes"),
                 "image_src": image_src,
                 "image": None,
                 "where": where,
@@ -788,7 +790,7 @@ def load_site(content_dir, root, problems, today=None):
 
     home = load_text_page(content_dir, root, "home", problems, True, today, allowed=("headline", "hero_image", "hero_alt"))
     about = load_text_page(content_dir, root, "about", problems, "about" in nav_pages, today, allowed=())
-    join = load_text_page(content_dir, root, "join", problems, "join" in nav_pages, today, allowed=("recruiting", "updated"))
+    join = load_text_page(content_dir, root, "join", problems, False, today, allowed=("recruiting", "updated"))  # shown on the Contact page
 
     research = load_research(content_dir, root, problems)
     people = load_people(content_dir, root, problems)

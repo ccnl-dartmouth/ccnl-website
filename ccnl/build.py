@@ -15,7 +15,6 @@ PAGE_TEMPLATES = {
     "research": "research.html",
     "people": "people.html",
     "publications": "publications.html",
-    "join": "join.html",
     "resources": "resources.html",
     "teaching": "teaching.html",
     "contact": "contact.html",
@@ -45,6 +44,8 @@ def process_site_images(site, out_dir, root, problems):
     # site-wide images (logos, banners): keep their names so lab.yaml can refer to them
     site_images = Path(site["content_dir"]) / "images"
     logo_stems = {Path(f["logo"]).stem for f in site["lab"].get("funders", []) if f["logo"]}
+    if site["lab"].get("institution_logo"):
+        logo_stems.add(Path(site["lab"]["institution_logo"]).stem)
     if site_images.is_dir():
         for path in sorted(site_images.iterdir()):
             if path.suffix.lower() in IMAGE_EXTS and not path.name.startswith("."):
@@ -54,6 +55,10 @@ def process_site_images(site, out_dir, root, problems):
     if hero:
         produced = list((images_out / "site").glob(f"{Path(hero).stem}.*"))
         site["home"]["hero"] = f"site/{produced[0].name}" if produced else None
+    inst = site["lab"].get("institution_logo")
+    if inst:
+        produced = list((images_out / "site").glob(f"{Path(inst).stem}.*"))
+        site["lab"]["institution_logo"] = f"site/{produced[0].name}" if produced else None
     for funder in site["lab"].get("funders", []):
         if funder["logo"]:
             stem = Path(funder["logo"]).stem
@@ -93,7 +98,6 @@ def write_page(env, out_dir, rel_dir, template, **context):
 
 def render_site(site, out_dir, templates_dir, static_dir, base_path):
     env = make_environment(templates_dir, base_path, site)
-    selected = [p for p in site["publications"] if p["selected"]]
     built_pages = {item["page"] for item in site["nav"]} | {"home"}
     env.globals["pages"] = built_pages  # templates link to optional pages (e.g. join) only if they exist
 
@@ -108,7 +112,6 @@ def render_site(site, out_dir, templates_dir, static_dir, base_path):
             template,
             page=page,
             site=site,
-            selected_publications=selected,
         )
     for person in site["people"]:
         if person["profile"]:

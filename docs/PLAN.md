@@ -92,6 +92,12 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       drop PDF links); (5) Join text is from 2023 (build warns it is stale); stale "next offering" dates for courses
       were dropped; (6) Not migrated: News (17 items, dropped by decision), alumni individual profile pages (one had a
       personal email), media-coverage links (kept as a plain-text note), an Outlook tracking link.
+- [~] 7b Design round 2 (Oct 2026): header is a centered nav only; hero card centered on the image with the
+      affiliation; selected publications and funders removed from Home; Join moved into Contact; Teaching before
+      Resources; SVG logos in the footer (Wikimedia Commons: NSF logo public domain, NIH logo public domain, Dartmouth
+      wordmark public domain but marked "trademarked"). TODO: check Dartmouth's identity/brand guidelines before launch
+      (is a Dartmouth wordmark on a lab site fine, and which file is official?); NIH/NSF have their own logo-use rules.
+      Awards and programs of 7 alumni were moved into their bios.
 - [~] 7 Design: layout and visual decisions recorded in `docs/STRUCTURE.md` ("Visual design"); templates, CSS,
       self-hosted fonts and placeholder hero built and checked in a browser (desktop, phone, light and dark).
       Still open: real hero photo and default people photo (placeholders now), fine-tuning publications,

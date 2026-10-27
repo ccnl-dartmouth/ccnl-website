@@ -3,10 +3,11 @@
 {% block main %}
 <section class="hero">
   <img class="hero-img" src="{{ url('images/' ~ site.home.hero) if site.home.hero else url('static/hero-default.svg') }}" alt="{{ site.home.hero_alt or '' }}">
-  <div class="wrap hero-wrap">
+  <div class="hero-overlay">
     <div class="hero-card">
       <h1>{{ site.home.headline or lab.name }}</h1>
-      {% if lab.tagline %}<p>{{ lab.tagline }}</p>{% endif %}
+      {% set affiliation = [lab.department, lab.institution]|select|join(', ') %}
+      {% if affiliation %}<p>{{ affiliation }}</p>{% endif %}
     </div>
   </div>
 </section>
@@ -24,30 +25,9 @@
     {% if 'people' in pages %}
     <li class="entry"><h2><a href="{{ url('people/') }}">People</a></h2><p>The lab, past and present.</p></li>
     {% endif %}
-    {% if 'join' in pages %}
-    <li class="entry"><h2><a href="{{ url('join/') }}">Join us</a></h2><p>Positions and how to get involved.</p></li>
+    {% if 'contact' in pages %}
+    <li class="entry"><h2><a href="{{ url('contact/') }}">Contact</a></h2><p>Get in touch, and join the lab.</p></li>
     {% endif %}
   </ul>
-
-  {% if selected_publications %}
-  <section>
-    <h2 class="section-title">Selected publications</h2>
-    <ul class="pubs compact">
-      {% for p in selected_publications %}{{ m.publication(p) }}{% endfor %}
-    </ul>
-    {% if 'publications' in pages %}<p><a class="more" href="{{ url('publications/') }}">All publications</a></p>{% endif %}
-  </section>
-  {% endif %}
-
-  {% if lab.funders %}
-  <section class="funders">
-    <h2 class="section-title small-title">Funding</h2>
-    <ul>
-      {% for f in lab.funders %}
-      <li>{% if f.url %}<a href="{{ f.url }}">{% endif %}{% if f.logo %}<img src="{{ url('images/' ~ f.logo) }}" alt="{{ f.name }}" height="48">{% else %}{{ f.name }}{% endif %}{% if f.url %}</a>{% endif %}</li>
-      {% endfor %}
-    </ul>
-  </section>
-  {% endif %}
 </div>
 {% endblock %}

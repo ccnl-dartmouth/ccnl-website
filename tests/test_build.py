@@ -36,11 +36,12 @@ def test_sample_content_is_clean(sandbox):
 
 def test_expected_pages_exist(sandbox):
     sandbox.build()
-    for page in ("people", "publications", "research", "join", "resources", "teaching", "contact"):
+    for page in ("people", "publications", "research", "resources", "teaching", "contact"):
         assert (sandbox.out / page / "index.html").is_file()
     assert (sandbox.out / "people" / "pat-investigator" / "index.html").is_file()
     assert (sandbox.out / "404.html").is_file()
     assert (sandbox.out / ".nojekyll").is_file()
+    assert not (sandbox.out / "join").exists()  # Join lives on the Contact page
 
 
 def test_every_page_has_title_and_nav_and_no_template_leftovers(sandbox):
