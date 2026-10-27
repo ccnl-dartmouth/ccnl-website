@@ -21,6 +21,12 @@ site on GitHub Pages that lab members can update themselves.
   notice on the old WordPress site. Build must support a base path until the domain is live.
 - **Old site:** the PI has approved admin access to the WordPress site for the migration.
 
+## Design references
+
+Reviewed other labs' sites (Oct 2026). Layout and content: **Niv Lab (Princeton)**; look and feel:
+Contextual Dynamics Lab (Dartmouth) and Murray Lab (Yale). Also seen: Kable (Penn), LNCC (Brown),
+Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change later.
+
 ## Open items
 
 - [ ] Reply from Dartmouth web support (hostname, policy, redirect). Send them the final org name: `ccnl-dartmouth`.
@@ -35,7 +41,7 @@ site on GitHub Pages that lab members can update themselves.
 | 0 | Decisions | Org name, go-ahead (done except Dartmouth reply) |
 | 1 | GitHub setup | Org, repo, team, Pages, protections |
 | 2 | Content audit | Inventory of old pages, people, papers, images |
-| 3 | Structure design | Data schemas, repo layout, validation rules (then frozen) |
+| 3 | Structure design | Data schemas, repo layout, validation rules (machinery and member recipes then fixed; sections stay flexible). See `docs/STRUCTURE.md` |
 | 4 | Core build | Python build, placeholder styling, local preview |
 | 5 | Validation and tests | Friendly errors, pytest with broken fixtures |
 | 6 | Automation | Actions build/deploy, failure alerts, uptime monitor, link check |
