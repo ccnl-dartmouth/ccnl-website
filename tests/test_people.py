@@ -29,12 +29,6 @@ def test_bad_role_lists_choices_and_suggests(sandbox):
     assert result.has_error("new-person.md", "'role' must be one of", "pi, postdoc, grad")
 
 
-def test_alumnus_needs_end_year(sandbox):
-    sandbox.write("people/new-person.md", person_md(status="alumni"))
-    result = sandbox.build()
-    assert result.has_error("new-person.md", "end: 2025")
-
-
 def test_current_member_must_not_have_end(sandbox):
     sandbox.write("people/new-person.md", person_md(end=2025))
     result = sandbox.build()
@@ -192,55 +186,61 @@ def test_alumni_sorted_newest_first(sandbox):
     assert names.index("New Alum") < names.index("Lee Alumna") < names.index("Old Alum")
 
 
-# ----- optional dates, class years, notes, automatic profile pages
+# ----- optional dates and profile pages
 
 
-def test_start_year_is_optional(sandbox):
-    sandbox.write("people/new-person.md", person_md(start=None))
+def test_dates_are_optional_for_everyone(sandbox):
+    sandbox.write("people/current-person.md", person_md(start=None))
+    sandbox.write("people/old-person.md", person_md(name="Old Person", status="alumni", start=None))
     result = sandbox.build()
-    assert result.ok, result.errors
-    person = next(p for p in result.site["people"] if p["slug"] == "new-person")
-    assert person["years"] == ""
-
-
-def test_alumnus_may_give_class_year_instead_of_end(sandbox):
-    sandbox.write("people/old-ug.md", person_md(role="undergrad", status="alumni", start=None, class_year=2018, current_position="Medical student"))
-    result = sandbox.build()
-    assert result.ok, result.errors
-    assert "&#39;18" in result.page("people/index.html") or "\u201918" in result.page("people/index.html")
-
-
-def test_alumnus_needs_end_or_class_year(sandbox):
-    sandbox.write("people/old-ug.md", person_md(status="alumni", start=None))
-    assert sandbox.build().has_error("old-ug.md", "class_year")
+    assert result.ok and result.warnings == [], result.errors + result.warnings
+    assert next(p for p in result.site["people"] if p["slug"] == "current-person")["years"] == ""
 
 
 def test_years_labels():
     from ccnl.content import years_label
 
-    assert years_label(2022, None, "current", None) == "2022\u2013present"
-    assert years_label(2014, 2019, "alumni", None) == "2014\u20132019"
-    assert years_label(2019, 2019, "alumni", None) == "2019"
-    assert years_label(None, None, "current", 2026) == "\u201926"
-    assert years_label(2020, 2022, "alumni", 2022) == "2020\u20132022 \u00b7 \u201922"
-    assert years_label(None, 2020, "alumni", None) == "until 2020"
-    assert years_label(None, None, "current", None) == ""
+    assert years_label(2022, None, "current") == "2022\u2013present"
+    assert years_label(2014, 2019, "alumni") == "2014\u20132019"
+    assert years_label(2019, 2019, "alumni") == "2019"
+    assert years_label(None, 2020, "alumni") == "until 2020"
+    assert years_label(None, None, "current") == ""
 
 
-def test_profile_page_exists_only_when_there_is_a_bio(sandbox):
-    sandbox.write("people/no-bio.md", person_md(body=""))
-    sandbox.write("people/has-bio.md", person_md(name="Has Bio", body="I study things.\n"))
-    sandbox.write("people/forced.md", person_md(name="Forced", body="", profile="true"))
+def test_current_members_always_get_a_profile_page(sandbox):
+    for role in ("postdoc", "grad", "undergrad"):
+        sandbox.write(f"people/new-{role}.md", person_md(name=f"New {role}", role=role, body=""))
     sandbox.build()
-    assert not (sandbox.out / "people" / "no-bio").exists()
-    assert (sandbox.out / "people" / "has-bio" / "index.html").is_file()
+    for role in ("postdoc", "grad", "undergrad"):
+        assert (sandbox.out / "people" / f"new-{role}" / "index.html").is_file(), role
+
+
+def test_alumni_and_collaborators_get_a_profile_only_with_a_bio(sandbox):
+    sandbox.write("people/alum-no-bio.md", person_md(name="Alum NoBio", status="alumni", start=2015, end=2020, body=""))
+    sandbox.write("people/alum-bio.md", person_md(name="Alum Bio", status="alumni", start=2015, end=2020, body="I did things.\n"))
+    sandbox.write("people/collab-no-bio.md", person_md(name="Collab NoBio", role="collaborator", body=""))
+    sandbox.write("people/collab-bio.md", person_md(name="Collab Bio", role="collaborator", body="Collaborates.\n"))
+    sandbox.build()
+    for slug, expected in (("alum-no-bio", False), ("alum-bio", True), ("collab-no-bio", False), ("collab-bio", True)):
+        assert (sandbox.out / "people" / slug).exists() is expected, slug
+
+
+def test_profile_flag_overrides_the_default(sandbox):
+    sandbox.write("people/forced.md", person_md(name="Forced", status="alumni", start=2015, end=2020, body="", profile="true"))
+    sandbox.write("people/hidden.md", person_md(name="Hidden", body="A bio.\n", profile="false"))
+    sandbox.build()
     assert (sandbox.out / "people" / "forced" / "index.html").is_file()
+    assert not (sandbox.out / "people" / "hidden").exists()
 
 
-def test_note_and_position_show_in_alumni_list(sandbox):
-    sandbox.write("people/new-alum.md", person_md(name="New Alum", status="alumni", end=2024, current_position="Doctor", note="Thesis award"))
-    html = sandbox.build().page("people/index.html")
-    assert "Thesis award" in html and "Doctor" in html
+def test_current_member_cards_link_to_their_profile_page(sandbox):
+    sandbox.write("people/new-person.md", person_md(body=""))
+    assert 'href="/people/new-person/"' in sandbox.build().page("people/index.html")
+
+
+def test_position_shows_in_alumni_list(sandbox):
+    sandbox.write("people/new-alum.md", person_md(name="New Alum", status="alumni", end=2024, current_position="Doctor"))
+    assert "Doctor" in sandbox.build().page("people/index.html")
 
 
 def test_collaborators_without_dates_show_their_institution(sandbox):

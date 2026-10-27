@@ -95,13 +95,12 @@ Each `page` must refer to a known page; build fails on unknown names. Reordering
 name: Jane Doe
 role: grad            # pi | postdoc | grad | undergrad | collaborator
 status: current       # current | alumni
-start: 2022           # optional (collaborators and some undergraduates have no dates)
-end:                  # year; alumni need `end` or `class_year`
-class_year: 2026      # optional, undergraduates: shown as 'XX
-note: Thesis award    # optional, shown for alumni (honors, program)
+start: 2022           # optional; start and end are the only date fields
+end:                  # optional year; leave empty while current
 degrees: B.Sc.        # optional
 current_position:     # alumni: where they are now; collaborators: their institution
-profile: true         # default: a profile page exists only if the file has a bio; true/false overrides
+profile: true         # default: current lab members always get a profile page; alumni and
+                      # collaborators only if the file has a bio. true/false overrides
 links:                # all optional
   scholar: https://scholar.google.com/...
   orcid: 0000-0000-0000-0000

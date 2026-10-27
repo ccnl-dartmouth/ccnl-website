@@ -9,7 +9,6 @@
     <dl>
       <dt>Role</dt><dd>{{ person.role_label }}{% if person.status == 'alumni' %} (alumnus){% endif %}</dd>
       {% if person.years %}<dt>In the lab</dt><dd>{{ m.years(person) }}</dd>{% endif %}
-      {% if person.note %}<dt>Honors</dt><dd>{{ person.note }}</dd>{% endif %}
       {% if person.current_position %}<dt>Now</dt><dd>{{ person.current_position }}</dd>{% endif %}
       {% if person.email %}<dt>Email</dt><dd>{{ m.email(person.email) }}</dd>{% endif %}
       {% if person.links %}

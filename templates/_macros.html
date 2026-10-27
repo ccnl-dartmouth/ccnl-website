@@ -35,7 +35,6 @@
   <span class="alumnus-name">{% if p.profile %}<a href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}{% if p.degrees %}, {{ p.degrees }}{% endif %}</span>
   {% set bits = [p.years, p.current_position]|select|list %}
   {% if bits %}<span class="meta">{{ bits|join(' · ') }}</span>{% endif %}
-  {% if p.note %}<span class="meta">{{ p.note }}</span>{% endif %}
 </li>
 {% endmacro %}
 

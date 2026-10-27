@@ -427,8 +427,6 @@ PEOPLE_SPEC = {
     "status": {"required": True, "choices": ("current", "alumni"), "example": "current"},
     "start": {"type": "year", "example": "2022"},
     "end": {"type": "year"},
-    "class_year": {"type": "year", "example": "2026"},
-    "note": {"example": "Best Neuroscience Honors Thesis Award"},
     "degrees": {},
     "current_position": {},
     "profile": {"type": "bool"},
@@ -487,15 +485,19 @@ def load_people(content_dir, root, problems):
         if meta is None:
             continue
         clean = check_meta(meta, where, PEOPLE_SPEC, problems)
-        if clean["status"] == "alumni" and not (clean["end"] or clean["class_year"]):
-            problems.error(where, "this person is an alumnus, so add the year they left: `end: 2025` (undergraduates can use `class_year: 2025` instead).")
         if clean["status"] == "current" and clean["end"]:
             problems.error(where, "`end:` is set but `status` is current. Set `status: alumni` or remove `end:`.")
         if clean["start"] and clean["end"] and clean["end"] < clean["start"]:
             problems.error(where, f"`end: {clean['end']}` is before `start: {clean['start']}`.")
         links, email = build_person_links(clean["links"], where, problems)
-        # a profile page exists when the person has written a bio, unless `profile:` says otherwise
-        has_profile = bool(body.strip()) if clean["profile"] is None else clean["profile"]
+        # Current lab members always get a profile page to fill in. Alumni and collaborators get one only if
+        # their file has a bio. `profile: true/false` overrides either way.
+        if clean["profile"] is not None:
+            has_profile = clean["profile"]
+        elif clean["status"] == "current" and clean["role"] != "collaborator":
+            has_profile = True
+        else:
+            has_profile = bool(body.strip())
         people.append(
             {
                 "slug": path.stem,
@@ -505,9 +507,7 @@ def load_people(content_dir, root, problems):
                 "status": clean["status"],
                 "start": clean["start"],
                 "end": clean["end"],
-                "class_year": clean["class_year"],
-                "years": years_label(clean["start"], clean["end"], clean["status"], clean["class_year"]),
-                "note": clean["note"],
+                "years": years_label(clean["start"], clean["end"], clean["status"]),
                 "degrees": clean["degrees"],
                 "current_position": clean["current_position"],
                 "profile": has_profile,
@@ -522,18 +522,15 @@ def load_people(content_dir, root, problems):
     return people
 
 
-def years_label(start, end, status, class_year):
-    """Text like '2022\u2013present', '2014\u20132019', '\u201926' or '2020\u20132022 \u00b7 \u201922' ('' if nothing is known)."""
+def years_label(start, end, status):
+    """Text like '2022\u2013present', '2014\u20132019', '2019' or 'until 2020' ('' if no years are known)."""
     if start and end:
-        span = f"{start}" if start == end else f"{start}\u2013{end}"
-    elif start:
-        span = f"{start}\u2013present" if status == "current" else f"{start}"
-    elif end:
-        span = f"until {end}"
-    else:
-        span = ""
-    klass = f"\u2019{class_year % 100:02d}" if class_year else ""
-    return " \u00b7 ".join(part for part in (span, klass) if part)
+        return f"{start}" if start == end else f"{start}\u2013{end}"
+    if start:
+        return f"{start}\u2013present" if status == "current" else f"{start}"
+    if end:
+        return f"until {end}"
+    return ""
 
 
 def group_people(people):
@@ -545,7 +542,7 @@ def group_people(people):
         if members:
             groups.append({"role": role, "title": ROLE_GROUP_TITLES[role], "people": members})
     alumni = [p for p in people if p["status"] == "alumni"]
-    alumni.sort(key=lambda p: (-(p["end"] or p["class_year"] or 0), p["name"].lower()))
+    alumni.sort(key=lambda p: (-(p["end"] or 0), p["name"].lower()))
     return groups, alumni
 
 

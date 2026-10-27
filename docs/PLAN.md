@@ -85,7 +85,7 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       (roles/years/positions parsed from the old People page), 48 publications as `.bib` files (matched to Crossref:
       DOIs for all 48, abstracts for 24, volumes/pages corrected where the old page was wrong, e.g. Aguirre 2024),
       4 resources, 5 courses, join text, funders and logos.
-      **Review list:** (1) every person's years/positions; students should add bios and photos; (2) research themes are
+      **Review list:** (1) every person's years/positions; students should add bios and photos (current lab members get a profile page automatically; alumni and collaborators only if they write a bio; the old site's class years, awards and "WISP intern" notes were dropped); (2) research themes are
       drafted from the lab's own home/PI text, no figures yet; (3) 3 papers are marked `selected` tentatively;
       (4) `pdf`/`si` links and dataset zips still point to `sites.dartmouth.edu/ccnl/files/...`: they will BREAK when
       the old site is redirected (global redirect), so decide where to host them before launch (e.g. repo files, or
