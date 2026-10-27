@@ -126,7 +126,8 @@ One standard BibTeX entry per file (paste from Google Scholar or the journal). O
 | `status` | `preprint`, or omitted for published |
 | `selected` | `true` to feature on Home |
 | `note` | short press/recognition note |
-| `image` | optional thumbnail filename next to the `.bib` |
+| `abstract` | shown in a collapsible "Abstract" section on the Publications page |
+| `image` | optional thumbnail filename next to the `.bib` (decorative; shown on Publications, not on Home) |
 
 ### Research themes: `content/research/<slug>.md`
 
@@ -135,6 +136,7 @@ One standard BibTeX entry per file (paste from Google Scholar or the journal). O
 title: Adaptive learning and decision making
 order: 1                 # lower first
 image: figure.png        # optional, same folder
+image_alt: Diagram of ...  # describe the figure (screen readers); the build warns if missing
 ---
 Short description in Markdown. Link to papers by BibTeX key if wanted.
 ```
@@ -175,7 +177,20 @@ Sections per career stage (postdoc, graduate, undergraduate) and how to contact 
 Can link to a Google Form or an email address.
 ```
 
-### Lab-wide: `content/lab.yaml`, `home.md`, `about.md`
+### Home: `content/home.md`
+
+```yaml
+---
+headline: Computational & Cognitive Neuroscience Lab   # optional; defaults to the lab name
+hero_image: lab-group.jpg   # optional, a file in content/images/; default is a placeholder picture
+hero_alt: Lab members at the 2026 retreat   # describe the photo; the build warns if missing
+---
+Intro text in Markdown.
+```
+
+The Research / People / Join cards on Home appear only for pages listed in `site.yaml`.
+
+### Lab-wide: `content/lab.yaml`, `about.md`
 
 Edited rarely, by anyone.
 
@@ -206,3 +221,21 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 - Obfuscate email addresses in the build.
 - Warn on stale pages (12 months).
 - Recruiting is not done through the site yet; `join.md` has an open/closed switch for later.
+
+## Visual design (decided Oct 2026)
+
+- **Home:** photo hero with a solid green headline card, intro text, three entry cards, selected
+  publications, funders. The hero uses a generated placeholder (`static/hero-default.svg`) until the lab
+  adds a real photo.
+- **People:** photo grid by role (initial in a circle when there is no photo); alumni as a plain list.
+  Profile page: details card (photo, role, years, links) beside the bio.
+- **Publications:** semi-dense list by year; each entry has an optional thumbnail, the BibTeX-derived text
+  (authors, title, venue, link buttons) and a collapsible abstract.
+- **Research:** one section per theme, figure alternating left/right (stacked on phones).
+- **Join, Resources, Teaching, Contact:** simple stacked entries.
+- **Palette:** Dartmouth green `#00693e` (6.8:1 on white), ink `#1c1c1c`, amber `#f2a900` as decoration only;
+  automatic dark mode following the system setting.
+- **Fonts:** Source Serif 4 headings, Inter body, self-hosted in `static/fonts/` (SIL OFL licenses included),
+  latin and latin-ext subsets.
+- **Accessibility target:** WCAG 2.2 AA: skip link, landmarks, visible focus, contrast, alt text prompts,
+  keyboard-operable abstract disclosure, reduced-motion friendly, usable at 200% zoom.

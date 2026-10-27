@@ -36,6 +36,9 @@ for slug, (color, text) in {
 }.items():
     card(ROOT / "research" / f"{slug}.jpg", (1600, 900), color, text)
 
+for name, color, text in (("context", (0, 105, 62), "Fig 1"), ("models", (70, 90, 160), "Fig 2")):
+    card(ROOT / "publications" / f"{name}.jpg", (800, 600), color, text)
+
 card(ROOT / "images" / "funder-one.png", (300, 120), (30, 60, 120), "FUNDER")
 card(ROOT / "images" / "funder-two.png", (300, 120), (120, 60, 30), "GRANT")
 print("sample images written to", ROOT)

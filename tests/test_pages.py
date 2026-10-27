@@ -103,11 +103,19 @@ def test_research_image_must_exist(sandbox):
     assert sandbox.build().has_error("learning.md", "image 'missing.jpg' was not found")
 
 
-def test_research_image_is_processed_and_tiles_link_to_anchors(sandbox):
+def test_research_image_is_processed_and_has_anchor(sandbox):
     result = sandbox.build()
     assert (sandbox.out / "images" / "research" / "learning.jpg").is_file()
-    assert "research/#learning" in result.page("index.html")
-    assert 'id="learning"' in result.page("research/index.html")
+    html = result.page("research/index.html")
+    assert 'id="learning"' in html
+    assert 'alt="Placeholder figure for the learning theme"' in html
+
+
+def test_research_image_without_description_warns(sandbox):
+    sandbox.edit("research/learning.md", "image_alt: Placeholder figure for the learning theme\n", "")
+    result = sandbox.build()
+    assert result.ok, result.errors
+    assert result.has_warning("learning.md", "image_alt")
 
 
 # ----- resources

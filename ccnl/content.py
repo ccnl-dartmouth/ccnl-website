@@ -351,12 +351,15 @@ def load_nav(content_dir, root, problems):
 
 TEXT_PAGE_SPEC = {
     "headline": {"example": "How does the brain learn flexibly?"},
+    "hero_image": {"example": "lab-group.jpg"},
+    "hero_alt": {"example": "Lab members around a table at the 2026 retreat"},
     "recruiting": {"choices": ("open", "closed"), "example": "closed"},
     "updated": {"type": "month", "example": "2026-10"},
 }
 
 
 def load_text_page(content_dir, root, name, problems, required, today, allowed=("headline", "recruiting", "updated")):
+    """Load content/<name>.md: front matter limited to `allowed` fields, plus the Markdown body as HTML."""
     path = Path(content_dir) / f"{name}.md"
     where = where_of(path, root)
     if not path.is_file():
@@ -369,13 +372,20 @@ def load_text_page(content_dir, root, name, problems, required, today, allowed=(
     spec = {k: v for k, v in TEXT_PAGE_SPEC.items() if k in allowed}
     clean = check_meta(meta, where, spec, problems)
     check_stale(clean.get("updated"), where, today, problems)
-    return {**clean, "html": render_markdown(body), "where": where}
+    if clean.get("hero_image"):
+        if not (Path(content_dir) / "images" / clean["hero_image"]).is_file():
+            problems.error(where, f"hero_image '{clean['hero_image']}' was not found in content/images/. Upload it there, or remove the line to use the default picture.")
+            clean["hero_image"] = None
+        elif not clean.get("hero_alt"):
+            problems.warn(where, "add `hero_alt:` describing the photo in a sentence, for people who use screen readers.")
+    return {**clean, "html": render_markdown(body), "where": where, "hero": None}
 
 
 RESEARCH_SPEC = {
     "title": {"required": True, "example": "Adaptive learning and decision making"},
     "order": {"type": "int", "example": "1"},
     "image": {"example": "figure.png"},
+    "image_alt": {"example": "Diagram of a neuron whose firing rate depends on recent rewards"},
 }
 
 
@@ -393,6 +403,8 @@ def load_research(content_dir, root, problems):
             continue
         clean = check_meta(meta, where, RESEARCH_SPEC, problems)
         image_src = resolve_field_image(folder, clean["image"], where, problems) if clean["image"] else None
+        if clean["image"] and not clean["image_alt"]:
+            problems.warn(where, "add `image_alt:` describing the figure in a sentence, for people who use screen readers.")
         themes.append(
             {
                 "slug": path.stem,
@@ -401,6 +413,7 @@ def load_research(content_dir, root, problems):
                 "html": render_markdown(body),
                 "image_src": image_src,
                 "image": None,
+                "image_alt": clean["image_alt"] or "",
                 "where": where,
             }
         )
@@ -656,6 +669,7 @@ def load_publications(content_dir, root, problems):
                 "pages": clean_bib_text(entry.get("pages", "")).replace("--", "–"),
                 "links": links,
                 "note": clean_bib_text(entry.get("note", "")),
+                "abstract": clean_bib_text(entry.get("abstract", "")),
                 "preprint": preprint,
                 "selected": selected_raw in ("true", "yes"),
                 "image_src": image_src,
@@ -762,7 +776,7 @@ def load_site(content_dir, root, problems, today=None):
     nav = load_nav(content_dir, root, problems)
     nav_pages = {item["page"] for item in nav}
 
-    home = load_text_page(content_dir, root, "home", problems, True, today, allowed=("headline",))
+    home = load_text_page(content_dir, root, "home", problems, True, today, allowed=("headline", "hero_image", "hero_alt"))
     about = load_text_page(content_dir, root, "about", problems, "about" in nav_pages, today, allowed=())
     join = load_text_page(content_dir, root, "join", problems, "join" in nav_pages, today, allowed=("recruiting", "updated"))
 

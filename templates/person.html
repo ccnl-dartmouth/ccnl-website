@@ -3,17 +3,23 @@
 {% block title %}{{ person.name }} &middot; {{ lab.name }}{% endblock %}
 {% block content %}
 <p class="back"><a href="{{ url('people/') }}">&larr; People</a></p>
-<article class="profile">
-  {% if person.photo %}<img class="profile-photo" src="{{ url('images/' ~ person.photo) }}" alt="{{ person.name }}">{% endif %}
-  <div>
-    <h1>{{ person.name }}{% if person.degrees %}, <span class="degrees">{{ person.degrees }}</span>{% endif %}</h1>
-    <p class="meta">{{ person.role_label }}{% if person.status == 'alumni' %} (alumnus){% endif %} &middot; {{ m.years(person) }}{% if person.current_position %} &middot; now: {{ person.current_position }}{% endif %}</p>
-    {% if person.links or person.email %}
-    <p class="links">
-      {% for l in person.links %}<a href="{{ l.url }}">{{ l.label }}</a>{{ " &middot; "|safe if not loop.last or person.email }}{% endfor %}{% if person.email %}{{ m.email(person.email) }}{% endif %}
-    </p>
-    {% endif %}
+<div class="profile">
+  <aside class="profile-card" aria-label="Details">
+    {{ m.avatar(person, "profile") }}
+    <dl>
+      <dt>Role</dt><dd>{{ person.role_label }}{% if person.status == 'alumni' %} (alumnus){% endif %}</dd>
+      <dt>In the lab</dt><dd>{{ m.years(person) }}</dd>
+      {% if person.current_position %}<dt>Now</dt><dd>{{ person.current_position }}</dd>{% endif %}
+      {% if person.email %}<dt>Email</dt><dd>{{ m.email(person.email) }}</dd>{% endif %}
+      {% if person.links %}
+      <dt>Links</dt>
+      <dd><ul class="plain">{% for l in person.links %}<li><a href="{{ l.url }}">{{ l.label }}</a></li>{% endfor %}</ul></dd>
+      {% endif %}
+    </dl>
+  </aside>
+  <article class="profile-main">
+    <h1>{{ person.name }}{% if person.degrees %}<span class="degrees">, {{ person.degrees }}</span>{% endif %}</h1>
     <div class="prose">{{ person.html|safe }}</div>
-  </div>
-</article>
+  </article>
+</div>
 {% endblock %}

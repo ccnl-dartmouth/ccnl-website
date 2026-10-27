@@ -4,35 +4,44 @@
 
 {% macro years(p) %}{{ p.start }}&ndash;{{ p.end if p.status == 'alumni' else 'present' }}{% endmacro %}
 
+{# Photo, or the person's initial in a circle when there is no photo. #}
+{% macro avatar(p, size="card") %}
+{% if p.photo %}<img class="avatar avatar-{{ size }}" src="{{ url('images/' ~ p.photo) }}" alt="" width="240" height="240" loading="lazy">
+{% else %}<span class="avatar avatar-{{ size }} placeholder" aria-hidden="true">{{ p.name[0] }}</span>{% endif %}
+{% endmacro %}
+
 {% macro person_card(p) %}
-<li class="person">
-  {% if p.photo %}
-  <img class="avatar" src="{{ url('images/' ~ p.photo) }}" alt="" width="96" height="96" loading="lazy">
-  {% else %}
-  <span class="avatar placeholder" aria-hidden="true">{{ p.name[0] }}</span>
+<li class="person-card">
+  {{ avatar(p) }}
+  <p class="person-name">{% if p.profile %}<a href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</p>
+  <p class="meta">{% if p.degrees %}{{ p.degrees }} &middot; {% endif %}{{ years(p) }}</p>
+  {% if not p.profile and p.links %}
+  <p class="meta">{% for l in p.links %}<a href="{{ l.url }}">{{ l.label }}</a>{{ " &middot; "|safe if not loop.last }}{% endfor %}</p>
   {% endif %}
-  <div>
-    <p class="person-name">
-      {% if p.profile %}<a href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}{% if p.degrees %}, <span class="degrees">{{ p.degrees }}</span>{% endif %}
-    </p>
-    <p class="meta">{{ years(p) }}{% if p.current_position %} &middot; {{ p.current_position }}{% endif %}</p>
-    {% if not p.profile and p.links %}
-    <p class="meta">{% for l in p.links %}<a href="{{ l.url }}">{{ l.label }}</a>{{ " &middot; "|safe if not loop.last }}{% endfor %}</p>
-    {% endif %}
-  </div>
 </li>
 {% endmacro %}
 
-{% macro publication(p) %}
-<li class="pub{% if p.image %} has-image{% endif %}">
-  {% if p.image %}<img class="pub-image" src="{{ url('images/' ~ p.image) }}" alt="" loading="lazy">{% endif %}
-  <div>
+{% macro alumnus(p) %}
+<li class="alumnus">
+  <span class="alumnus-name">{% if p.profile %}<a href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}{% if p.degrees %}, {{ p.degrees }}{% endif %}</span>
+  <span class="meta">{{ years(p) }}{% if p.current_position %} &middot; {{ p.current_position }}{% endif %}</span>
+</li>
+{% endmacro %}
+
+{# One publication. With full=True it also shows the thumbnail and a collapsible abstract. #}
+{% macro publication(p, full=False) %}
+<li class="pub{% if full and p.image %} has-thumb{% endif %}">
+  {% if full and p.image %}<img class="pub-thumb" src="{{ url('images/' ~ p.image) }}" alt="" loading="lazy">{% endif %}
+  <div class="pub-body">
     <p class="pub-title">{{ p.title }}</p>
     <p class="pub-authors">{% for a in p.authors %}{% if a.etal %}et al.{% else %}{{ a.last }} {{ a.initials }}{% if a.cofirst %}&deg;{% endif %}{% if a.corresponding %}*{% endif %}{% endif %}{{ ", " if not loop.last }}{% endfor %} ({{ p.year }})</p>
     <p class="pub-venue"><em>{{ p.venue }}</em>{% if p.volume %} {{ p.volume }}{% if p.number %}({{ p.number }}){% endif %}{% endif %}{% if p.pages %}, {{ p.pages }}{% endif %}</p>
     {% if p.note %}<p class="pub-note">{{ p.note }}</p>{% endif %}
     {% if p.links %}
-    <p class="pub-links">{% for l in p.links %}<a href="{{ l.url }}">{{ l.label }}</a>{{ " " if not loop.last }}{% endfor %}</p>
+    <ul class="pub-links">{% for l in p.links %}<li><a href="{{ l.url }}">{{ l.label }}<span class="sr-only"> for {{ p.title }}</span></a></li>{% endfor %}</ul>
+    {% endif %}
+    {% if full and p.abstract %}
+    <details class="pub-abstract"><summary>Abstract<span class="sr-only"> of {{ p.title }}</span></summary><p>{{ p.abstract }}</p></details>
     {% endif %}
   </div>
 </li>

@@ -13,7 +13,7 @@
 {% if preprints %}
 <section>
   <h2>Preprints</h2>
-  <ul class="pubs">{% for p in preprints %}{{ m.publication(p) }}{% endfor %}</ul>
+  <ul class="pubs">{% for p in preprints %}{{ m.publication(p, full=True) }}{% endfor %}</ul>
 </section>
 {% endif %}
 
@@ -21,7 +21,7 @@
   <h2>Published papers</h2>
   {% for year, group in published|groupby("year")|reverse %}
   <h3 class="year">{{ year }}</h3>
-  <ul class="pubs">{% for p in group %}{{ m.publication(p) }}{% endfor %}</ul>
+  <ul class="pubs">{% for p in group %}{{ m.publication(p, full=True) }}{% endfor %}</ul>
   {% else %}
   <p>Publications will appear here.</p>
   {% endfor %}

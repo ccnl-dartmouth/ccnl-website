@@ -3,10 +3,10 @@
 {% block title %}Contact &middot; {{ lab.name }}{% endblock %}
 {% block content %}
 <h1>Contact</h1>
-<address>
+<address class="card">
   <strong>{{ lab.name }}</strong><br>
   {% if lab.department %}{{ lab.department }}<br>{% endif %}
   {% for line in lab.address %}{{ line }}<br>{% endfor %}
+  {% if lab.email %}<br>Email: {{ m.email(lab.email) }}{% endif %}
 </address>
-{% if lab.email %}<p>Email: {{ m.email(lab.email) }}</p>{% endif %}
 {% endblock %}

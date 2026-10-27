@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ lab.name }}{% endblock %}</title>
   <meta name="description" content="{{ lab.tagline or lab.name }}">
+  <meta name="theme-color" content="#00693e">
+  <link rel="preload" href="{{ url('static/fonts/inter-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ url('static/fonts/source-serif-4-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ url('static/fonts/fonts.css') }}">
   <link rel="stylesheet" href="{{ url('static/style.css') }}">
   <script src="{{ url('static/site.js') }}" defer></script>
 </head>
@@ -13,8 +17,8 @@
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="brand" href="{{ url() }}">
-        <span class="brand-name">{{ lab.short_name }}</span>
-        {% if lab.department %}<span class="brand-sub">{{ lab.department }}</span>{% endif %}
+        <span class="brand-name">{{ lab.name }}</span>
+        {% if lab.department or lab.institution %}<span class="brand-sub">{{ [lab.department, lab.institution]|select|join(', ') }}</span>{% endif %}
       </a>
       <nav aria-label="Main">
         <ul class="nav">
@@ -26,15 +30,16 @@
     </div>
   </header>
 
-  <main id="main" class="wrap">
-    {% block content %}{% endblock %}
+  <main id="main" tabindex="-1">
+    {% block main %}<div class="wrap">{% block content %}{% endblock %}</div>{% endblock %}
   </main>
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>{{ lab.name }}{% if lab.institution %} &middot; {{ lab.institution }}{% endif %}</p>
+      <p class="footer-name">{{ lab.name }}</p>
+      {% if lab.department or lab.institution %}<p>{{ [lab.department, lab.institution]|select|join(', ') }}</p>{% endif %}
       {% if lab.social %}
-      <p class="social">{% for s in lab.social %}<a href="{{ s.url }}">{{ s.label }}</a>{{ " &middot; "|safe if not loop.last }}{% endfor %}</p>
+      <ul class="social">{% for s in lab.social %}<li><a href="{{ s.url }}">{{ s.label }}</a></li>{% endfor %}</ul>
       {% endif %}
       <p class="small">&copy; {{ year }} {{ lab.short_name }}</p>
     </div>

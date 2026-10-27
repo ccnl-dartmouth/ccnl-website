@@ -47,7 +47,11 @@ def process_site_images(site, out_dir, root, problems):
     if site_images.is_dir():
         for path in sorted(site_images.iterdir()):
             if path.suffix.lower() in IMAGE_EXTS and not path.name.startswith("."):
-                process_image(path, images_out / "site", path.stem, 1600, where_of(path, root), problems)
+                process_image(path, images_out / "site", path.stem, 2000, where_of(path, root), problems)
+    hero = site["home"].get("hero_image") if site["home"] else None
+    if hero:
+        produced = list((images_out / "site").glob(f"{Path(hero).stem}.*"))
+        site["home"]["hero"] = f"site/{produced[0].name}" if produced else None
     for funder in site["lab"].get("funders", []):
         if funder["logo"]:
             stem = Path(funder["logo"]).stem

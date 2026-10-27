@@ -47,6 +47,7 @@ def test_every_page_has_title_and_nav_and_no_template_leftovers(sandbox):
     sandbox.build()
     for page in sandbox.out.rglob("index.html"):
         html = page.read_text()
+        assert '<html lang="en">' in html and 'class="skip-link"' in html and '<main id="main"' in html
         assert "<title>" in html and 'aria-label="Main"' in html
         assert "{{" not in html and "{%" not in html
 
@@ -107,7 +108,7 @@ def test_base_path_prefixes_links_and_assets(sandbox):
     html = sandbox.build(base_path="/ccnl-website").page("index.html")
     assert 'href="/ccnl-website/people/"' in html
     assert 'href="/ccnl-website/static/style.css"' in html
-    assert 'src="/ccnl-website/images/research/learning.jpg"' in html
+    assert 'src="/ccnl-website/static/hero-default.svg"' in html
 
 
 def test_without_base_path_links_start_at_root(sandbox):

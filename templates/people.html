@@ -6,7 +6,7 @@
 {% for g in site.people_groups %}
 <section>
   <h2>{{ g.title }}</h2>
-  <ul class="people">
+  <ul class="person-grid">
     {% for p in g.people %}{{ m.person_card(p) }}{% endfor %}
   </ul>
 </section>
@@ -17,8 +17,8 @@
 {% if site.alumni %}
 <section>
   <h2>Alumni</h2>
-  <ul class="people">
-    {% for p in site.alumni %}{{ m.person_card(p) }}{% endfor %}
+  <ul class="alumni">
+    {% for p in site.alumni %}{{ m.alumnus(p) }}{% endfor %}
   </ul>
 </section>
 {% endif %}

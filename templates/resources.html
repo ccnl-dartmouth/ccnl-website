@@ -2,15 +2,17 @@
 {% block title %}Resources &middot; {{ lab.name }}{% endblock %}
 {% block content %}
 <h1>Resources</h1>
-<p>Code, data and tools from our work. Please cite the associated paper and respect each package's license.</p>
+<p class="prose">Code, data and tools from our work. Please cite the associated paper and respect each package's license.</p>
+<ul class="stack">
 {% for r in site.resources %}
-<section class="resource">
-  <h2>{{ r.title }}</h2>
-  {% if r.paper_pub %}<p class="meta">Paper: {{ r.paper_pub.title }} ({{ r.paper_pub.year }}), <em>{{ r.paper_pub.venue }}</em></p>{% endif %}
-  <div class="prose">{{ r.html|safe }}</div>
-  {% if r.links %}<p class="pub-links">{% for l in r.links %}<a href="{{ l.url }}">{{ l.label }}</a>{{ " " if not loop.last }}{% endfor %}</p>{% endif %}
-</section>
+  <li class="card">
+    <h2>{{ r.title }}</h2>
+    {% if r.paper_pub %}<p class="meta">Paper: {{ r.paper_pub.title }} ({{ r.paper_pub.year }}), <em>{{ r.paper_pub.venue }}</em></p>{% endif %}
+    <div class="prose">{{ r.html|safe }}</div>
+    {% if r.links %}<ul class="pub-links">{% for l in r.links %}<li><a href="{{ l.url }}">{{ l.label }}<span class="sr-only"> for {{ r.title }}</span></a></li>{% endfor %}</ul>{% endif %}
+  </li>
 {% else %}
-<p>Resources will appear here.</p>
+  <li>Resources will appear here.</li>
 {% endfor %}
+</ul>
 {% endblock %}

@@ -80,6 +80,10 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       EXIF strip, HEIC, corrupt/oversized), atomic output, base path, CLI exit codes. Each runs against a
       throwaway copy of `sample_content/` broken in one specific way. Known gap: BibTeX errors name the file
       and entry key but not a line number (the parser does not report them).
+- [~] 7 Design: layout and visual decisions recorded in `docs/STRUCTURE.md` ("Visual design"); templates, CSS,
+      self-hosted fonts and placeholder hero built and checked in a browser (desktop, phone, light and dark).
+      Still open: real hero photo and default people photo (placeholders now), fine-tuning publications,
+      automated accessibility checks (e.g. axe in CI), print stylesheet review.
 - [~] 6 Automation: `deploy.yml` builds, tests and deploys on every push to `main` (skeleton live at
       https://ccnl-dartmouth.github.io/ccnl-website/); failures open/close alert issues (`ccnl/alerts.py`);
       `uptime.yml` (6-hourly) and `links.yml` (weekly, `ccnl/linkcheck.py`) added; see `docs/OPERATIONS.md`.
@@ -90,7 +94,7 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       Not yet run: `links.yml`, `uptime.yml`, `escalate.yml` (start each once from the Actions tab: Run workflow).
       Still to do by hand: `lab-members` team, variables `ALERT_MENTIONS_TEAM` / `ALERT_MENTIONS_PI`,
       `main` ruleset, UptimeRobot.
-- [ ] 2 Content audit (partly done during structure design), 7 design, 8 migration,
+- [ ] 2 Content audit (partly done during structure design), 8 migration,
       9 member testing, 10 docs, 11 launch, 12 handover
 
 Dependencies: 3 gates everything after it; 1 runs alongside 2 and 3; 5 and 6 need 4; 7 can start

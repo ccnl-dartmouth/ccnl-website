@@ -1,56 +1,50 @@
 {% extends "base.html" %}
 {% import "_macros.html" as m %}
-{% block content %}
+{% block main %}
 <section class="hero">
-  <h1>{{ site.home.headline or lab.name }}</h1>
-  {% if lab.tagline %}<p class="lead">{{ lab.tagline }}</p>{% endif %}
+  <img class="hero-img" src="{{ url('images/' ~ site.home.hero) if site.home.hero else url('static/hero-default.svg') }}" alt="{{ site.home.hero_alt or '' }}">
+  <div class="wrap hero-wrap">
+    <div class="hero-card">
+      <h1>{{ site.home.headline or lab.name }}</h1>
+      {% if lab.tagline %}<p>{{ lab.tagline }}</p>{% endif %}
+    </div>
+  </div>
 </section>
 
-<section class="prose">
-  {{ site.home.html|safe }}
-</section>
+<div class="wrap">
+  <section class="prose intro">{{ site.home.html|safe }}</section>
 
-{% if site.research %}
-<section>
-  <h2>Research</h2>
-  <ul class="tiles">
-    {% for t in site.research %}
-    <li class="tile">
-      <a href="{{ url('research/#' ~ t.slug) }}">
-        {% if t.image %}<img src="{{ url('images/' ~ t.image) }}" alt="" loading="lazy">{% endif %}
-        <span>{{ t.title }}</span>
-      </a>
-    </li>
-    {% endfor %}
+  <ul class="entry-cards">
+    {% if 'research' in pages %}
+    <li class="entry"><h2><a href="{{ url('research/') }}">Research</a></h2><p>What we study, and how.</p></li>
+    {% endif %}
+    {% if 'people' in pages %}
+    <li class="entry"><h2><a href="{{ url('people/') }}">People</a></h2><p>The lab, past and present.</p></li>
+    {% endif %}
+    {% if 'join' in pages %}
+    <li class="entry"><h2><a href="{{ url('join/') }}">Join us</a></h2><p>Positions and how to get involved.</p></li>
+    {% endif %}
   </ul>
-</section>
-{% endif %}
 
-{% if selected_publications %}
-<section>
-  <h2>Selected publications</h2>
-  <ul class="pubs">
-    {% for p in selected_publications %}{{ m.publication(p) }}{% endfor %}
-  </ul>
-  {% if 'publications' in pages %}<p><a href="{{ url('publications/') }}">All publications &rarr;</a></p>{% endif %}
-</section>
-{% endif %}
+  {% if selected_publications %}
+  <section>
+    <h2 class="section-title">Selected publications</h2>
+    <ul class="pubs compact">
+      {% for p in selected_publications %}{{ m.publication(p) }}{% endfor %}
+    </ul>
+    {% if 'publications' in pages %}<p><a class="more" href="{{ url('publications/') }}">All publications</a></p>{% endif %}
+  </section>
+  {% endif %}
 
-{% if 'join' in pages %}
-<section class="cta">
-  <h2>Join us</h2>
-  <p>Interested in working with the lab? <a href="{{ url('join/') }}">See how to get involved &rarr;</a></p>
-</section>
-{% endif %}
-
-{% if lab.funders %}
-<section class="funders">
-  <p class="small">Our research is supported by</p>
-  <ul>
-    {% for f in lab.funders %}
-    <li>{% if f.url %}<a href="{{ f.url }}">{% endif %}{% if f.logo %}<img src="{{ url('images/' ~ f.logo) }}" alt="{{ f.name }}" height="48">{% else %}{{ f.name }}{% endif %}{% if f.url %}</a>{% endif %}</li>
-    {% endfor %}
-  </ul>
-</section>
-{% endif %}
+  {% if lab.funders %}
+  <section class="funders">
+    <h2 class="section-title small-title">Funding</h2>
+    <ul>
+      {% for f in lab.funders %}
+      <li>{% if f.url %}<a href="{{ f.url }}">{% endif %}{% if f.logo %}<img src="{{ url('images/' ~ f.logo) }}" alt="{{ f.name }}" height="48">{% else %}{{ f.name }}{% endif %}{% if f.url %}</a>{% endif %}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+</div>
 {% endblock %}
