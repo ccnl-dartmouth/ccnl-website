@@ -1,0 +1,58 @@
+"""The examples in the contributor guide must actually build, so the guide can't drift from the site."""
+
+import re
+
+from conftest import ROOT
+
+GUIDE = (ROOT / "docs" / "ADD-YOUR-CONTENT.md").read_text()
+
+
+def fenced(language):
+    return re.findall(rf"```{language}\n(.*?)```", GUIDE, flags=re.S)
+
+
+def test_guide_has_the_expected_examples():
+    assert len(fenced("markdown")) >= 1 and len(fenced("bibtex")) >= 1
+
+
+def test_example_profile_builds_cleanly(sandbox):
+    sandbox.write("people/jane-doe.md", fenced("markdown")[0])
+    result = sandbox.build()
+    assert result.ok and result.warnings == [], result.errors + result.warnings
+    html = result.page("people/jane-doe/index.html")
+    assert "Jane Doe" in html and "I build computational models of learning" in html
+
+
+def test_example_paper_builds_cleanly_and_uses_every_option_it_shows(sandbox):
+    sandbox.write("people/jane-doe.md", fenced("markdown")[0])
+    sandbox.write("publications/2026-doe-learning-under-uncertainty.bib", fenced("bibtex")[0])
+    sandbox.write("people/alireza-soltani-example.md", "---\nname: Alireza Soltani\nrole: postdoc\nstatus: current\n---\n")
+    result = sandbox.build()
+    assert result.ok and result.warnings == [], result.errors + result.warnings
+    paper = next(p for p in result.site["publications"] if p["key"] == "doe2026learning")
+    assert paper["abstract"] and [link["label"] for link in paper["links"]] == ["DOI", "PDF"]
+    html = result.page("people/jane-doe/index.html")
+    assert "Learning under uncertainty" in html  # the paper appears on Jane's page
+    assert 'au au-cofirst' not in html  # profile pages only highlight their owner
+
+
+def test_every_error_message_quoted_in_the_guide_still_exists_in_the_code():
+    code = "\n".join(p.read_text() for p in (ROOT / "ccnl").glob("*.py"))
+    quoted = [
+        "the file name must use only lowercase letters, digits and hyphens",
+        "unknown field",
+        "missing required field",
+        "is not valid YAML",
+        "rename the image to",
+        "contains GPS location data",
+        "no valid BibTeX entry found",
+        "entries. Use one .bib file per paper",
+        "is also used in",
+        "who is not among the authors",
+    ]
+    for phrase in quoted:
+        assert phrase in code, phrase
+    for phrase in ("lowercase letters, digits and hyphens", "unknown field", "missing required field", "is not valid YAML",
+                   "rename the image to", "contains GPS location data", "no valid BibTeX entry found", "is also used in",
+                   "who is not among the authors"):
+        assert phrase in GUIDE, phrase

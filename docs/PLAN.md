@@ -95,6 +95,9 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       drop PDF links); (5) Join text is from 2023 (build warns it is stale); stale "next offering" dates for courses
       were dropped; (6) Not migrated: News (17 items, dropped by decision), alumni individual profile pages (one had a
       personal email), media-coverage links (kept as a plain-text note), an Outlook tracking link.
+- [~] 10 Documentation: contributor guide written (`docs/ADD-YOUR-CONTENT.md`: bio, profile picture, papers, profile
+      fields, troubleshooting) and linked from the README; `tests/test_docs.py` builds the guide's examples so it
+      cannot drift. Next: Peter follows the guide himself as a test; then a maintainer/handover page.
 - [~] 7c Design round 3 (Oct 2026): hero title larger with the department and Dartmouth College on separate lines;
       intro centered; Teaching moved into Resources; footer uses the Dartmouth D-Pine mark (Wikimedia, CC BY-SA 4.0, credit
       line, removed from the footer on request: see docs/CREDITS.md) and the standard NIH logo; research page has generated placeholder illustrations in the
