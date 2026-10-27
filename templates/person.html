@@ -22,4 +22,11 @@
     <div class="prose">{{ person.html|safe }}</div>
   </article>
 </div>
+
+{% if person.publications %}
+<section class="profile-pubs" id="publications">
+  <h2>Publications <span class="count">({{ person.publications|length }})</span></h2>
+  {{ m.publication_lists(person.publications, person.author_key, 3) }}
+</section>
+{% endif %}
 {% endblock %}

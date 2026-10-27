@@ -39,12 +39,14 @@
 </li>
 {% endmacro %}
 
-{# One publication: text on the left, thumbnail (the paper's own image, or a generic filler) on the right. #}
-{% macro publication(p) %}
+{# One publication: text on the left, thumbnail (the paper's own image, or a generic filler) on the right.
+   With person_key (a profile page) only that person is highlighted; otherwise lab members, co-first and corresponding
+   authors are styled. #}
+{% macro publication(p, person_key=none) %}
 <li class="pub">
   <div class="pub-body">
     <p class="pub-title">{{ p.title }}</p>
-    <p class="pub-authors">{% for a in p.authors %}{% if a.etal %}et al.{% else %}{% set role = 'both' if a.cofirst and a.corresponding else 'cofirst' if a.cofirst else 'corr' if a.corresponding else '' %}{% if role %}<span class="au au-{{ role }}">{{ a.last }} {{ a.initials }}<span class="sr-only"> ({{ 'co-first and corresponding author' if role == 'both' else 'co-first author' if role == 'cofirst' else 'corresponding author' }})</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{% endif %}{{ ", " if not loop.last }}{% endfor %} ({{ p.year }})</p>
+    <p class="pub-authors">{% for a in p.authors %}{% if a.etal %}et al.{% elif person_key %}{% if a.key == person_key %}<span class="au au-member">{{ a.last }} {{ a.initials }}<span class="sr-only"> (this person)</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{% elif a.classes %}<span class="au {{ a.classes }}">{{ a.last }} {{ a.initials }}<span class="sr-only"> ({{ a.role_text }})</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{{ ", " if not loop.last }}{% endfor %}</p>
     <p class="pub-venue"><em>{{ p.venue }}</em>{% if p.volume %} {{ p.volume }}{% if p.number %}({{ p.number }}){% endif %}{% endif %}{% if p.pages %}, {{ p.pages }}{% endif %}</p>
     {% if p.note %}<p class="pub-note">{{ p.note }}</p>{% endif %}
     {% if p.links %}
@@ -56,4 +58,26 @@
   </div>
   <img class="pub-thumb" src="{{ url('images/' ~ p.image) if p.image else url('static/pub-placeholder.svg') }}" alt="" loading="lazy">
 </li>
+{% endmacro %}
+
+{# Preprints, then published papers grouped by year (newest first). top=2 on the Publications page; top=3 when it is a
+   section of a profile page, where the years are not nested under a "Published papers" heading. #}
+{% macro publication_lists(pubs, person_key=none, top=2) %}
+{% set preprints = pubs|selectattr("preprint")|list %}
+{% set published = pubs|rejectattr("preprint")|list %}
+{% if preprints %}
+<section>
+  <h{{ top }}>Preprints</h{{ top }}>
+  <ul class="pubs">{% for p in preprints %}{{ publication(p, person_key) }}{% endfor %}</ul>
+</section>
+{% endif %}
+{% if published %}
+<section>
+  {% if top == 2 %}<h2>Published papers</h2>{% endif %}
+  {% for year, group in published|groupby("year")|reverse %}
+  <h3 class="year">{{ year }}</h3>
+  <ul class="pubs">{% for p in group %}{{ publication(p, person_key) }}{% endfor %}</ul>
+  {% endfor %}
+</section>
+{% endif %}
 {% endmacro %}

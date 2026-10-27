@@ -3,32 +3,19 @@
 {% block title %}Publications &middot; {{ lab.name }}{% endblock %}
 {% block content %}
 <h1>Publications</h1>
-{% set preprints = site.publications|selectattr("preprint")|list %}
-{% set published = site.publications|rejectattr("preprint")|list %}
-
 {% set roles = site.author_roles %}
-{% if roles.cofirst or roles.corresponding or roles.both %}
-<p class="author-key small">Authors in the lab's papers:
+{% if roles.member or roles.cofirst or roles.corresponding %}
+<p class="author-key small">Authors:
+  {% if roles.member %}<span class="au au-member">lab member</span>{% endif %}
   {% if roles.cofirst %}<span class="au au-cofirst">co-first author</span>{% endif %}
   {% if roles.corresponding %}<span class="au au-corr">corresponding author</span>{% endif %}
-  {% if roles.both %}<span class="au au-both">co-first and corresponding</span>{% endif %}
+  (styles combine)
 </p>
 {% endif %}
 
-{% if preprints %}
-<section>
-  <h2>Preprints</h2>
-  <ul class="pubs">{% for p in preprints %}{{ m.publication(p) }}{% endfor %}</ul>
-</section>
+{% if site.publications %}
+{{ m.publication_lists(site.publications) }}
+{% else %}
+<p>Publications will appear here.</p>
 {% endif %}
-
-<section>
-  <h2>Published papers</h2>
-  {% for year, group in published|groupby("year")|reverse %}
-  <h3 class="year">{{ year }}</h3>
-  <ul class="pubs">{% for p in group %}{{ m.publication(p) }}{% endfor %}</ul>
-  {% else %}
-  <p>Publications will appear here.</p>
-  {% endfor %}
-</section>
 {% endblock %}

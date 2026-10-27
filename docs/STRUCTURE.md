@@ -108,6 +108,8 @@ Bio in Markdown. Optional "## Research" section.
 ```
 
 - Photo: `<slug>.jpg|png|webp|heic` next to the `.md`; missing photo gets an initial in a circle. A photo that contains GPS location data triggers a warning (the original stays public in the repository).
+- A profile page also lists the person's papers automatically (matched from the BibTeX author names by last name
+  and first initial), grouped like the main Publications page; only the page's owner is highlighted (bold blue).
 - Collaborators are listed at the bottom of the People page as a compact list (name linked to their site,
   institution, any other links), without profile pages.
 - `content/people/_TEMPLATE.md` is a commented example to copy when joining (files starting with `_` are ignored).
@@ -121,7 +123,7 @@ One standard BibTeX entry per file (paste from Google Scholar or the journal). O
 | Field | Meaning |
 |---|---|
 | `pdf`, `si`, `data`, `code`, `url` | link buttons |
-| `cofirst` | last names of co-first authors (shown in blue; no symbols) |
+| `cofirst` | last names of co-first authors (shown in purple; no symbols) |
 | `corresponding` | last names of corresponding authors |
 | `status` | `preprint`, or omitted for published |
 | `note` | short press/recognition note |
@@ -214,7 +216,7 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 ## Decisions recorded
 
 - One `.bib` file per paper (errors stay local to one file).
-- Co-first / corresponding authors are shown by text color in the author list (blue, orange, purple for both) with bold weight, screen-reader text and a legend, not by the old ° and * symbols.
+- Author styles in the Publications list (no ° or * symbols): lab members (anyone on the People page, matched by last name + first initial) are bold blue; co-first authors are purple; corresponding authors get a yellow highlight. Styles combine. Screen readers hear the roles, and a legend explains the styles.
 - Drop News. No selected-publications section on Home.
 - Join is not a page; its text lives on the Contact page (`join.md`).
 - No Research page of fixed length: themes are files, the count can change.
@@ -229,8 +231,8 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 - **People:** current groups (PI, postdocs, grad students, undergraduates) sit side by side while they fit and
   wrap onto new rows as they fill up; photo cards (initial in a circle when there is no photo); alumni as a plain list.
   Profile page: details card (photo, role, years, links) beside the bio.
-- **Publications:** semi-dense list by year; each entry has the BibTeX-derived text on the left (authors colored by
-  role, title, venue, link buttons, collapsible abstract) and a right-aligned thumbnail (own image or generic filler).
+- **Publications:** semi-dense list by year; each entry has the BibTeX-derived text on the left (authors styled by
+  role, title, venue, link buttons, collapsible abstract; no year after the authors since the list is grouped by year) and a right-aligned thumbnail (own image or generic filler).
 - **Research:** one section per theme with a large figure alternating left/right (stacked on phones). The real
   site currently uses generated placeholder illustrations, to be replaced with real figures.
 - **Header:** only a centered navigation bar (no lab name at the left); order Home, Research, People, Publications,

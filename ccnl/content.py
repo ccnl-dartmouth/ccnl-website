@@ -7,6 +7,7 @@ collected (not raised one by one) so a member sees all of them in a single build
 import datetime
 import difflib
 import re
+import unicodedata
 from pathlib import Path
 
 import bibtexparser
@@ -574,7 +575,8 @@ def parse_authors(raw):
         else:
             tokens = part.split()
             last, first = tokens[-1], " ".join(tokens[:-1])
-        initials = "".join(tok[0] for tok in re.split(r"[\s.\-]+", first) if tok)
+        # "MC" is already initials (keep both letters); "Xiao-Jing" and "Jane Q." give one letter per name part
+        initials = "".join(tok if (tok.isupper() and len(tok) > 1) else tok[0] for tok in re.split(r"[\s.\-]+", first) if tok)
         names.append({"last": last, "initials": initials.upper(), "etal": False})
     return names
 
@@ -778,10 +780,41 @@ def load_teaching(content_dir, root, problems, today):
 # --------------------------------------------------------------------------- everything
 
 
+def ascii_key(text):
+    return re.sub(r"[^a-z]", "", unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower())
+
+
+def person_key(name):
+    """'last|initial' for a person's name, the form bibliographies use ('Michael (Chong) Wang' -> 'wang|m')."""
+    tokens = [t for t in name.split() if ascii_key(t)]
+    return f"{ascii_key(tokens[-1])}|{ascii_key(tokens[0])[0]}" if len(tokens) >= 2 else None
+
+
+def member_keys(people):
+    """Keys for everyone listed on the People page."""
+    return {key for key in (person_key(p["name"]) for p in people) if key}
+
+
+def style_authors(publications, people):
+    """Flag authors who are listed in People and prepare their CSS classes and screen-reader text."""
+    keys = member_keys(people)
+    for pub in publications:
+        for a in pub["authors"]:
+            if a.get("etal"):
+                continue
+            a["key"] = f"{ascii_key(a['last'])}|{a['initials'][0].lower()}" if a["initials"] else None
+            a["member"] = a["key"] in keys
+            roles = [(a["member"], "member", "lab member"), (a.get("cofirst"), "cofirst", "co-first author"),
+                     (a.get("corresponding"), "corr", "corresponding author")]
+            a["classes"] = " ".join(f"au-{css}" for on, css, _ in roles if on)
+            a["role_text"] = ", ".join(text for on, _, text in roles if on)
+
+
 def author_roles(publications):
-    """Which author roles occur, for the legend on the Publications page."""
-    seen = {(bool(a.get("cofirst")), bool(a.get("corresponding"))) for p in publications for a in p["authors"]}
-    return {"cofirst": (True, False) in seen, "corresponding": (False, True) in seen, "both": (True, True) in seen}
+    """Which author styles occur, for the legend on the Publications page."""
+    authors = [a for p in publications for a in p["authors"] if not a.get("etal")]
+    return {"member": any(a["member"] for a in authors), "cofirst": any(a.get("cofirst") for a in authors),
+            "corresponding": any(a.get("corresponding") for a in authors)}
 
 
 def load_site(content_dir, root, problems, today=None):
@@ -816,6 +849,12 @@ def load_site(content_dir, root, problems, today=None):
                     f"`paper: {item['paper']}` does not match any publication. Use the BibTeX key (the text after `@article{{` in the .bib file).",
                 )
 
+    style_authors(publications, people)
+    for person in people:  # each profile page lists the person's own papers (newest first, as loaded)
+        person["author_key"] = person_key(person["name"])
+        person["publications"] = [
+            pub for pub in publications if person["author_key"] and any(a.get("key") == person["author_key"] for a in pub["authors"])
+        ]
     people_groups, alumni = group_people(people)
     return {
         "content_dir": content_dir,

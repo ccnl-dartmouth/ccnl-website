@@ -10,15 +10,15 @@
   --soft: #f3f7f4;
   --line: #d6ddd8;
   --amber: #f2a900;
-  --au-cofirst: #1a5fb4;
-  --au-corr: #a24b00;
-  --au-both: #7b3fa0;
+  --au-member: #1a5fb4;
+  --au-cofirst: #7b3fa0;
+  --au-corr-bg: #fff0a0;
   --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --wrap: 70rem;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #151815; --ink: #ececec; --muted: #a9aea9; --green: #5fc08f; --on-green: #0b1a12; --soft: #1e231f; --line: #394039; --au-cofirst: #7fb2f0; --au-corr: #f0a860; --au-both: #c9a0ec; }
+  :root { --bg: #151815; --ink: #ececec; --muted: #a9aea9; --green: #5fc08f; --on-green: #0b1a12; --soft: #1e231f; --line: #394039; --au-member: #7fb2f0; --au-cofirst: #c9a0ec; --au-corr-bg: #4a3d00; }
 }
 
 * { box-sizing: border-box; }
@@ -101,6 +101,7 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .alumnus-name { font-weight: 600; }
 
 .back { margin: 1.5rem 0 0; }
+.profile-pubs { margin-top: 3rem; }
 .profile { display: grid; grid-template-columns: minmax(0, 16rem) minmax(0, 1fr); gap: 1rem 3rem; align-items: start; margin-top: .5rem; }
 .profile-card dl { margin: 1rem 0 0; font-size: .95rem; }
 .profile-card dt { color: var(--muted); font-size: .8rem; text-transform: none; margin-top: .75rem; }
@@ -116,10 +117,9 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .pub-title { font-weight: 600; }
 .pub-authors, .pub-venue { color: var(--muted); font-size: .95rem; }
 .pub-note { font-size: .9rem; font-style: italic; }
-.au { font-weight: 600; }
+.au-member { font-weight: 700; color: var(--au-member); }
 .au-cofirst { color: var(--au-cofirst); }
-.au-corr { color: var(--au-corr); }
-.au-both { color: var(--au-both); }
+.au-corr { background: var(--au-corr-bg); padding: 0 .25em; border-radius: 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .author-key span { margin-left: .5rem; }
 .pub-links { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; padding: 0; margin: .4rem 0 0; }
 .pub-links a { display: inline-block; padding: .1rem .65rem; border: 1px solid var(--green); border-radius: 999px; font-size: .85rem; text-decoration: none; }
@@ -145,7 +145,7 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .fold > summary::before { content: ""; flex: none; width: .55rem; height: .55rem; border-right: 2px solid var(--green); border-bottom: 2px solid var(--green); transform: rotate(-45deg); transition: transform .15s; }
 .fold[open] > summary::before { transform: rotate(45deg); }
 .fold > summary h2 { margin: 0; }
-.fold .count { color: var(--muted); font: 400 1rem var(--sans); }
+.count { color: var(--muted); font: 400 1rem var(--sans); }
 .fold[open] > summary { margin-bottom: .5rem; }
 
 /* ---- other pages ---- */
