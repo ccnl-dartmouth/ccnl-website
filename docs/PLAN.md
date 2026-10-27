@@ -59,6 +59,14 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
 | 11 | Launch | Custom domain + HTTPS, redirect from old site, update external links |
 | 12 | Handover | PI is owner, alerts reach PI, OWNERSHIP.md complete |
 
+## Progress
+
+- [x] 0 Decisions, 1 GitHub setup (remaining: PI as owner, 2FA, team/invites, `main` ruleset), 3 Structure design
+- [x] 4 Core build: `build.py` + `ccnl/` (loading, validation, images, rendering), templates, placeholder CSS,
+      `sample_content/`, smoke tests. Validation already gives friendly errors; phase 5 adds the full test suite.
+- [ ] 2 Content audit (partly done during structure design), 5 tests, 6 automation, 7 design, 8 migration,
+      9 member testing, 10 docs, 11 launch, 12 handover
+
 Dependencies: 3 gates everything after it; 1 runs alongside 2 and 3; 5 and 6 need 4; 7 can start
 once 3 is fixed; 9 needs 5, 6, 8; 11 needs the Dartmouth reply (can launch on github.io first).
 

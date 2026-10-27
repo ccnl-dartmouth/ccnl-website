@@ -56,10 +56,12 @@ content/
     salience-choice.md
   teaching/
     psyc-50-02-decision-making.md
-images/                    # site-wide images (logos, banners)
+  images/                  # site-wide images (funder logos, banners); referenced from lab.yaml
+sample_content/            # fake lab with every content type; used for previews and tests
 templates/                 # Jinja2 HTML
 static/                    # CSS, small JS
-build.py
+build.py                   # command-line entry point
+ccnl/                      # the build: content.py (load + validate), images.py, build.py (render)
 tests/
 docs/
 .github/workflows/

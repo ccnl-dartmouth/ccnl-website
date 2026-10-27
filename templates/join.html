@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Join &middot; {{ lab.name }}{% endblock %}
+{% block content %}
+<h1>Join us</h1>
+{% if site.join.recruiting == 'open' %}
+<p class="banner banner-open">We are currently recruiting. See below.</p>
+{% else %}
+<p class="banner">We are not currently recruiting, but we welcome questions.</p>
+{% endif %}
+<div class="prose">{{ site.join.html|safe }}</div>
+{% if site.join.updated %}<p class="small">Last updated {{ site.join.updated.strftime('%B %Y') }}</p>{% endif %}
+{% endblock %}

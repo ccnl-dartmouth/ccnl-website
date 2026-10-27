@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}Publications &middot; {{ lab.name }}{% endblock %}
+{% block content %}
+<h1>Publications</h1>
+{% set preprints = site.publications|selectattr("preprint")|list %}
+{% set published = site.publications|rejectattr("preprint")|list %}
+
+{% if site.has_cofirst or site.has_corresponding %}
+<p class="small">{% if site.has_cofirst %}&deg; co-first authors{% endif %}{% if site.has_cofirst and site.has_corresponding %} &nbsp; {% endif %}{% if site.has_corresponding %}* corresponding author{% endif %}</p>
+{% endif %}
+
+{% if preprints %}
+<section>
+  <h2>Preprints</h2>
+  <ul class="pubs">{% for p in preprints %}{{ m.publication(p) }}{% endfor %}</ul>
+</section>
+{% endif %}
+
+<section>
+  <h2>Published papers</h2>
+  {% for year, group in published|groupby("year")|reverse %}
+  <h3 class="year">{{ year }}</h3>
+  <ul class="pubs">{% for p in group %}{{ m.publication(p) }}{% endfor %}</ul>
+  {% else %}
+  <p>Publications will appear here.</p>
+  {% endfor %}
+</section>
+{% endblock %}

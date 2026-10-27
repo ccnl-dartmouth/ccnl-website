@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Teaching &middot; {{ lab.name }}{% endblock %}
+{% block content %}
+<h1>Teaching</h1>
+{% for c in site.teaching %}
+<section class="course">
+  <h2>{{ c.title }} <span class="meta">({{ c.code }})</span></h2>
+  <div class="prose">{{ c.html|safe }}</div>
+  {% if c.next_offering %}<p class="meta">Next offering: {{ c.next_offering }}</p>{% endif %}
+</section>
+{% else %}
+<p>Courses will appear here.</p>
+{% endfor %}
+{% endblock %}

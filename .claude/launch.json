@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "preview-sample",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": ["build.py", "--content", "sample_content", "--out", "_site", "--serve", "--port", "8000"],
+      "port": 8000
+    }
+  ]
+}

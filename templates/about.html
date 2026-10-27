@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}About &middot; {{ lab.name }}{% endblock %}
+{% block content %}
+<h1>About</h1>
+<div class="prose">{{ site.about.html|safe }}</div>
+{% if lab.funders %}
+<h2>Funding</h2>
+<ul class="funder-list">
+  {% for f in lab.funders %}
+  <li>{% if f.url %}<a href="{{ f.url }}">{{ f.name }}</a>{% else %}{{ f.name }}{% endif %}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

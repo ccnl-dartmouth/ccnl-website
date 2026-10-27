@@ -2,5 +2,6 @@
 __pycache__/
 *.pyc
 _site/
+_site.tmp/
 build/
 .DS_Store

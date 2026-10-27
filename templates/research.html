@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Research &middot; {{ lab.name }}{% endblock %}
+{% block content %}
+<h1>Research</h1>
+{% for t in site.research %}
+<section class="theme" id="{{ t.slug }}">
+  <h2>{{ t.title }}</h2>
+  {% if t.image %}<img class="theme-image" src="{{ url('images/' ~ t.image) }}" alt="" loading="lazy">{% endif %}
+  <div class="prose">{{ t.html|safe }}</div>
+</section>
+{% else %}
+<p>Research themes will appear here.</p>
+{% endfor %}
+{% endblock %}

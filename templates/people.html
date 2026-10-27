@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}People &middot; {{ lab.name }}{% endblock %}
+{% block content %}
+<h1>People</h1>
+{% for g in site.people_groups %}
+<section>
+  <h2>{{ g.title }}</h2>
+  <ul class="people">
+    {% for p in g.people %}{{ m.person_card(p) }}{% endfor %}
+  </ul>
+</section>
+{% else %}
+<p>Lab members will appear here.</p>
+{% endfor %}
+
+{% if site.alumni %}
+<section>
+  <h2>Alumni</h2>
+  <ul class="people">
+    {% for p in site.alumni %}{{ m.person_card(p) }}{% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

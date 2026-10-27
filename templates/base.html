@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ lab.name }}{% endblock %}</title>
+  <meta name="description" content="{{ lab.tagline or lab.name }}">
+  <link rel="stylesheet" href="{{ url('static/style.css') }}">
+  <script src="{{ url('static/site.js') }}" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="{{ url() }}">
+        <span class="brand-name">{{ lab.short_name }}</span>
+        {% if lab.department %}<span class="brand-sub">{{ lab.department }}</span>{% endif %}
+      </a>
+      <nav aria-label="Main">
+        <ul class="nav">
+          {% for item in nav %}
+          <li><a href="{{ url('' if item.page == 'home' else item.page ~ '/') }}"{% if item.page == page %} aria-current="page"{% endif %}>{{ item.label }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>{{ lab.name }}{% if lab.institution %} &middot; {{ lab.institution }}{% endif %}</p>
+      {% if lab.social %}
+      <p class="social">{% for s in lab.social %}<a href="{{ s.url }}">{{ s.label }}</a>{{ " &middot; "|safe if not loop.last }}{% endfor %}</p>
+      {% endif %}
+      <p class="small">&copy; {{ year }} {{ lab.short_name }}</p>
+    </div>
+  </footer>
+</body>
+</html>

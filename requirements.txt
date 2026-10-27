@@ -1,0 +1,10 @@
+# Runtime dependencies for the site build. Pinned: do not upgrade casually.
+# CI uses the same Python version as local development (3.12).
+bibtexparser==1.4.3
+Jinja2==3.1.6
+Markdown==3.11.2
+MarkupSafe==3.0.4
+pillow==13.0.0
+pillow_heif==1.8.1
+pyparsing==3.3.3
+PyYAML==6.0.3
