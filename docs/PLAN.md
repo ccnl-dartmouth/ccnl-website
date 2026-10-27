@@ -50,6 +50,9 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       `ALERT_MENTIONS_PI`. Until then he can still be alerted about a downed site by email through the
       external UptimeRobot monitor (no GitHub account needed); add him as an alert contact there.
 - [ ] List of lab members' GitHub usernames.
+- [ ] **Peter to check Dartmouth's brand guidelines** for the D-Pine logo on a lab site (decided Oct 2026 to keep it with no
+      visible credit meanwhile). The file is CC BY-SA 4.0, which asks for credit; see `docs/CREDITS.md` for the options
+      (credit line, public-domain block D, or an official Dartmouth file). Same question for the NIH and NSF logos.
 - [ ] Long-lived contact email for the org (PI or lab list address).
 - [ ] Get admin access to the old WordPress site.
 
