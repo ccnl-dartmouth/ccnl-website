@@ -137,6 +137,17 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .theme-text h2 { margin-top: 0; }
 .theme:not(:has(.theme-fig)) { grid-template-columns: minmax(0, 1fr); }
 
+/* ---- collapsible sections (Resources page) ---- */
+.fold { border-top: 1px solid var(--line); margin-top: 1.5rem; max-width: 50rem; }
+.fold:last-of-type { border-bottom: 1px solid var(--line); }
+.fold > summary { display: flex; align-items: center; gap: .75rem; cursor: pointer; list-style: none; padding: .35rem 0; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary::before { content: ""; flex: none; width: .55rem; height: .55rem; border-right: 2px solid var(--green); border-bottom: 2px solid var(--green); transform: rotate(-45deg); transition: transform .15s; }
+.fold[open] > summary::before { transform: rotate(45deg); }
+.fold > summary h2 { margin: 0; }
+.fold .count { color: var(--muted); font: 400 1rem var(--sans); }
+.fold[open] > summary { margin-bottom: .5rem; }
+
 /* ---- other pages ---- */
 .banner { background: var(--soft); border-left: 4px solid var(--line); padding: .75rem 1rem; max-width: 42rem; }
 .banner-open { border-left-color: var(--green); }

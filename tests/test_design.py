@@ -239,3 +239,29 @@ def test_current_groups_share_a_wrapping_container_but_alumni_and_collaborators_
     assert 'class="people-group"' not in wrapper.split("<h2>Alumni</h2>")[1]
     css = (sandbox.out / "static" / "style.css").read_text()
     assert ".people-groups { display: flex; flex-wrap: wrap;" in css
+
+
+# ----- collapsible Resources sections
+
+
+def test_resources_sections_are_collapsed_by_default_with_counts(sandbox):
+    html = sandbox.build().page("resources/index.html")
+    for ident, label in (("code-data", "Code and data"), ("teaching", "Teaching")):
+        tag = html.split(f'id="{ident}"')[0].rsplit("<details", 1)[1]
+        assert 'class="fold"' in tag and "open" not in tag  # closed until the visitor expands it
+        summary = html.split(f'id="{ident}"')[1].split("</summary>")[0]
+        assert f"<h2>{label} " in summary and 'class="count"' in summary
+
+
+def test_collapsed_sections_still_contain_their_cards(sandbox):
+    html = sandbox.build().page("resources/index.html")
+    teaching = html.split('id="teaching"')[1].split("</details>")[0]
+    assert "Decision making" in teaching and "PSYC 50" in teaching
+    code = html.split('id="code-data"')[1].split("</details>")[0]
+    assert "Context effects dataset" in code
+
+
+def test_script_opens_a_section_named_in_the_url_hash(sandbox):
+    sandbox.build()
+    js = (sandbox.out / "static" / "site.js").read_text()
+    assert "hashchange" in js and "DETAILS" in js

@@ -29,7 +29,7 @@ The old WordPress site is not being recreated; we keep its core information in a
 | People | `people/*.md` | Current and alumni, grouped by role; profile pages generated |
 | Publications | `publications/*.bib` | Preprints + published, by year |
 | Contact | `lab.yaml` + `join.md` | Address and email; the "Join us" section (recruiting banner + text per career stage) from `join.md` |
-| Resources | `resources/*.md` + `teaching/*.md` | "Code and data" cards, then a "Teaching" section with the course cards (Teaching is not a separate page) |
+| Resources | `resources/*.md` + `teaching/*.md` | collapsible "Code and data" and "Teaching" sections (closed by default, with counts; open automatically from a `#teaching` or `#code-data` link), each holding cards (Teaching is not a separate page) |
 
 Deferred (can be added later without touching the rest): Participate / Active Studies, Press,
 Lab Photos. Dropped: News (stale since 2023; replaced by nothing for now).

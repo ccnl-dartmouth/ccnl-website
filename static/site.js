@@ -7,3 +7,12 @@ document.querySelectorAll('.email').forEach(function (el) {
   link.textContent = address;
   el.replaceWith(link);
 });
+
+// Open a collapsed section when the page is opened (or the link is followed) with its #id,
+// e.g. /resources/#teaching.
+function openSectionFromHash() {
+  var el = location.hash && document.getElementById(location.hash.slice(1));
+  if (el && el.tagName === 'DETAILS') { el.open = true; el.scrollIntoView(); }
+}
+openSectionFromHash();
+window.addEventListener('hashchange', openSectionFromHash);
