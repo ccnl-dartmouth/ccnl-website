@@ -16,9 +16,15 @@ site on GitHub Pages that lab members can update themselves.
   the PI and the lab.
 - **Editing model:** members edit their own files in the GitHub web editor (or git push). No local
   setup needed; the build runs in Actions.
-- **Domain:** requested a `dartmouth.edu` hostname (e.g. ccnl.dartmouth.edu) via Dartmouth web
-  support (email sent, awaiting reply). Fallback: `ccnl-dartmouth.github.io` plus a redirect or
-  notice on the old WordPress site. Build must support a base path until the domain is live.
+- **Domain:** Dartmouth web support (Oct 2026): no policy against pointing a dartmouth.edu subdomain
+  at an external host, but labs are not eligible for one. They suggested `ccnl.host.dartmouth.edu`
+  (cPanel/LAMP with Git). Decision: stay on GitHub Pages at `ccnl-dartmouth.github.io` (automated
+  builds, no dependence on a NetID-bound server account, easy member edits). Keep
+  `sites.dartmouth.edu/ccnl` as a redirect or "we've moved" page (asked web support which the
+  platform supports; reply pending). Ask the department to update its link to the lab. Build must
+  support a base path (`/ccnl-website/`) until/unless a custom domain is added.
+  If a dartmouth.edu name becomes required, revisit host.dartmouth.edu; first ask: can the account
+  belong to a department/PI, is automated deploy (SFTP/SSH) allowed, how does its Git feature work.
 - **Old site:** the PI has approved admin access to the WordPress site for the migration.
 
 ## Design references
@@ -29,7 +35,8 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
 
 ## Open items
 
-- [ ] Reply from Dartmouth web support (hostname, policy, redirect). Send them the final org name: `ccnl-dartmouth`.
+- [x] Dartmouth web support replied on the hostname (see Decisions).
+- [ ] Reply from web support on whether sites.dartmouth.edu can redirect or only show a "we've moved" page.
 - [ ] PI's GitHub username; list of lab members' GitHub usernames.
 - [ ] Long-lived contact email for the org (PI or lab list address).
 - [ ] Get admin access to the old WordPress site.
