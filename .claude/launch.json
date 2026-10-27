@@ -4,8 +4,32 @@
     {
       "name": "preview-sample",
       "runtimeExecutable": ".venv/bin/python",
-      "runtimeArgs": ["build.py", "--content", "sample_content", "--out", "_site", "--serve", "--port", "8000"],
+      "runtimeArgs": [
+        "build.py",
+        "--content",
+        "sample_content",
+        "--out",
+        "_site",
+        "--serve",
+        "--port",
+        "8000"
+      ],
       "port": 8000
+    },
+    {
+      "name": "preview-real",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": [
+        "build.py",
+        "--content",
+        "content",
+        "--out",
+        "_site-real",
+        "--serve",
+        "--port",
+        "8001"
+      ],
+      "port": 8001
     }
   ]
 }

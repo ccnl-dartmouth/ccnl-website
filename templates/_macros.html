@@ -2,7 +2,7 @@
 
 {% macro email(e) %}<span class="email" data-user="{{ e.user }}" data-domain="{{ e.domain }}">{{ e.user }} [at] {{ e.domain }}</span>{% endmacro %}
 
-{% macro years(p) %}{{ p.start }}&ndash;{{ p.end if p.status == 'alumni' else 'present' }}{% endmacro %}
+{% macro years(p) %}{{ p.years }}{% endmacro %}
 
 {# Photo, or the person's initial in a circle when there is no photo. #}
 {% macro avatar(p, size="card") %}
@@ -14,17 +14,28 @@
 <li class="person-card">
   {{ avatar(p) }}
   <p class="person-name">{% if p.profile %}<a href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</p>
-  <p class="meta">{% if p.degrees %}{{ p.degrees }} &middot; {% endif %}{{ years(p) }}</p>
+  {% set bits = [p.degrees, p.years, p.current_position if p.status == 'current' else None]|select|list %}
+  {% if bits %}<p class="meta">{{ bits|join(' · ') }}</p>{% endif %}
   {% if not p.profile and p.links %}
   <p class="meta">{% for l in p.links %}<a href="{{ l.url }}">{{ l.label }}</a>{{ " &middot; "|safe if not loop.last }}{% endfor %}</p>
   {% endif %}
 </li>
 {% endmacro %}
 
+{# Compact entry for people shown without a photo: collaborators (name links to their site) and alumni. #}
+{% macro collaborator(p) %}
+<li class="alumnus">
+  <span class="alumnus-name">{% if p.profile %}<a href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% elif p.links %}<a href="{{ p.links[0].url }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</span>
+  {% if p.current_position %}<span class="meta">{{ p.current_position }}</span>{% endif %}
+</li>
+{% endmacro %}
+
 {% macro alumnus(p) %}
 <li class="alumnus">
   <span class="alumnus-name">{% if p.profile %}<a href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}{% if p.degrees %}, {{ p.degrees }}{% endif %}</span>
-  <span class="meta">{{ years(p) }}{% if p.current_position %} &middot; {{ p.current_position }}{% endif %}</span>
+  {% set bits = [p.years, p.current_position]|select|list %}
+  {% if bits %}<span class="meta">{{ bits|join(' · ') }}</span>{% endif %}
+  {% if p.note %}<span class="meta">{{ p.note }}</span>{% endif %}
 </li>
 {% endmacro %}
 

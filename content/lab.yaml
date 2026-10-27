@@ -7,6 +7,11 @@ address:
   - 6207 Moore Hall
   - Dartmouth College
   - Hanover, NH 03755
+email: alireza.soltani@dartmouth.edu
 funders:
-  - name: National Institutes of Health
   - name: National Science Foundation
+    logo: nsf-logo.png
+    url: https://www.nsf.gov
+  - name: National Institutes of Health (NIDA)
+    logo: nida-logo.jpeg
+    url: https://nida.nih.gov

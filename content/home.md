@@ -1,8 +1,6 @@
 ---
 headline: Computational & Cognitive Neuroscience Lab
 ---
-The long-term goal of our research is to understand biological intelligence across multiple
-scales, from synaptic to circuit to social, by uncovering the computational principles and neural
-mechanisms of flexible cognition and adaptive behavior.
+The long-term goal of our research is to understand biological intelligence across multiple scales—from synaptic to circuit to social—by uncovering the computational principles and neural mechanisms of flexible cognition and adaptive behavior. To that end, we explore computational and neural mechanisms that allow humans and other animals to be flexible, and when/how these mechanisms fail. Specifically, we focus on elucidating cognitive processes and neural mechanisms underlying adaptive learning and decision making, as well as cognitive heuristics and biases humans and other animals adopt to overcome challenges of real-world learning and decision making. To achieve these goals, we use a combination of computational methods and human experiments while extensively collaborating with a wide range experimentalists using various animal models (including mice, rats, monkeys, and humans) and techniques.
 
-(Placeholder skeleton: content is being migrated from the old site; see docs/PLAN.md.)
+Adaptive behavior depends on neural mechanisms across multiple levels—synaptic, cellular, and circuit—each contributing to flexibility and adaptation at distinct timescales. To understand these mechanisms, we develop computational models spanning from synaptic to system levels, designed to explain both behavioral and neural data while making testable predictions. We also develop computational methods to quantify behavioral and neural adjustments and design more naturalistic experimental paradigms.

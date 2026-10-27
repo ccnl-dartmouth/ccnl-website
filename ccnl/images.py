@@ -41,6 +41,12 @@ def process_image(src, dest_dir, name, max_px, where, problems):
 
     try:
         with Image.open(src) as im:
+            if im.getexif().get_ifd(0x8825):  # GPS block
+                problems.warn(
+                    where,
+                    f"'{src.name}' contains GPS location data. The website strips it, but the original file is public in the repository: "
+                    "remove the location (e.g. re-export the photo without metadata) and upload it again.",
+                )
             im = ImageOps.exif_transpose(im)  # apply camera rotation before metadata is dropped
             im.load()
     except Exception as exc:  # corrupt or not really an image

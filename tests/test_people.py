@@ -19,7 +19,7 @@ def test_unknown_field_suggests_the_right_name(sandbox):
 def test_missing_required_fields_say_how_to_fix(sandbox):
     sandbox.write("people/new-person.md", "---\nname: New Person\n---\nBio\n")
     result = sandbox.build()
-    for field in ("role", "status", "start"):
+    for field in ("role", "status"):
         assert result.has_error("new-person.md", f"missing required field '{field}'", "Add a line like")
 
 
@@ -47,11 +47,10 @@ def test_end_before_start(sandbox):
     assert result.has_error("new-person.md", "before")
 
 
-def test_alumnus_without_position_is_only_a_warning(sandbox):
+def test_alumnus_without_position_is_fine(sandbox):
     sandbox.write("people/new-person.md", person_md(status="alumni", end=2025))
     result = sandbox.build()
-    assert result.ok, result.errors
-    assert result.has_warning("new-person.md", "current_position")
+    assert result.ok and result.warnings == [], result.errors + result.warnings
 
 
 def test_year_must_be_a_year(sandbox):
@@ -191,3 +190,60 @@ def test_alumni_sorted_newest_first(sandbox):
     sandbox.write("people/new-alum.md", person_md(name="New Alum", status="alumni", end=2024, start=2019, current_position="Y"))
     names = [p["name"] for p in sandbox.build().site["alumni"]]
     assert names.index("New Alum") < names.index("Lee Alumna") < names.index("Old Alum")
+
+
+# ----- optional dates, class years, notes, automatic profile pages
+
+
+def test_start_year_is_optional(sandbox):
+    sandbox.write("people/new-person.md", person_md(start=None))
+    result = sandbox.build()
+    assert result.ok, result.errors
+    person = next(p for p in result.site["people"] if p["slug"] == "new-person")
+    assert person["years"] == ""
+
+
+def test_alumnus_may_give_class_year_instead_of_end(sandbox):
+    sandbox.write("people/old-ug.md", person_md(role="undergrad", status="alumni", start=None, class_year=2018, current_position="Medical student"))
+    result = sandbox.build()
+    assert result.ok, result.errors
+    assert "&#39;18" in result.page("people/index.html") or "\u201918" in result.page("people/index.html")
+
+
+def test_alumnus_needs_end_or_class_year(sandbox):
+    sandbox.write("people/old-ug.md", person_md(status="alumni", start=None))
+    assert sandbox.build().has_error("old-ug.md", "class_year")
+
+
+def test_years_labels():
+    from ccnl.content import years_label
+
+    assert years_label(2022, None, "current", None) == "2022\u2013present"
+    assert years_label(2014, 2019, "alumni", None) == "2014\u20132019"
+    assert years_label(2019, 2019, "alumni", None) == "2019"
+    assert years_label(None, None, "current", 2026) == "\u201926"
+    assert years_label(2020, 2022, "alumni", 2022) == "2020\u20132022 \u00b7 \u201922"
+    assert years_label(None, 2020, "alumni", None) == "until 2020"
+    assert years_label(None, None, "current", None) == ""
+
+
+def test_profile_page_exists_only_when_there_is_a_bio(sandbox):
+    sandbox.write("people/no-bio.md", person_md(body=""))
+    sandbox.write("people/has-bio.md", person_md(name="Has Bio", body="I study things.\n"))
+    sandbox.write("people/forced.md", person_md(name="Forced", body="", profile="true"))
+    sandbox.build()
+    assert not (sandbox.out / "people" / "no-bio").exists()
+    assert (sandbox.out / "people" / "has-bio" / "index.html").is_file()
+    assert (sandbox.out / "people" / "forced" / "index.html").is_file()
+
+
+def test_note_and_position_show_in_alumni_list(sandbox):
+    sandbox.write("people/new-alum.md", person_md(name="New Alum", status="alumni", end=2024, current_position="Doctor", note="Thesis award"))
+    html = sandbox.build().page("people/index.html")
+    assert "Thesis award" in html and "Doctor" in html
+
+
+def test_collaborators_without_dates_show_their_institution(sandbox):
+    sandbox.write("people/collab.md", person_md(name="Some Collaborator", role="collaborator", start=None, current_position="Big University"))
+    html = sandbox.build().page("people/index.html")
+    assert "Some Collaborator" in html and "Big University" in html

@@ -119,3 +119,11 @@ def test_fonts_are_self_hosted_with_licenses(sandbox):
     assert "https://" not in css.replace("Inter and Source Serif 4", "")  # no third-party URLs
     html = sandbox.build().page("index.html")
     assert "fonts.googleapis" not in html and "gstatic" not in html
+
+
+def test_collaborators_are_a_compact_list_linking_to_their_sites(sandbox):
+    html = sandbox.build().page("people/index.html")
+    section = html.split("<h2>Collaborators</h2>")[1].split("</section>")[0]
+    assert "person-card" not in section and 'class="alumnus"' in section
+    assert '<a href="https://example.org/kim">Kim Collaborator</a>' in section
+    assert "Example Institute" in section

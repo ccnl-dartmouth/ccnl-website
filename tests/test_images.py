@@ -80,3 +80,17 @@ def test_svg_is_copied_unchanged(tmp_path):
     out = process_image(src, tmp_path / "out", "logo", 100, "logo.svg", problems)
     assert out == "logo.svg" and (tmp_path / "out" / "logo.svg").is_file()
     assert not problems.errors
+
+
+def test_photo_with_gps_data_warns_but_builds(sandbox):
+    exif = Image.Exif()
+    exif[0x8825] = {1: "N", 2: (43.0, 42.0, 10.0), 3: "W", 4: (72.0, 17.0, 20.0)}
+    add_person_with_photo(sandbox, image_bytes((200, 100), exif=exif))
+    result = sandbox.build()
+    assert result.ok, result.errors
+    assert result.has_warning("new-person.jpg", "GPS location data")
+
+
+def test_photo_without_gps_data_does_not_warn(sandbox):
+    add_person_with_photo(sandbox, image_bytes((200, 100)))
+    assert sandbox.build().warnings == []

@@ -6,9 +6,15 @@
 {% for g in site.people_groups %}
 <section>
   <h2>{{ g.title }}</h2>
+  {% if g.role == 'collaborator' %}
+  <ul class="alumni">
+    {% for p in g.people %}{{ m.collaborator(p) }}{% endfor %}
+  </ul>
+  {% else %}
   <ul class="person-grid">
     {% for p in g.people %}{{ m.person_card(p) }}{% endfor %}
   </ul>
+  {% endif %}
 </section>
 {% else %}
 <p>Lab members will appear here.</p>

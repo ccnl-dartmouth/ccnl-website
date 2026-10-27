@@ -80,6 +80,18 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       EXIF strip, HEIC, corrupt/oversized), atomic output, base path, CLI exit codes. Each runs against a
       throwaway copy of `sample_content/` broken in one specific way. Known gap: BibTeX errors name the file
       and entry key but not a line number (the parser does not report them).
+- [~] 8 Content migration (done Oct 2026, needs human review): old WordPress pages fetched through its REST API and
+      converted by one-off scripts (not kept in the repo). Migrated: home text, PI profile + photo, 50 people
+      (roles/years/positions parsed from the old People page), 48 publications as `.bib` files (matched to Crossref:
+      DOIs for all 48, abstracts for 24, volumes/pages corrected where the old page was wrong, e.g. Aguirre 2024),
+      4 resources, 5 courses, join text, funders and logos.
+      **Review list:** (1) every person's years/positions; students should add bios and photos; (2) research themes are
+      drafted from the lab's own home/PI text, no figures yet; (3) 3 papers are marked `selected` tentatively;
+      (4) `pdf`/`si` links and dataset zips still point to `sites.dartmouth.edu/ccnl/files/...`: they will BREAK when
+      the old site is redirected (global redirect), so decide where to host them before launch (e.g. repo files, or
+      drop PDF links); (5) Join text is from 2023 (build warns it is stale); stale "next offering" dates for courses
+      were dropped; (6) Not migrated: News (17 items, dropped by decision), alumni individual profile pages (one had a
+      personal email), media-coverage links (kept as a plain-text note), an Outlook tracking link.
 - [~] 7 Design: layout and visual decisions recorded in `docs/STRUCTURE.md` ("Visual design"); templates, CSS,
       self-hosted fonts and placeholder hero built and checked in a browser (desktop, phone, light and dark).
       Still open: real hero photo and default people photo (placeholders now), fine-tuning publications,
@@ -94,7 +106,7 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       Not yet run: `links.yml`, `uptime.yml`, `escalate.yml` (start each once from the Actions tab: Run workflow).
       Still to do by hand: `lab-members` team, variables `ALERT_MENTIONS_TEAM` / `ALERT_MENTIONS_PI`,
       `main` ruleset, UptimeRobot.
-- [ ] 2 Content audit (partly done during structure design), 8 migration,
+- [ ] 2 Content audit (partly done during structure design),
       9 member testing, 10 docs, 11 launch, 12 handover
 
 Dependencies: 3 gates everything after it; 1 runs alongside 2 and 3; 5 and 6 need 4; 7 can start

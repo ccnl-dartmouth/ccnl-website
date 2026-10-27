@@ -44,10 +44,12 @@ def process_site_images(site, out_dir, root, problems):
 
     # site-wide images (logos, banners): keep their names so lab.yaml can refer to them
     site_images = Path(site["content_dir"]) / "images"
+    logo_stems = {Path(f["logo"]).stem for f in site["lab"].get("funders", []) if f["logo"]}
     if site_images.is_dir():
         for path in sorted(site_images.iterdir()):
             if path.suffix.lower() in IMAGE_EXTS and not path.name.startswith("."):
-                process_image(path, images_out / "site", path.stem, 2000, where_of(path, root), problems)
+                max_px = 480 if path.stem in logo_stems else 2000  # logos are shown about 48px tall
+                process_image(path, images_out / "site", path.stem, max_px, where_of(path, root), problems)
     hero = site["home"].get("hero_image") if site["home"] else None
     if hero:
         produced = list((images_out / "site").glob(f"{Path(hero).stem}.*"))

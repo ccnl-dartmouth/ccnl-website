@@ -95,11 +95,13 @@ Each `page` must refer to a known page; build fails on unknown names. Reordering
 name: Jane Doe
 role: grad            # pi | postdoc | grad | undergrad | collaborator
 status: current       # current | alumni
-start: 2022
-end:                  # year, required if status is alumni
+start: 2022           # optional (collaborators and some undergraduates have no dates)
+end:                  # year; alumni need `end` or `class_year`
+class_year: 2026      # optional, undergraduates: shown as 'XX
+note: Thesis award    # optional, shown for alumni (honors, program)
 degrees: B.Sc.        # optional
-current_position:     # optional, shown for alumni
-profile: true         # false = listed on People only, no own page (e.g. collaborators)
+current_position:     # alumni: where they are now; collaborators: their institution
+profile: true         # default: a profile page exists only if the file has a bio; true/false overrides
 links:                # all optional
   scholar: https://scholar.google.com/...
   orcid: 0000-0000-0000-0000
@@ -110,7 +112,8 @@ links:                # all optional
 Bio in Markdown. Optional "## Research" section.
 ```
 
-- Photo: `<slug>.jpg|png|webp|heic` next to the `.md`; missing photo gets a placeholder (warning).
+- Photo: `<slug>.jpg|png|webp|heic` next to the `.md`; missing photo gets an initial in a circle. A photo that contains GPS location data triggers a warning (the original stays public in the repository).
+- Collaborators are shown as a compact list (name linked to their site, institution), not photo cards.
 - People page, menu and profile URLs are generated from these files, so they cannot disagree.
 - Moving to alumni = edit your own file (`status`, `end`, `current_position`).
 
