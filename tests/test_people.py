@@ -1,12 +1,6 @@
 from conftest import image_bytes, person_md
 
 
-def test_sample_content_is_clean(sandbox):
-    result = sandbox.build()
-    assert result.ok, result.errors
-    assert result.warnings == []
-
-
 def test_new_person_appears_on_people_page_and_gets_profile(sandbox):
     sandbox.write("people/new-person.md", person_md())
     result = sandbox.build()

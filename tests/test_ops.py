@@ -164,38 +164,38 @@ def test_cli_without_configured_mentions_is_a_noop(monkeypatch, capsys):
 # ----- link checker
 
 
+STATUS = {"/ok": 200, "/missing": 404, "/gone": 410, "/blocked": 403, "/limited": 429, "/nohead": 200}
+
+
 class Handler(http.server.BaseHTTPRequestHandler):
+    """/redirect -> /ok; /nohead refuses HEAD (405) but answers GET; other paths use STATUS."""
+
     def log_message(self, *args):
         pass
 
-    def respond(self, code, headers=None):
-        self.send_response(code)
-        for k, v in (headers or {}).items():
-            self.send_header(k, v)
+    def reply(self):
+        if self.path == "/redirect":
+            self.send_response(301)
+            self.send_header("Location", "/ok")
+        else:
+            self.send_response(STATUS.get(self.path, 404))
         self.end_headers()
+
+    def do_GET(self):
+        self.reply()
 
     def do_HEAD(self):
         if self.path == "/nohead":
-            return self.respond(405)
-        self.route()
-
-    def do_GET(self):
-        self.route()
-
-    def route(self):
-        table = {"/ok": 200, "/missing": 404, "/gone": 410, "/blocked": 403, "/limited": 429}
-        if self.path == "/redirect":
-            return self.respond(301, {"Location": "/ok"})
-        if self.path in ("/nohead",):
-            return self.respond(200)
-        self.respond(table.get(self.path, 404))
+            self.send_response(405)
+            self.end_headers()
+        else:
+            self.reply()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def server():
     httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
-    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
-    thread.start()
+    threading.Thread(target=httpd.serve_forever, kwargs={"poll_interval": 0.02}, daemon=True).start()
     yield f"http://127.0.0.1:{httpd.server_address[1]}"
     httpd.shutdown()
 
@@ -278,13 +278,10 @@ def test_every_internal_link_and_anchor_resolves(sandbox):
     assert checked > 50
 
 
-def test_workflow_files_are_valid_yaml_with_expected_triggers():
+def test_workflow_files_are_valid_yaml():
     import yaml
 
-    root = Path(__file__).resolve().parent.parent / ".github" / "workflows"
-    for name in ("deploy.yml", "links.yml", "uptime.yml", "escalate.yml"):
-        data = yaml.safe_load((root / name).read_text())
-        assert "jobs" in data
-        assert "on" in data or True in data  # PyYAML reads the key `on` as boolean True
-    deploy = yaml.safe_load((root / "deploy.yml").read_text())
-    assert deploy["permissions"]["issues"] == "write"
+    workflows = Path(__file__).resolve().parent.parent / ".github" / "workflows"
+    loaded = {name: yaml.safe_load((workflows / name).read_text()) for name in ("deploy.yml", "links.yml", "uptime.yml", "escalate.yml")}
+    assert all("jobs" in data for data in loaded.values())
+    assert all(data["permissions"]["issues"] == "write" for data in loaded.values())  # alerts open issues

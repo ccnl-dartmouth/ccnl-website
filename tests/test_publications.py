@@ -87,11 +87,9 @@ def test_markers_are_rendered_and_legend_shown(sandbox):
 
 
 def test_no_legend_without_markers(sandbox):
-    for path in (sandbox.dir / "publications").glob("*.bib"):
-        text = path.read_text()
-        for field in ("cofirst", "corresponding"):
-            text = "\n".join(line for line in text.splitlines() if not line.strip().startswith(field))
-        path.write_text(text)
+    sandbox.edit("publications/2024-student-context.bib", "  cofirst = {Student, Postdoc},\n", "")
+    sandbox.edit("publications/2024-student-context.bib", "  corresponding = {Investigator},\n", "")
+    sandbox.edit("publications/2025-postdoc-preprint.bib", "  corresponding = {Investigator},\n", "")
     result = sandbox.build()
     assert result.ok, result.errors
     assert "co-first authors" not in result.page("publications/index.html")

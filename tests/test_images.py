@@ -1,9 +1,11 @@
+from io import BytesIO
+
 import pytest
 from conftest import image_bytes, person_md
 from PIL import Image
 
-from ccnl.problems import Problems
 from ccnl.images import process_image
+from ccnl.problems import Problems
 
 
 def add_person_with_photo(sandbox, data, ext="jpg"):
@@ -52,8 +54,6 @@ def test_heic_is_converted_to_jpg(sandbox):
 
 
 def test_png_stays_png_and_palette_images_work(sandbox):
-    from io import BytesIO
-
     buf = BytesIO()
     Image.new("P", (40, 40)).save(buf, "PNG", transparency=0)
     add_person_with_photo(sandbox, buf.getvalue(), ext="png")
@@ -73,7 +73,7 @@ def test_oversized_image_is_rejected(sandbox):
     assert sandbox.build().has_error("new-person.jpg", "larger than 25 MB")
 
 
-def test_svg_and_gif_are_copied(tmp_path):
+def test_svg_is_copied_unchanged(tmp_path):
     src = tmp_path / "logo.svg"
     src.write_text("<svg xmlns='http://www.w3.org/2000/svg'/>")
     problems = Problems()

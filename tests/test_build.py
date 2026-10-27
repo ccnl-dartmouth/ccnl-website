@@ -1,7 +1,13 @@
+"""Whole-build behavior: output, atomic replacement, base path, links, and the command line."""
+
 import importlib.util
+import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+from conftest import ROOT, TODAY, Sandbox, person_md
+
+from ccnl.build import build
+from ccnl.problems import Problems
 
 
 def load_cli():
@@ -11,23 +17,61 @@ def load_cli():
     return module
 
 
+# ----- what gets built
+
+
+def test_real_content_builds(tmp_path):
+    """Guards the actual site content: if this fails, the next deploy would fail too."""
+    problems = Problems()
+    build(ROOT / "content", tmp_path / "site", ROOT / "templates", ROOT / "static", root=ROOT, today=TODAY, problems=problems)
+    assert not problems.errors
+    assert (tmp_path / "site" / "index.html").is_file()
+
+
+def test_sample_content_is_clean(sandbox):
+    result = sandbox.build()
+    assert result.ok, result.errors
+    assert result.warnings == []
+
+
+def test_expected_pages_exist(sandbox):
+    sandbox.build()
+    for page in ("people", "publications", "research", "join", "resources", "teaching", "contact"):
+        assert (sandbox.out / page / "index.html").is_file()
+    assert (sandbox.out / "people" / "pat-investigator" / "index.html").is_file()
+    assert (sandbox.out / "404.html").is_file()
+    assert (sandbox.out / ".nojekyll").is_file()
+
+
+def test_every_page_has_title_and_nav_and_no_template_leftovers(sandbox):
+    sandbox.build()
+    for page in sandbox.out.rglob("index.html"):
+        html = page.read_text()
+        assert "<title>" in html and 'aria-label="Main"' in html
+        assert "{{" not in html and "{%" not in html
+
+
+def test_current_nav_item_is_marked(sandbox):
+    assert 'href="/people/" aria-current="page"' in sandbox.build().page("people/index.html")
+
+
+# ----- failures never damage the previous site
+
+
 def test_failed_build_leaves_previous_site_untouched(sandbox):
     assert sandbox.build().ok
-    marker = sandbox.out / "index.html"
-    before = marker.read_text()
+    before = (sandbox.out / "index.html").read_text()
 
     sandbox.remove("home.md")
-    result = sandbox.build()
-    assert not result.ok
-    assert marker.read_text() == before
+    assert not sandbox.build().ok
+    assert (sandbox.out / "index.html").read_text() == before
     assert not (sandbox.root / "_site.tmp").exists()
 
 
-def test_failed_image_stage_also_keeps_previous_site(sandbox):
-    from conftest import person_md
-
+def test_failure_found_while_processing_images_also_keeps_previous_site(sandbox):
     assert sandbox.build().ok
     before = (sandbox.out / "index.html").read_text()
+
     sandbox.write("people/new-person.md", person_md())
     sandbox.write("people/new-person.jpg", b"garbage")  # only detected when images are processed
     assert not sandbox.build().ok
@@ -47,51 +91,57 @@ def test_all_errors_are_reported_together(sandbox):
     sandbox.remove("home.md")
     sandbox.write("people/Bad_Name.md", "---\nname: X\n---\n")
     sandbox.write("publications/junk.bib", "nothing")
-    result = sandbox.build()
-    assert len(result.errors) >= 4
+    assert len(sandbox.build().errors) >= 4
+
+
+def test_missing_content_folder_is_an_error(tmp_path):
+    sandbox = Sandbox(tmp_path)
+    sandbox.dir = tmp_path / "does-not-exist"
+    assert sandbox.build().has_error("content folder does not exist")
+
+
+# ----- links
 
 
 def test_base_path_prefixes_links_and_assets(sandbox):
-    result = sandbox.build(base_path="/ccnl-website")
-    html = result.page("index.html")
+    html = sandbox.build(base_path="/ccnl-website").page("index.html")
     assert 'href="/ccnl-website/people/"' in html
     assert 'href="/ccnl-website/static/style.css"' in html
     assert 'src="/ccnl-website/images/research/learning.jpg"' in html
 
 
-def test_no_base_path_links_start_at_root(sandbox):
-    html = sandbox.build().page("index.html")
-    assert 'href="/people/"' in html
+def test_without_base_path_links_start_at_root(sandbox):
+    assert 'href="/people/"' in sandbox.build().page("index.html")
 
 
-def test_404_and_nojekyll_exist(sandbox):
-    sandbox.build()
-    assert (sandbox.out / "404.html").is_file()
-    assert (sandbox.out / ".nojekyll").is_file()
+def test_every_internal_link_and_anchor_resolves(sandbox):
+    assert sandbox.build(base_path="/ccnl-website").ok
+    out = sandbox.out
+    pattern = re.compile(r'(?:href|src)="(/ccnl-website/[^"]*)"')
+    checked = 0
+    for page in out.rglob("*.html"):
+        for ref in pattern.findall(page.read_text()):
+            path, _, fragment = ref.partition("#")
+            path = path.removeprefix("/ccnl-website/")
+            target = out / path / "index.html" if path == "" or path.endswith("/") else out / path
+            assert target.is_file(), f"{page.relative_to(out)} links to missing {ref}"
+            if fragment:
+                assert f'id="{fragment}"' in target.read_text(), f"{page.relative_to(out)}: no #{fragment} in {target.relative_to(out)}"
+            checked += 1
+    assert checked > 50  # the loop really looked at the site
 
 
-def test_every_page_has_title_nav_and_no_unrendered_templates(sandbox):
-    sandbox.build()
-    for page in sandbox.out.rglob("index.html"):
-        html = page.read_text()
-        assert "<title>" in html and 'aria-label="Main"' in html
-        assert "{{" not in html and "{%" not in html
-
-
-def test_nav_marks_current_page(sandbox):
-    html = sandbox.build().page("people/index.html")
-    assert 'href="/people/" aria-current="page"' in html
+# ----- command line
 
 
 def test_cli_exit_codes_and_messages(sandbox, capsys):
     cli = load_cli()
-    ok = cli.main(["--content", str(sandbox.dir), "--out", str(sandbox.root / "cli_site")])
-    assert ok == 0
-    assert (sandbox.root / "cli_site" / "index.html").is_file()
+    out_dir = str(sandbox.root / "cli_site")
+    assert cli.main(["--content", str(sandbox.dir), "--out", out_dir]) == 0
+    assert (Path(out_dir) / "index.html").is_file()
 
     sandbox.remove("home.md")
     capsys.readouterr()
-    bad = cli.main(["--content", str(sandbox.dir), "--out", str(sandbox.root / "cli_site")])
-    out = capsys.readouterr().out
-    assert bad == 1
-    assert "ERROR" in out and "home.md" in out and "was NOT updated" in out
+    assert cli.main(["--content", str(sandbox.dir), "--out", out_dir]) == 1
+    output = capsys.readouterr().out
+    assert "ERROR" in output and "home.md" in output and "was NOT updated" in output

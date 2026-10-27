@@ -72,18 +72,6 @@ def test_missing_home(sandbox):
     assert sandbox.build().has_error("home.md", "missing")
 
 
-def test_missing_content_folder(tmp_path):
-    from ccnl.build import build
-    from ccnl.problems import BuildFailed, Problems
-
-    problems = Problems()
-    try:
-        build(tmp_path / "nope", tmp_path / "out", tmp_path, tmp_path, root=tmp_path, problems=problems)
-    except BuildFailed:
-        pass
-    assert problems.errors
-
-
 def test_about_missing_only_matters_if_in_nav(sandbox):
     sandbox.remove("about.md")
     assert sandbox.build().ok  # 'about' is not in the sample nav
