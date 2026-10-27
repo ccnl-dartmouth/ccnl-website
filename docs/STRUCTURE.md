@@ -99,8 +99,8 @@ start: 2022           # optional; start and end are the only date fields
 end:                  # optional year; leave empty while current
 degrees: B.Sc.        # optional
 current_position:     # alumni: where they are now; collaborators: their institution
-profile: true         # default: current lab members always get a profile page; alumni and
-                      # collaborators only if the file has a bio. true/false overrides
+profile: true         # default: everyone except collaborators gets a profile page (minimal until
+                      # they add a bio); collaborators are only listed. true/false overrides
 links:                # all optional
   scholar: https://scholar.google.com/...
   orcid: 0000-0000-0000-0000
@@ -112,7 +112,9 @@ Bio in Markdown. Optional "## Research" section.
 ```
 
 - Photo: `<slug>.jpg|png|webp|heic` next to the `.md`; missing photo gets an initial in a circle. A photo that contains GPS location data triggers a warning (the original stays public in the repository).
-- Collaborators are shown as a compact list (name linked to their site, institution), not photo cards.
+- Collaborators are listed at the bottom of the People page as a compact list (name linked to their site,
+  institution, any other links), without profile pages.
+- `content/people/_TEMPLATE.md` is a commented example to copy when joining (files starting with `_` are ignored).
 - People page, menu and profile URLs are generated from these files, so they cannot disagree.
 - Moving to alumni = edit your own file (`status`, `end`, `current_position`).
 

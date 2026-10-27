@@ -207,26 +207,25 @@ def test_years_labels():
     assert years_label(None, None, "current") == ""
 
 
-def test_current_members_always_get_a_profile_page(sandbox):
-    for role in ("postdoc", "grad", "undergrad"):
-        sandbox.write(f"people/new-{role}.md", person_md(name=f"New {role}", role=role, body=""))
+def test_everyone_except_collaborators_gets_a_minimal_profile_page(sandbox):
+    for slug, role, status, extra in (("a-post", "postdoc", "current", {}), ("a-grad", "grad", "current", {}), ("a-ug", "undergrad", "current", {}),
+                                      ("an-alum", "grad", "alumni", {"start": 2015, "end": 2020})):
+        sandbox.write(f"people/{slug}.md", person_md(name=slug, role=role, status=status, body="", **extra))
+    sandbox.write("people/a-collab.md", person_md(name="a-collab", role="collaborator", body="Even with a bio.\n"))
     sandbox.build()
-    for role in ("postdoc", "grad", "undergrad"):
-        assert (sandbox.out / "people" / f"new-{role}" / "index.html").is_file(), role
+    for slug in ("a-post", "a-grad", "a-ug", "an-alum"):
+        assert (sandbox.out / "people" / slug / "index.html").is_file(), slug
+    assert not (sandbox.out / "people" / "a-collab").exists()
 
 
-def test_alumni_and_collaborators_get_a_profile_only_with_a_bio(sandbox):
-    sandbox.write("people/alum-no-bio.md", person_md(name="Alum NoBio", status="alumni", start=2015, end=2020, body=""))
-    sandbox.write("people/alum-bio.md", person_md(name="Alum Bio", status="alumni", start=2015, end=2020, body="I did things.\n"))
-    sandbox.write("people/collab-no-bio.md", person_md(name="Collab NoBio", role="collaborator", body=""))
-    sandbox.write("people/collab-bio.md", person_md(name="Collab Bio", role="collaborator", body="Collaborates.\n"))
-    sandbox.build()
-    for slug, expected in (("alum-no-bio", False), ("alum-bio", True), ("collab-no-bio", False), ("collab-bio", True)):
-        assert (sandbox.out / "people" / slug).exists() is expected, slug
+def test_minimal_profile_page_still_shows_the_details_card(sandbox):
+    sandbox.write("people/new-person.md", person_md(body="", degrees="B.Sc."))
+    html = sandbox.build().page("people/new-person/index.html")
+    assert "New Person" in html and "Graduate Student" in html and "2023" in html
 
 
 def test_profile_flag_overrides_the_default(sandbox):
-    sandbox.write("people/forced.md", person_md(name="Forced", status="alumni", start=2015, end=2020, body="", profile="true"))
+    sandbox.write("people/forced.md", person_md(name="Forced", role="collaborator", body="", profile="true"))
     sandbox.write("people/hidden.md", person_md(name="Hidden", body="A bio.\n", profile="false"))
     sandbox.build()
     assert (sandbox.out / "people" / "forced" / "index.html").is_file()
@@ -247,3 +246,19 @@ def test_collaborators_without_dates_show_their_institution(sandbox):
     sandbox.write("people/collab.md", person_md(name="Some Collaborator", role="collaborator", start=None, current_position="Big University"))
     html = sandbox.build().page("people/index.html")
     assert "Some Collaborator" in html and "Big University" in html
+
+
+def test_template_file_for_new_people_is_valid_and_ignored_until_copied(sandbox):
+    import shutil
+
+    from conftest import ROOT
+
+    template = ROOT / "content" / "people" / "_TEMPLATE.md"
+    sandbox.write("people/_TEMPLATE.md", template.read_text())
+    result = sandbox.build()
+    assert result.ok and not (sandbox.out / "people" / "_template").exists()  # not published by itself
+
+    shutil.copy(template, sandbox.path("people/jane-doe.md"))  # what a student does
+    result = sandbox.build()
+    assert result.ok and result.warnings == [], result.errors + result.warnings
+    assert (sandbox.out / "people" / "jane-doe" / "index.html").is_file()

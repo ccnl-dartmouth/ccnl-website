@@ -127,3 +127,15 @@ def test_collaborators_are_a_compact_list_linking_to_their_sites(sandbox):
     assert "person-card" not in section and 'class="alumnus"' in section
     assert '<a href="https://example.org/kim">Kim Collaborator</a>' in section
     assert "Example Institute" in section
+
+
+def test_collaborators_are_listed_last_after_alumni(sandbox):
+    html = sandbox.build().page("people/index.html")
+    assert html.index("<h2>Alumni</h2>") < html.index("<h2>Collaborators</h2>")
+    assert html.index("<h2>Graduate Students</h2>") < html.index("<h2>Alumni</h2>")
+
+
+def test_alumni_link_to_their_minimal_profile_pages(sandbox):
+    html = sandbox.build().page("people/index.html")
+    alumni = html.split("<h2>Alumni</h2>")[1].split("</section>")[0]
+    assert 'href="/people/lee-alumna/"' in alumni and 'href="/people/quinn-alumnus/"' in alumni

@@ -27,6 +27,7 @@
 <li class="alumnus">
   <span class="alumnus-name">{% if p.profile %}<a href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% elif p.links %}<a href="{{ p.links[0].url }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</span>
   {% if p.current_position %}<span class="meta">{{ p.current_position }}</span>{% endif %}
+  {% if p.links|length > 1 %}<span class="meta">{% for l in p.links[1:] %}<a href="{{ l.url }}">{{ l.label }}</a>{{ " &middot; "|safe if not loop.last }}{% endfor %}</span>{% endif %}
 </li>
 {% endmacro %}
 

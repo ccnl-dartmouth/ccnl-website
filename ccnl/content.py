@@ -490,14 +490,9 @@ def load_people(content_dir, root, problems):
         if clean["start"] and clean["end"] and clean["end"] < clean["start"]:
             problems.error(where, f"`end: {clean['end']}` is before `start: {clean['start']}`.")
         links, email = build_person_links(clean["links"], where, problems)
-        # Current lab members always get a profile page to fill in. Alumni and collaborators get one only if
-        # their file has a bio. `profile: true/false` overrides either way.
-        if clean["profile"] is not None:
-            has_profile = clean["profile"]
-        elif clean["status"] == "current" and clean["role"] != "collaborator":
-            has_profile = True
-        else:
-            has_profile = bool(body.strip())
+        # Everyone except collaborators gets a profile page (minimal until they add a bio).
+        # Collaborators are only listed, with their links. `profile: true/false` overrides either way.
+        has_profile = clean["profile"] if clean["profile"] is not None else clean["role"] != "collaborator"
         people.append(
             {
                 "slug": path.stem,

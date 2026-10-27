@@ -3,18 +3,13 @@
 {% block title %}People &middot; {{ lab.name }}{% endblock %}
 {% block content %}
 <h1>People</h1>
-{% for g in site.people_groups %}
+{% set collaborators = site.people_groups|selectattr("role", "equalto", "collaborator")|list %}
+{% for g in site.people_groups if g.role != 'collaborator' %}
 <section>
   <h2>{{ g.title }}</h2>
-  {% if g.role == 'collaborator' %}
-  <ul class="alumni">
-    {% for p in g.people %}{{ m.collaborator(p) }}{% endfor %}
-  </ul>
-  {% else %}
   <ul class="person-grid">
     {% for p in g.people %}{{ m.person_card(p) }}{% endfor %}
   </ul>
-  {% endif %}
 </section>
 {% else %}
 <p>Lab members will appear here.</p>
@@ -28,4 +23,13 @@
   </ul>
 </section>
 {% endif %}
+
+{% for g in collaborators %}
+<section>
+  <h2>{{ g.title }}</h2>
+  <ul class="alumni">
+    {% for p in g.people %}{{ m.collaborator(p) }}{% endfor %}
+  </ul>
+</section>
+{% endfor %}
 {% endblock %}
