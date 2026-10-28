@@ -1,9 +1,10 @@
 """Generate the Research page picture for "Learning in complex environments".
 
-A 5 x 5 grid of objects built from three features, each changing in steps across the picture: colour changes down the
-rows (blue, green, yellow), shape changes along the columns (triangle, square, hexagon, 12-sided, circle), and the stripe
-pattern grows along the diagonal, from solid at the top left to bold stripes at the bottom right, turning from horizontal to vertical on the way. Every combination of
-colour and shape is shown, so the options multiply quickly. Deterministic; pure Pillow.
+A grid of objects built from three features, each changing in steps across the picture: colour changes down the rows
+(blue, green, yellow), shape changes along the columns (triangle, square, hexagon, star, plus, half-disc, circle), and
+the stripe pattern grows along the diagonal, turning from horizontal to vertical and getting bolder, from solid at the
+top left to boldest stripes at the bottom right. Every combination of colour and shape is shown, so the options multiply
+quickly. Deterministic; pure Pillow.
 
     .venv/bin/python scripts/make_complex_environments_image.py [output.png]     # default: content/images/complex-environments.png
 """
@@ -15,8 +16,9 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 W, H, SCALE = 1600, 1000, 3
-N = 5  # the grid is N x N
-SIDES = [3, 4, 6, 12, 0]  # 0 means a circle
+ROWS = 5  # colours
+SHAPES = ["triangle", "square", "hexagon", "star", "plus", "half-disc", "circle"]  # one column each
+COLS = len(SHAPES)
 STOPS = [(0.0, (26, 95, 180)), (0.5, (0, 105, 62)), (1.0, (242, 184, 0))]  # blue, Dartmouth green, yellow
 
 
@@ -28,30 +30,51 @@ def colour(t):
     return STOPS[-1][1]
 
 
-def outline(cx, cy, radius, sides):
-    """A regular polygon with a flat bottom (a triangle points up), or a circle. Corners of few-sided shapes are pulled out a little so all shapes look about equally big."""
-    if sides == 0:
-        return [(cx + radius * math.cos(a / 90 * math.pi), cy + radius * math.sin(a / 90 * math.pi)) for a in range(180)]
-    equal_area = math.sqrt(2 * math.pi / (sides * math.sin(2 * math.pi / sides)))
-    r = radius * equal_area ** 0.6
-    turn = math.pi / sides if sides % 2 == 0 else 0  # even-sided shapes are turned half a step so they sit flat
-    return [(cx + r * math.sin(2 * math.pi * i / sides + turn), cy - r * math.cos(2 * math.pi * i / sides + turn)) for i in range(sides)]
+def regular(sides, turn=0.0):
+    return [(math.sin(2 * math.pi * i / sides + turn), -math.cos(2 * math.pi * i / sides + turn)) for i in range(sides)]
+
+
+def shape_points(name):
+    """A shape as points around (0, 0), roughly 1 unit across, with its visual centre at the origin."""
+    if name == "triangle":
+        return regular(3)
+    if name == "square":
+        return regular(4, math.pi / 4)
+    if name == "hexagon":
+        return regular(6, math.pi / 6)
+    if name == "star":
+        return [((1 if i % 2 == 0 else 0.45) * math.sin(math.pi * i / 5), -(1 if i % 2 == 0 else 0.45) * math.cos(math.pi * i / 5)) for i in range(10)]
+    if name == "plus":
+        a, b = 1.0, 0.36  # arm length and half-width
+        return [(b, -a), (b, -b), (a, -b), (a, b), (b, b), (b, a), (-b, a), (-b, b), (-a, b), (-a, -b), (-b, -b), (-b, -a)]
+    if name == "half-disc":
+        top = [(math.cos(a / 40 * math.pi), -math.sin(a / 40 * math.pi)) for a in range(41)]
+        return [(x, y + 0.424) for x, y in top]  # the flat side sits below the centre, so the shape looks centred
+    return [(math.cos(a / 90 * math.pi), math.sin(a / 90 * math.pi)) for a in range(180)]  # circle
+
+
+def outline(cx, cy, radius, name):
+    """The shape's corners in the picture, scaled so every shape covers about the same area (but pulled only part of the way, to keep them from crowding)."""
+    pts = shape_points(name)
+    area = abs(sum(x0 * y1 - x1 * y0 for (x0, y0), (x1, y1) in zip(pts, pts[1:] + pts[:1]))) / 2
+    s = radius * (math.pi / area) ** 0.35
+    return [(cx + x * s, cy + y * s) for x, y in pts]
 
 
 def draw(path):
     big = Image.new("RGB", (W * SCALE, H * SCALE), "white")
     cell = H * 0.18 * SCALE
-    x0, y0 = (W * SCALE - cell * N) / 2, (H * SCALE - cell * N) / 2
+    x0, y0 = (W * SCALE - cell * COLS) / 2, (H * SCALE - cell * ROWS) / 2
     radius = cell * 0.36
-    for row in range(N):
-        for col in range(N):
+    for row in range(ROWS):
+        for col in range(COLS):
             cx, cy = x0 + (col + 0.5) * cell, y0 + (row + 0.5) * cell
             mask = Image.new("L", big.size, 0)
-            ImageDraw.Draw(mask).polygon(outline(cx, cy, radius, SIDES[col]), fill=255)
-            fill = colour(row / (N - 1))
+            ImageDraw.Draw(mask).polygon(outline(cx, cy, radius, SHAPES[col]), fill=255)
+            fill = colour(row / (ROWS - 1))
             pale = tuple(round(c + (255 - c) * 0.55) for c in fill)  # stripes are a pale tint of the colour, so every outline stays whole
             layer = Image.new("RGB", big.size, fill)
-            stripe = (row + col) / (2 * (N - 1))  # 0 = solid, 1 = boldest stripes
+            stripe = (row + col) / (ROWS + COLS - 2)  # 0 = solid, 1 = boldest stripes
             if stripe:
                 sd, thick = ImageDraw.Draw(layer), radius * 0.26 * stripe
                 angle = math.pi / 2 * stripe  # the stripes turn from horizontal (just after the solid corner) through diagonal to vertical
