@@ -13,7 +13,7 @@
 {% macro person_card(p) %}
 <li class="person-card">
   {{ avatar(p) }}
-  <p class="person-name">{% if p.profile %}<a href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</p>
+  <p class="person-name">{% if p.profile %}<a class="card-link" href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</p>
   {% set bits = [p.degrees, p.years, p.current_position if p.status == 'current' else None]|select|list %}
   {% if bits %}<p class="meta">{{ bits|join(' · ') }}</p>{% endif %}
   {% if not p.profile and p.links %}
@@ -22,10 +22,10 @@
 </li>
 {% endmacro %}
 
-{# Compact entry for people shown without a photo: collaborators (name links to their site) and alumni. #}
+{# Compact card for people shown without a photo: collaborators (name links to their site) and alumni. #}
 {% macro collaborator(p) %}
 <li class="alumnus">
-  <span class="alumnus-name">{% if p.profile %}<a href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% elif p.links %}<a href="{{ p.links[0].url }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</span>
+  <span class="alumnus-name">{% if p.profile %}<a class="card-link" href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% elif p.links %}<a class="card-link" href="{{ p.links[0].url }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</span>
   {% if p.current_position %}<span class="meta">{{ p.current_position }}</span>{% endif %}
   {% if p.links|length > 1 %}<span class="meta">{% for l in p.links[1:] %}<a href="{{ l.url }}">{{ l.label }}</a>{{ " &middot; "|safe if not loop.last }}{% endfor %}</span>{% endif %}
 </li>
@@ -33,7 +33,7 @@
 
 {% macro alumnus(p) %}
 <li class="alumnus">
-  <span class="alumnus-name">{% if p.profile %}<a href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}{% if p.degrees %}, {{ p.degrees }}{% endif %}</span>
+  <span class="alumnus-name">{% if p.profile %}<a class="card-link" href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}{% if p.degrees %}, {{ p.degrees }}{% endif %}</span>
   {% set bits = [p.years, p.current_position]|select|list %}
   {% if bits %}<span class="meta">{{ bits|join(' · ') }}</span>{% endif %}
 </li>

@@ -95,6 +95,25 @@ def test_people_page_uses_photo_cards_for_current_and_a_list_for_alumni(sandbox)
     assert "Assistant Professor, Example College" in alumni
 
 
+def test_every_people_listing_is_a_clickable_fixed_size_card(sandbox):
+    result = sandbox.build()
+    html = result.page("people/index.html")
+    assert html.count('class="person-card"') + html.count('class="alumnus"') >= 8
+    assert 'class="card-link" href="/people/' in html                      # the name link covers the whole card
+    assert 'class="card-link" href="https://example.org/kim"' in html      # collaborators link out
+    css = (sandbox.out / "static" / "style.css").read_text()
+    assert ".card-link::after { content: \"\"; position: absolute; inset: 0; }" in css
+    assert "border-bottom: 1px solid var(--line); display: flex" not in css  # no more thin separator lines
+    assert "height: 18rem" in css and "height: 5.75rem" in css
+
+
+def test_publications_are_bordered_cards_without_separator_lines(sandbox):
+    sandbox.build()
+    css = (sandbox.out / "static" / "style.css").read_text()
+    rule = css.split(".pub { ")[1].split("}")[0]
+    assert "border: 1px solid var(--line)" in rule and "border-bottom" not in rule and "min-height" in rule
+
+
 def test_person_without_photo_gets_an_initial(sandbox):
     sandbox.write("people/zed-nophoto.md", person_md(name="Zed Nophoto"))
     html = sandbox.build().page("people/index.html")
@@ -125,7 +144,7 @@ def test_collaborators_are_a_compact_list_linking_to_their_sites(sandbox):
     html = sandbox.build().page("people/index.html")
     section = html.split("<h2>Collaborators</h2>")[1].split("</section>")[0]
     assert "person-card" not in section and 'class="alumnus"' in section
-    assert '<a href="https://example.org/kim">Kim Collaborator</a>' in section
+    assert '<a class="card-link" href="https://example.org/kim">Kim Collaborator</a>' in section
     assert "Example Institute" in section
 
 

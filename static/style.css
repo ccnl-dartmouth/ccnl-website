@@ -88,18 +88,31 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 /* ---- people ---- */
 .people-groups { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0 3.5rem; }
 .people-group { flex: 0 1 auto; max-width: 100%; }
-.person-grid { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 1.75rem 1.25rem; }
-.person-card { width: 10.5rem; }
+.person-grid { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 1.25rem; }
+/* Every listing is a card of one fixed size per kind, so rows line up even when fields are missing. The name link is
+   stretched over the whole card, which makes the card clickable; other links sit above it. */
+.person-card, .alumnus { position: relative; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); overflow: hidden; }
+.person-card:hover, .alumnus:hover { border-color: var(--green); }
+.person-card:focus-within, .alumnus:focus-within { outline: 3px solid var(--green); outline-offset: 2px; }
+.person-card a:focus-visible, .alumnus a:focus-visible { outline: none; }
+.card-link::after { content: ""; position: absolute; inset: 0; }
+.person-card .meta a, .alumnus .meta a { position: relative; z-index: 1; }
+.person-card .meta a:focus-visible, .alumnus .meta a:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+.person-card { width: 11.5rem; height: 18rem; padding: .5rem; }
 .person-card p { margin: 0; }
-.person-name { font-weight: 600; margin-top: .6rem !important; }
-.avatar { display: block; border-radius: 8px; object-fit: cover; background: var(--soft); }
+.person-name { font-weight: 600; margin-top: .6rem !important; line-height: 1.35; }
+.person-card .meta { line-height: 1.35; }
+.person-name, .person-card .meta, .alumnus-name, .alumnus .meta { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.person-card .meta { -webkit-line-clamp: 3; }
+.avatar { display: block; border-radius: 4px; object-fit: cover; background: var(--soft); }
 .avatar-card { width: 100%; aspect-ratio: 1; }
-.avatar-profile { width: 100%; max-width: 16rem; aspect-ratio: 1; }
+.avatar-profile { width: 100%; max-width: 16rem; aspect-ratio: 1; border-radius: 8px; }
 .avatar.placeholder { display: flex; align-items: center; justify-content: center; font: 600 3rem var(--serif); color: var(--green); border: 1px solid var(--line); }
-.alumni-group { margin: 1.5rem 0 .5rem; color: var(--muted); font-family: var(--sans); font-weight: 600; font-size: 1rem; }
-.alumni { list-style: none; padding: 0; margin: 0; columns: 18rem; column-gap: 2rem; }
-.alumnus { break-inside: avoid; padding: .35rem 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; }
-.alumnus-name { font-weight: 600; }
+.alumni-group { margin: 1.5rem 0 .75rem; color: var(--muted); font-family: var(--sans); font-weight: 600; font-size: 1rem; }
+.alumni { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; }
+.alumnus { height: 5.75rem; padding: .7rem .9rem; display: flex; flex-direction: column; gap: .15rem; }
+.alumnus-name { font-weight: 600; line-height: 1.35; -webkit-line-clamp: 1; }
+.alumnus .meta { line-height: 1.35; }
 
 .back { margin: 1.5rem 0 0; }
 .profile-pubs { margin-top: 3rem; }
@@ -111,8 +124,8 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .degrees { font-weight: 400; color: var(--muted); }
 
 /* ---- publications ---- */
-.pubs { list-style: none; padding: 0; margin: 0 0 1rem; }
-.pub { display: grid; grid-template-columns: minmax(0, 1fr) 9rem; gap: 1.25rem; align-items: start; padding: 1rem 0; border-bottom: 1px solid var(--line); }
+.pubs { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: 1rem; }
+.pub { display: grid; grid-template-columns: minmax(0, 1fr) 9rem; gap: 1.25rem; align-items: start; padding: 1rem 1.1rem; min-height: 9.5rem; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); }
 .pub-thumb { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 4px; border: 1px solid var(--line); background: var(--soft); }
 .pub p { margin: 0 0 .2rem; }
 .pub-title { font-weight: 600; }
@@ -128,7 +141,7 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .pub-abstract { margin-top: .5rem; }
 .pub-abstract summary { cursor: pointer; color: var(--green); font-size: .9rem; width: max-content; }
 .pub-abstract p { margin-top: .5rem; max-width: 46rem; font-size: .95rem; }
-.year { margin: 1.75rem 0 .25rem; color: var(--muted); font-family: var(--sans); font-weight: 600; font-size: 1rem; }
+.year { margin: 1.75rem 0 .75rem; color: var(--muted); font-family: var(--sans); font-weight: 600; font-size: 1rem; }
 
 /* ---- research ---- */
 .theme { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1.5rem 3rem; align-items: center; margin: 3rem 0; }

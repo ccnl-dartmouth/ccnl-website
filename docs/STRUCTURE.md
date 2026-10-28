@@ -229,7 +229,7 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 - **Home:** photo hero with the lab name and affiliation in a solid green card centered on the image, intro text,
   four entry cards. The hero uses a generated placeholder (`static/hero-default.svg`) until the lab adds a real photo.
 - **People:** current groups (PI, postdocs, grad students, undergraduates) sit side by side while they fit and
-  wrap onto new rows as they fill up; photo cards (initial in a circle when there is no photo); alumni as plain lists in subsections by role (postdoctoral scholars, graduate students, undergraduates, in that order; empty ones are left out).
+  wrap onto new rows as they fill up; every listing is a fixed-size, fully clickable card (photo cards with an initial when there is no photo; compact text cards for alumni and collaborators, so rows align when fields are missing and no separator lines are needed); alumni in subsections by role (postdoctoral scholars, graduate students, undergraduates, in that order; empty ones are left out).
   Profile page: details card (photo, role, years, links) beside the bio.
 - **Publications:** semi-dense list by year; each entry has the BibTeX-derived text on the left (authors styled by
   role, title, venue, link buttons, collapsible abstract; no year after the authors since the list is grouped by year) and a right-aligned thumbnail (own image or generic filler).
@@ -273,3 +273,5 @@ Every picture goes directly in `content/images/` (no subfolders) and is paired w
   resized and published with their page. The original files in the repository are public, so remove GPS data first.
 - One folder means one upload page to remember and no near-identical `people` folders to confuse; the cost is one long
   alphabetical list (GitHub's file finder, key `t`, finds a file by name).
+
+- Publications are bordered cards with a minimum height (text left, thumbnail right); unlike people cards they are not wholly clickable, because each has several links and an abstract toggle.
