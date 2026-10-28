@@ -173,3 +173,12 @@ def test_every_real_paper_file_lists_all_the_optional_fields(sandbox=None):
     for path in (ROOT / "content" / "publications").glob("*.bib"):
         text = path.read_text(encoding="utf-8")
         assert all(re.search(rf"^\s*{f}\s*=", text, re.M) for f in OPTIONAL_FIELDS), path.name
+
+
+def test_research_topic_links_to_papers_tagged_with_its_file_name(sandbox):
+    sandbox.write("publications/tagged-a.bib", bib("a2024", title="Tagged A", keywords="reward; models"))
+    sandbox.write("publications/tagged-b.bib", bib("b2024", title="Tagged B", keywords="Models, other"))
+    sandbox.write("publications/untagged.bib", bib("c2024", title="Untagged", keywords="other"))
+    page = sandbox.build().page("research/index.html")
+    assert '<a href="/publications/?q=models">2 related papers' in page.replace("/ccnl-website", "")
+    assert "?q=behavior" not in page  # a topic with no tagged paper shows no link

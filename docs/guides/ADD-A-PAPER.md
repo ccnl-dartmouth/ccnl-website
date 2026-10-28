@@ -63,7 +63,7 @@ A complete example (the lines after `year` are all optional):
 | `pmid = {12345678}` | adds a PubMed button; just the number |
 | `pdf`, `preprint`, `si`, `data`, `code`, `video`, `slides`, `poster`, `url` | adds link buttons; values must start with `https://` |
 | `abstract = {...}` | the abstract, shown in full on the paper's own page |
-| `keywords = {learning, uncertainty}` | keyword chips on the paper's page; clicking one searches the Publications page. Separate with commas or semicolons |
+| `keywords = {learning, uncertainty}` | keyword chips on the paper's page; clicking one searches the Publications page. Separate with commas or semicolons. To list the paper on the Research page, add the tag of each research topic it belongs to: `adaptive-learning`, `complex-environments`, `value-attention-bias`, `neural-synaptic-mechanisms` |
 | `cofirst = {Doe, Smith}` | marks these authors (by last name) as co-first authors, shown in purple |
 | `corresponding = {Soltani}` | marks corresponding authors: a yellow highlight on the Publications list, and a "Corresponding author" line under Cite on the paper's page that links to their profile (put your email on your profile if you want it shown) |
 | `status = {preprint}` | lists the paper under "Preprints" |

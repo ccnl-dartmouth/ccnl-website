@@ -99,7 +99,7 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
       STRUCTURE.md "Images"). Earlier the same day they were briefly in per-kind subfolders; changed because
       `content/people` vs `content/images/people` was confusing. Existing images (including Peter's trial photo and
       thumbnail) moved with `git mv`; only logos and the hero are published as site images. Not yet run or pushed.
-      Peter's paper (Duggins & Eliasmith, Psychological Review) was corrected from 2025 to 2024: file `duggins2024spiking.bib`, key, year and its thumbnail `duggins2024spiking_thumb.png`.
+      Peter's paper (Duggins & Eliasmith, Psychological Review, vol. 132(5), Oct 2025) is `duggins2025spiking.bib`; it was briefly renamed to 2024 (online-first date) and restored to 2025, with pages 1090--1127.
 - [~] 7d Design round 4 (Oct 2026, built and tested, not yet pushed): every People listing is a fixed-size clickable card
       showing role and affiliation (not years); publications are bordered, condensed cards with a search box (all BibTeX
       fields), year links and big year headings; every paper gets its own page (`publication.html`) built from its `.bib`

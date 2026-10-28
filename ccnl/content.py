@@ -967,6 +967,8 @@ def load_site(content_dir, root, problems, today=None):
         person["affiliation"] = person["current_position"] or (
             (lab.get("institution") or "") if person["status"] == "current" and person["role"] != "collaborator" else "")
     publications = load_publications(content_dir, root, problems, images)
+    for theme in research:  # papers whose keywords include the theme's file name are linked from the Research page
+        theme["paper_count"] = sum(theme["slug"] in [k.lower() for k in pub["keywords"]] for pub in publications)
     resources = load_resources(content_dir, root, problems)
     teaching = load_teaching(content_dir, root, problems, today)
 

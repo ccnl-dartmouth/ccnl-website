@@ -166,6 +166,7 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .theme:nth-of-type(even) .theme-fig { order: 2; }
 .theme-fig { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
 .theme-text h2 { margin-top: 0; }
+.theme-papers { margin: 1rem 0 0; font-weight: 600; }
 .theme:not(:has(.theme-fig)) { grid-template-columns: minmax(0, 1fr); }
 
 /* ---- collapsible sections (Resources page) ---- */

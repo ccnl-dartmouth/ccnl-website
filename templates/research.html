@@ -8,6 +8,7 @@
   <div class="theme-text">
     <h2>{{ t.title }}</h2>
     <div class="prose">{{ t.html|safe }}</div>
+    {% if t.paper_count %}<p class="theme-papers"><a href="{{ url('publications/') }}?q={{ t.slug|urlencode }}">{{ t.paper_count }} related paper{{ 's' if t.paper_count != 1 }}<span aria-hidden="true"> &rarr;</span></a></p>{% endif %}
   </div>
 </section>
 {% else %}
