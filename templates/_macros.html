@@ -4,10 +4,10 @@
 
 {% macro years(p) %}{{ p.years }}{% endmacro %}
 
-{# Photo, or the person's initial in a circle when there is no photo. #}
+{# Photo, or the person's first and last initials when there is no photo. #}
 {% macro avatar(p, size="card") %}
 {% if p.photo %}<img class="avatar avatar-{{ size }}" src="{{ url('images/' ~ p.photo) }}" alt="" width="240" height="240" loading="lazy">
-{% else %}<span class="avatar avatar-{{ size }} placeholder" aria-hidden="true">{{ p.name[0] }}</span>{% endif %}
+{% else %}<span class="avatar avatar-{{ size }} placeholder" aria-hidden="true">{{ p.initials }}</span>{% endif %}
 {% endmacro %}
 
 {% macro person_card(p) %}

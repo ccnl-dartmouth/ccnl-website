@@ -957,6 +957,12 @@ def person_key(name):
     return f"{ascii_key(tokens[-1])}|{ascii_key(tokens[0])[0]}" if len(tokens) >= 2 else None
 
 
+def name_initials(name):
+    """The first letters of the first and last name, for the picture placeholder ('Michael (Chong) Wang' -> 'MW')."""
+    letters = [next((c for c in token if c.isalpha()), token[0]).upper() for token in name.split()]
+    return letters[0] + letters[-1] if len(letters) > 1 else "".join(letters)
+
+
 def member_keys(people):
     """Keys for everyone listed on the People page."""
     return {key for key in (person_key(p["name"]) for p in people) if key}
@@ -1008,6 +1014,7 @@ def load_site(content_dir, root, problems, today=None):
     research = load_research(content_dir, root, problems, images)
     people = load_people(content_dir, root, problems, images)
     for person in people:  # shown on the cards: where they are now, or the lab's institution for current members
+        person["initials"] = name_initials(person["name"])
         person["affiliation"] = person["current_position"] or (
             (lab.get("institution") or "") if person["status"] == "current" and person["role"] != "collaborator" else "")
     publications = load_publications(content_dir, root, problems, images)

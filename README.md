@@ -51,6 +51,7 @@ Everything outside `content/` (layout, colors, build code) belongs to the websit
 | [docs/maintainers/PLAN.md](docs/maintainers/PLAN.md) | decisions, status and open items |
 | [docs/maintainers/STRUCTURE.md](docs/maintainers/STRUCTURE.md) | the content model, repo layout, validation rules, visual design |
 | [docs/maintainers/OPERATIONS.md](docs/maintainers/OPERATIONS.md) | alerts, uptime and link checks, GitHub settings |
+| [docs/maintainers/OWNERSHIP.md](docs/maintainers/OWNERSHIP.md) | who owns which accounts, alert contacts, handover and offboarding |
 | [docs/maintainers/CREDITS.md](docs/maintainers/CREDITS.md) | third-party assets and licenses |
 
 Every push to `main` builds, tests and deploys the site. If the build or a test fails, nothing is deployed and the last

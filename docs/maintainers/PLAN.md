@@ -45,16 +45,23 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
 - [x] Web support: sites.dartmouth.edu can redirect, but only as one global rule: every `/ccnl` URL goes to a
       single new page (not page-to-page). They do it on request via the ticket; ask at launch (phase 11).
       Alternative: we are admins of the old site, so we can instead leave a "we've moved" page there.
-- [ ] **TODO: PI has no known GitHub account yet.** Needed before handover: ask him to create one (use his
-      dartmouth.edu address + 2FA), then add him as an org owner (1.3) and set the repo variable
-      `ALERT_MENTIONS_PI`. Until then he can still be alerted about a downed site by email through the
-      external UptimeRobot monitor (no GitHub account needed); add him as an alert contact there.
-- [ ] List of lab members' GitHub usernames.
+- [x] PI now has a GitHub account and is in the org (Oct 2026). Peter stays the main maintainer for now.
+      Still to do: record his username and confirm he is an *Owner* in `OWNERSHIP.md`, and set the repo variable
+      `ALERT_MENTIONS_PI`.
+- [x] Lab members invited to the org (Oct 2026). Still to do: record their usernames; confirm the `lab-members` team
+      has Write access and that 2FA is required.
 - [ ] **Peter to check Dartmouth's brand guidelines** for the D-Pine logo on a lab site (decided Oct 2026 to keep it with no
       visible credit meanwhile). The file is CC BY-SA 4.0, which asks for credit; see `docs/maintainers/CREDITS.md` for the options
       (credit line, public-domain block D, or an official Dartmouth file). Same question for the NIH and NSF logos.
 - [ ] Long-lived contact email for the org (PI or lab list address).
-- [ ] Get admin access to the old WordPress site.
+- [ ] Get admin access to the old WordPress site (approved by the PI). Redirect or "we've moved" notice: later,
+      at launch (phase 11); leave for now.
+- [ ] **Custom domain** (phase 11): choose and register a name (the registrant must be the PI, the department or the
+      lab), set it under Settings -> Pages, enforce HTTPS, set the repository variable `SITE_URL` and update the
+      external monitor (see `docs/maintainers/OPERATIONS.md`).
+- [ ] Review the 6 papers added from the literature search (links are in the Oct 2026 chat; each has a DOI), and decide the
+      research-topic tags for the untagged papers (older Soltani-Wang models, Gu, Khorsand, Chauhan, Benistant, Duggins).
+- [ ] Students test the guides in `docs/guides/` (in progress, Oct 2026) and send feedback.
 
 ## Phases
 
@@ -83,6 +90,17 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
       EXIF strip, HEIC, corrupt/oversized), atomic output, base path, CLI exit codes. Each runs against a
       throwaway copy of `tests/fixture_lab/` broken in one specific way. Known gap: BibTeX errors name the file
       and entry key but not a line number (the parser does not report them).
+- [~] 7e Design round 5 and content (Oct 2026, built, tested and pushed): Research page rewritten as four topic summaries
+      (abstract-style paragraphs, block-justified on wide screens) with one generated schematic per topic
+      (`scripts/make_*_image.py`, Pillow only, deterministic; alt text in each research file) and a "N related papers"
+      link to the Publications search by topic keyword (the topic tags are the research file names; papers carry
+      them in `keywords`; see STRUCTURE.md); Contact page in two columns (details | "Join us" openings built from
+      the `openings` list in `join.md`, no recruiting switch); centered page titles on a full-width yellow line;
+      placeholder avatars show first and last initials; docs split into `docs/guides/` (members) and
+      `docs/maintainers/`; the fake lab moved to `tests/fixture_lab/`. Publication keywords: only author-supplied
+      keywords from PubMed were kept (OpenAlex's generated ones were removed, except the topic tags). 245 tests.
+      Titles corrected from Crossref where the old page differed (Gu 2015, Soltani 2021, Song 2024); the Duggins
+      paper is 2025; the unpublished "theory of mind in children" preprint was removed.
 - [~] 8 Content migration (done Oct 2026, needs human review): old WordPress pages fetched through its REST API and
       converted by one-off scripts (not kept in the repo). Migrated: home text, PI profile + photo, 50 people
       (roles/years/positions parsed from the old People page), 48 publications as `.bib` files (matched to Crossref:
@@ -150,16 +168,16 @@ once 3 is fixed; 9 needs 5, 6, 8; 11 needs the Dartmouth reply (can launch on gi
 - [x] 1.1 Org name chosen: `ccnl-dartmouth` (`ccnl` and `soltanilab` are taken).
 - [x] 1.2 Create the org (Free plan). Currently owned by Peter's personal account with his gmail as
       contact email; change the contact email before handover (org Settings -> Profile).
-- [ ] 1.3 Add the PI as owner (deferred); keep owners to 2-3 people. Require 2FA for members
+- [x] 1.3 PI added to the org (confirm role = Owner, record username in OWNERSHIP.md); keep owners to 2-3 people. Require 2FA for members
       (do this BEFORE inviting members, or non-2FA members get removed).
 - [x] 1.4 Create public repo `ccnl-website`.
-- [ ] 1.5 Create team `lab-members` with Write on the repo; org default permission Read; invite members.
+- [x] 1.5 Lab members invited (Oct 2026). Confirm the team `lab-members` has Write on the repo and org default permission is Read.
 - [x] 1.6 Settings -> Pages -> Source: GitHub Actions (done). Enforce HTTPS and custom domain later.
 - [ ] 1.7 Ruleset on `main`: block force-push and deletion ONLY. Do not require status checks or pull
       requests: required checks reject direct pushes/web-editor commits, defeating the hands-off design,
       and a failed build already cannot deploy. See `docs/maintainers/OPERATIONS.md`.
 - [x] 1.8 Clone locally (this folder), add `.gitignore`, README stub, this plan, `CLAUDE.md`; first commit; pushed to origin.
-- [ ] 1.9 Write `docs/maintainers/OWNERSHIP.md` (owners, alert email, domain contact, monitor account, offboarding).
+- [~] 1.9 `docs/maintainers/OWNERSHIP.md` drafted (Oct 2026); fill in its TODO lines (PI username, monitor account, domain registrant, org contact email).
 
 ## Risks
 

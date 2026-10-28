@@ -131,10 +131,12 @@ def test_cards_show_role_and_affiliation_not_years(sandbox):
     assert "Example University" in card  # current members default to the lab's institution
 
 
-def test_person_without_photo_gets_an_initial(sandbox):
+def test_person_without_photo_gets_first_and_last_initials(sandbox):
     sandbox.write("people/zed-nophoto.md", person_md(name="Zed Nophoto"))
+    sandbox.write("people/michael-wang.md", person_md(name="Michael (Chong) Wang"))
     html = sandbox.build().page("people/index.html")
-    assert 'class="avatar avatar-card placeholder" aria-hidden="true">Z<' in html
+    assert 'class="avatar avatar-card placeholder" aria-hidden="true">ZN<' in html
+    assert 'class="avatar avatar-card placeholder" aria-hidden="true">MW<' in html
 
 
 def test_profile_page_shows_details_card_and_bio(sandbox):
