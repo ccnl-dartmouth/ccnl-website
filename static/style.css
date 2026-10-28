@@ -32,6 +32,9 @@ a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 3px solid var(--green); outline-offset: 3px; border-radius: 2px; }
 h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.2; }
 h1 { font-size: clamp(1.9rem, 4.5vw, 2.6rem); margin: 2rem 0 1rem; }
+.page-title { position: relative; text-align: center; margin-bottom: 1.5rem; }  /* the main pages' titles: centred on a yellow line that runs the width of the content area */
+.page-title::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 3px; transform: translateY(-50%); background: var(--amber); }
+.page-title span { position: relative; padding: 0 1.25rem; background: var(--bg); }  /* sits on top of the line and hides the part behind the words */
 h2 { font-size: 1.5rem; margin: 2.25rem 0 .75rem; }
 h3 { font-size: 1.15rem; margin: 1.5rem 0 .5rem; }
 p { margin: 0 0 1rem; }
