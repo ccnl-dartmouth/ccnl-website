@@ -32,7 +32,7 @@ and `image_alt` describes the picture for screen readers. The picture is `conten
 name as the topic's file. To add a topic, add a new file; to remove one, delete its file.
 
 Each topic ends with a link such as "12 related papers" that opens the Publications page searched for the topic's file
-name (for `adaptive-learning.md` it searches `adaptive-learning`). A paper is included when its `keywords` line contains
+name (for `uncertainty-and-change.md` it searches `uncertainty-and-change`). A paper is included when its `keywords` line contains
 that tag, so tagging a paper is one word in its `.bib` file (see [Add or fix a paper](ADD-A-PAPER.md)). For a new
 topic, choose the file name once and use it as the tag.
 

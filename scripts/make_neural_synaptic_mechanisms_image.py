@@ -1,7 +1,8 @@
-"""Generate the Research page picture for "Neural and synaptic mechanisms of learning".
+"""Generate the Research page picture for "Neural and synaptic mechanisms".
 
-A loose scatter of neurons, each a round cell body with branches. Branches from neighbouring neurons grow towards each
-other and meet halfway, thinning as they go, and a few short branches end in the open. Branch thickness varies widely. Colour fades from
+A loose scatter of neurons, each with an irregular cell body and nucleus, thick dendrites that taper and branch
+repeatedly, tiny spines along the branches, and a short axon ending in a bulb. Each neuron is placed at random but is only
+kept if it clears every neuron already placed, so nothing overlaps and nothing runs off the edge. Colour fades from
 green to yellow, left to right, like the other Research pictures. Deterministic (fixed seed); pure Pillow.
 
     .venv/bin/python scripts/make_neural_synaptic_mechanisms_image.py [output.png]     # default: content/images/neural-synaptic-mechanisms.png
@@ -15,107 +16,143 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 W, H, SCALE = 1600, 1000, 3
-MARGIN, MIN_GAP, NEIGHBOURS = 90, 118, 3  # keep-out edge, closest two cell bodies may be, outgoing connections per neuron
-SOMA = 13  # cell body radius
+EDGE, CLEAR = 40, 15  # how close a neuron may come to the picture's edge, and to another neuron (pixels)
+SIZES = (1.0, 0.82, 0.66, 0.52)  # how large a neuron may be, tried from the biggest down
+FAIL_LIMIT, ATTEMPTS = 1500, 20000  # stop after this many failed tries in a row, or this many tries overall
+COLOUR_FROM, COLOUR_TO = 90, W - 90  # the left and right ends of the colour fade
+SOMA = 21  # cell body radius
 STOPS = [(0.0, (0, 105, 62)), (0.5, (127, 168, 58)), (1.0, (242, 184, 0))]  # green, yellow-green, yellow
 
 
-def colour(x):
-    t = min(1, max(0, (x - MARGIN) / (W - 2 * MARGIN)))
+def colour(x, lift=0.0):
+    t = min(1, max(0, (x - COLOUR_FROM) / (COLOUR_TO - COLOUR_FROM)))
     for (t0, c0), (t1, c1) in zip(STOPS, STOPS[1:]):
         if t <= t1:
             f = (t - t0) / (t1 - t0)
-            return tuple(round(a + (b - a) * f) for a, b in zip(c0, c1))
+            c = tuple(a + (b - a) * f for a, b in zip(c0, c1))
+            return tuple(round(v + (255 - v) * lift) for v in c)
     return STOPS[-1][1]
 
 
-def scatter(rng):
-    """Random points no closer than MIN_GAP (dart throwing), so the scatter looks even but not regular."""
-    pts = []
-    for _ in range(40000):
-        p = (rng.uniform(MARGIN, W - MARGIN), rng.uniform(MARGIN, H - MARGIN))
-        if all(math.dist(p, q) >= MIN_GAP for q in pts):
-            pts.append(p)
-    return pts
+def grow(rng, x, y, ang, steps, step, width, depth, out):
+    """One branch of a dendrite: it bends gently, tapers, then splits into two thinner branches."""
+    pts = [(x, y)]
+    for _ in range(steps):
+        ang += rng.uniform(-0.4, 0.4)
+        x, y = x + step * math.cos(ang), y + step * math.sin(ang)
+        pts.append((x, y))
+    end_width = width * 0.62
+    out.append((pts, width, end_width))
+    if depth:
+        for turn in (-1, 1):
+            grow(rng, x, y, ang + turn * rng.uniform(0.35, 0.75), max(2, steps - 1), step * 0.85, end_width, depth - 1, out)
+        if depth == 2 and rng.random() < 0.4:  # now and then a third branch
+            grow(rng, x, y, ang + rng.uniform(-0.2, 0.2), max(2, steps - 1), step * 0.85, end_width, depth - 1, out)
 
 
-def free_dendrites(rng, cx, cy, taken):
-    """Short branches that end in the open: they leave the cell body in directions not used by a connection, bend a little and fork at the end."""
+def neuron(rng, cx, cy, scale=1.0):
+    """One neuron (`scale` shrinks its branches, so smaller ones can fill the gaps): dendrite strokes, spines, a short axon with its end bulb, and points sampled along all of it (for the overlap check)."""
     strokes = []
-    for _ in range(rng.randint(2, 4)):
-        for _ in range(40):
-            a = rng.uniform(0, 2 * math.pi)
-            if all(abs((a - b + math.pi) % (2 * math.pi) - math.pi) > 0.7 for b in taken):
-                break
-        else:
-            continue
-        taken.append(a)
-        x, y = cx + SOMA * math.cos(a), cy + SOMA * math.sin(a)
-        pts = [(x, y)]
-        for _ in range(3):
-            a += rng.uniform(-0.45, 0.45)
-            x, y = x + 13 * math.cos(a), y + 13 * math.sin(a)
-            pts.append((x, y))
-        strokes.append((pts, 4.0, 1.8))
-        for turn in (-0.55, 0.55):
-            fa, fx, fy, fpts = a + turn + rng.uniform(-0.2, 0.2), x, y, [(x, y)]
-            for _ in range(2):
-                fa += rng.uniform(-0.3, 0.3)
-                fx, fy = fx + 9 * math.cos(fa), fy + 9 * math.sin(fa)
-                fpts.append((fx, fy))
-            strokes.append((fpts, 1.8, 1.0))
-    return strokes
+    count = rng.randint(4, 6)
+    start = rng.uniform(0, 2 * math.pi)
+    angles = [start + 2 * math.pi * k / count + rng.uniform(-0.3, 0.3) for k in range(count)]
+    for a in angles:
+        grow(rng, cx + SOMA * 0.8 * math.cos(a), cy + SOMA * 0.8 * math.sin(a), a, 4, 17 * scale, 8.5 * scale ** 0.5, 2, strokes)
+    axon = start + math.pi / count + rng.uniform(-0.2, 0.2)  # one thin axon in the gap between dendrites, ending in a small bulb
+    apts = [(cx + SOMA * 0.9 * math.cos(axon), cy + SOMA * 0.9 * math.sin(axon))]
+    for _ in range(5):
+        axon += rng.uniform(-0.25, 0.25)
+        apts.append((apts[-1][0] + 14 * scale * math.cos(axon), apts[-1][1] + 14 * scale * math.sin(axon)))
+    spines = []  # tiny stubs with a rounded head, sticking out along the thinner branches
+    for spts, w0, _ in strokes:
+        if w0 <= 5:
+            for (xa, ya), (xb, yb) in zip(spts, spts[1:]):
+                if rng.random() < 0.7:
+                    t = rng.random()
+                    x, y = xa + (xb - xa) * t, ya + (yb - ya) * t
+                    ang = math.atan2(yb - ya, xb - xa) + rng.choice((-1, 1)) * rng.uniform(1.0, 1.9)
+                    L = rng.uniform(3.5, 6.5)
+                    spines.append((x, y, x + L * math.cos(ang), y + L * math.sin(ang)))
+    samples = [(cx + SOMA * math.cos(a), cy + SOMA * math.sin(a)) for a in [i * math.pi / 6 for i in range(12)]] + [(cx, cy)]
+    for spts, _, _ in strokes + [(apts, 0, 0)]:
+        for (xa, ya), (xb, yb) in zip(spts, spts[1:]):
+            n = max(1, int(math.dist((xa, ya), (xb, yb)) / 4))
+            samples += [(xa + (xb - xa) * i / n, ya + (yb - ya) * i / n) for i in range(n + 1)]
+    samples += [(hx, hy) for _, _, hx, hy in spines]
+    return {"x": cx, "y": cy, "strokes": strokes, "axon": apts, "spines": spines, "samples": samples}
 
 
-def stroke(d, pts, w0, w1, c):
+def taper(d, pts, w0, w1, c):
     """A line that tapers from width w0 to w1 (in picture pixels), drawn as short round-ended pieces."""
     n = len(pts) - 1
     for i, ((xa, ya), (xb, yb)) in enumerate(zip(pts, pts[1:])):
         w = (w0 + (w1 - w0) * (i + 0.5) / n) * SCALE
-        d.line((xa * SCALE, ya * SCALE, xb * SCALE, yb * SCALE), fill=c, width=round(w))
+        d.line((xa * SCALE, ya * SCALE, xb * SCALE, yb * SCALE), fill=c, width=max(1, round(w)))
         r = w / 2
         d.ellipse((xb * SCALE - r, yb * SCALE - r, xb * SCALE + r, yb * SCALE + r), fill=c)
 
 
-def link(rng, a, b):
-    """A branch from neuron a and a branch from neuron b that grow towards each other and meet halfway, thinning as they go."""
-    (x0, y0), (x1, y1) = a, b
-    gap = math.dist(a, b)
-    ang = math.atan2(y1 - y0, x1 - x0)
-    sx, sy = x0 + SOMA * math.cos(ang), y0 + SOMA * math.sin(ang)
-    ex, ey = x1 - SOMA * math.cos(ang), y1 - SOMA * math.sin(ang)
-    nx, ny = -(ey - sy), ex - sx
-    norm = math.hypot(nx, ny) or 1
-    bend = rng.uniform(-0.22, 0.22) * gap
-    mx, my = (sx + ex) / 2 + nx / norm * bend, (sy + ey) / 2 + ny / norm * bend
-    curve = [((1 - t) ** 2 * sx + 2 * (1 - t) * t * mx + t * t * ex, (1 - t) ** 2 * sy + 2 * (1 - t) * t * my + t * t * ey) for t in [k / 24 for k in range(25)]]
-    return curve[:13], curve[12:][::-1], ang
+def dot(d, x, y, r, c):
+    d.ellipse(((x - r) * SCALE, (y - r) * SCALE, (x + r) * SCALE, (y + r) * SCALE), fill=c)
+
+
+def soma_outline(rng, cx, cy):
+    """An irregular, slightly pointed cell body."""
+    k, phase = rng.randint(3, 5), rng.uniform(0, 2 * math.pi)
+    return [(cx + SOMA * (1 + 0.14 * math.cos(k * a + phase)) * math.cos(a), cy + SOMA * (1 + 0.14 * math.cos(k * a + phase)) * math.sin(a)) for a in [i * math.pi / 45 for i in range(90)]]
+
+
+def place(rng):
+    """Neurons at random spots, each kept only if all of it fits in the picture and stays clear of the neurons already placed."""
+    cells, taken, cell = [], {}, CLEAR  # `taken` buckets every placed point by grid square, so the clearance check is quick
+    key = lambda p: (int(p[0] // cell), int(p[1] // cell))
+    fails = 0
+    for _ in range(ATTEMPTS):
+        if fails >= FAIL_LIMIT:
+            break
+        cx, cy = rng.uniform(EDGE + 30, W - EDGE - 30), rng.uniform(EDGE + 30, H - EDGE - 30)
+        for scale in SIZES:  # the biggest version of the neuron that fits at this spot
+            n = neuron(rng, cx, cy, scale)
+            ok = all(EDGE <= x <= W - EDGE and EDGE <= y <= H - EDGE for x, y in n["samples"])
+            for x, y in n["samples"] if ok else []:
+                gx, gy = key((x, y))
+                if any(math.dist((x, y), q) < CLEAR for i in (-1, 0, 1) for j in (-1, 0, 1) for q in taken.get((gx + i, gy + j), ())):
+                    ok = False
+                    break
+            if ok:
+                break
+        if ok:
+            for p in n["samples"]:
+                taken.setdefault(key(p), []).append(p)
+            cells.append(n)
+            fails = 0
+        else:
+            fails += 1
+    return cells
 
 
 def draw(path):
     rng = random.Random(5)
-    pts = scatter(rng)
-    pairs = set()
-    for i, p in enumerate(pts):
-        for j in sorted((j for j in range(len(pts)) if j != i), key=lambda j: math.dist(p, pts[j]))[:NEIGHBOURS]:
-            pairs.add((min(i, j), max(i, j)))
-    taken = [[] for _ in pts]  # directions in which each neuron already has a connecting branch
     big = Image.new("RGB", (W * SCALE, H * SCALE), "white")
     d = ImageDraw.Draw(big)
-    for i, j in sorted(pairs):
-        half_i, half_j, ang = link(rng, pts[i], pts[j])
-        taken[i].append(ang)
-        taken[j].append(ang + math.pi)
-        for half, owner in ((half_i, i), (half_j, j)):
-            strength = math.exp(rng.uniform(math.log(1.5), math.log(7)))  # each side has its own strength: many weak, a few strong
-            stroke(d, half, strength, 0.8, colour(pts[owner][0]))
-    for (x, y), used in zip(pts, taken):
+    cells = place(rng)
+    for n in cells:
+        c = colour(n["x"])
+        for spts, w0, w1 in n["strokes"]:
+            taper(d, spts, w0, w1, c)
+        for x, y, hx, hy in n["spines"]:
+            d.line((x * SCALE, y * SCALE, hx * SCALE, hy * SCALE), fill=c, width=SCALE)
+            dot(d, hx, hy, 1.7, c)
+        taper(d, n["axon"], 2.6, 1.6, c)
+        dot(d, n["axon"][-1][0], n["axon"][-1][1], 3.6, c)  # the axon's end bulb
+    for n in cells:
+        x, y = n["x"], n["y"]
         c = colour(x)
-        for spts, w0, w1 in free_dendrites(rng, x, y, used):
-            stroke(d, spts, w0, w1, c)
-        r, halo = SOMA * SCALE, 3 * SCALE
-        d.ellipse((x * SCALE - r - halo, y * SCALE - r - halo, x * SCALE + r + halo, y * SCALE + r + halo), fill="white")  # white ring so the cell body stands clear of the branches
-        d.ellipse((x * SCALE - r, y * SCALE - r, x * SCALE + r, y * SCALE + r), fill=c)
+        body = soma_outline(rng, x, y)
+        d.polygon([(px * SCALE, py * SCALE) for px, py in body], fill="white", outline="white", width=3 * SCALE)  # a white ring so the cell body stands clear of the branches
+        d.polygon([(px * SCALE, py * SCALE) for px, py in body], fill=c)
+        dot(d, x + 2, y - 1, SOMA * 0.42, colour(x, 0.45))  # the nucleus
+    print(len(cells), "neurons")
     path.parent.mkdir(parents=True, exist_ok=True)
     big.resize((W, H), Image.LANCZOS).save(path)
 

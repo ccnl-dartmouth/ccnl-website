@@ -165,8 +165,9 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .theme:nth-of-type(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
 .theme:nth-of-type(even) .theme-fig { order: 2; }
 .theme-fig { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
-.theme-text h2 { margin-top: 0; }
-.theme-papers { margin: 1rem 0 0; font-weight: 600; }
+.theme-text h2 { margin-top: 0; font-size: clamp(1.05rem, 2.1vw, 1.5rem); }  /* shrinks with the window so each topic title stays on one line */
+@media (min-width: 56.01rem) { .theme-text .prose { text-align: justify; hyphens: auto; } }  /* justified only where the lines are long enough to avoid wide gaps */
+.theme-papers-link { font-weight: 600; white-space: nowrap; }
 .theme:not(:has(.theme-fig)) { grid-template-columns: minmax(0, 1fr); }
 
 /* ---- collapsible sections (Resources page) ---- */
@@ -187,11 +188,13 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .card { border: 1px solid var(--line); border-radius: 4px; padding: 1rem 1.25rem; background: var(--soft); font-style: normal; }
 .card h3 { margin-top: 0; font-size: 1.25rem; }
 
-@media (max-width: 44rem) {
-  .profile, .theme { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 56rem) {  /* research topics stack earlier than other pages, so the titles keep room */
+  .theme, .theme:nth-of-type(even) { grid-template-columns: minmax(0, 1fr); }
   .theme:nth-of-type(even) .theme-fig { order: 0; }
+}
+@media (max-width: 44rem) {
+  .profile { grid-template-columns: minmax(0, 1fr); }
   .pub { grid-template-columns: minmax(0, 1fr) 5.5rem; gap: 1rem; }
-  .theme:nth-of-type(even) { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: no-preference) {
   .entry, .pub-links a { transition: border-color .15s, background-color .15s; }

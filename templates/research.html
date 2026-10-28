@@ -7,8 +7,10 @@
   {% if t.image %}<img class="theme-fig" src="{{ url('images/' ~ t.image) }}" alt="{{ t.image_alt }}" loading="lazy">{% endif %}
   <div class="theme-text">
     <h2>{{ t.title }}</h2>
-    <div class="prose">{{ t.html|safe }}</div>
-    {% if t.paper_count %}<p class="theme-papers"><a href="{{ url('publications/') }}?q={{ t.slug|urlencode }}">{{ t.paper_count }} related paper{{ 's' if t.paper_count != 1 }}<span aria-hidden="true"> &rarr;</span></a></p>{% endif %}
+    {% set link %}<a class="theme-papers-link" href="{{ url('publications/') }}?q={{ t.slug|urlencode }}">{{ t.paper_count }} related paper{{ 's' if t.paper_count != 1 }}<span aria-hidden="true"> &rarr;</span></a>{% endset %}
+    {# the link ends the last paragraph, so it sits inside the justified text #}
+    {% set body = t.html|trim %}
+    <div class="prose">{% if t.paper_count and body.endswith('</p>') %}{{ body[:-4]|safe }} {{ link }}</p>{% else %}{{ body|safe }}{% if t.paper_count %}<p>{{ link }}</p>{% endif %}{% endif %}</div>
   </div>
 </section>
 {% else %}

@@ -1,10 +1,10 @@
-"""Generate the Research page picture for "Adaptive learning under uncertainty and change".
+"""Generate the Research page picture for "Learning under uncertainty and change".
 
 Many thin, wobbling lines follow nearly the same path (uncertainty: many possible versions of the same world), then the
 whole bundle jumps to a new level (change). Each line fades from green to yellow, left to right. Deterministic (fixed
 seed), so rerunning gives the same picture. Pure Pillow, no other libraries.
 
-    .venv/bin/python scripts/make_adaptive_learning_image.py [output.png]     # default: content/images/adaptive-learning.png
+    .venv/bin/python scripts/make_uncertainty_and_change_image.py [output.png]     # default: content/images/uncertainty-and-change.png
 """
 
 import math
@@ -67,4 +67,4 @@ def draw(path):
 
 
 if __name__ == "__main__":
-    draw(Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / "content" / "images" / "adaptive-learning.png")
+    draw(Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / "content" / "images" / "uncertainty-and-change.png")

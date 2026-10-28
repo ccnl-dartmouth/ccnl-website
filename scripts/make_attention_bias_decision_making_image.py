@@ -1,10 +1,10 @@
-"""Generate the Research page picture for "Value, attention and bias in choice".
+"""Generate the Research page picture for "Attention, bias, and decision making".
 
 A lattice of identical circles seen through a lens that is focused off-centre: near the focus the circles swell, turn
 yellow and push their neighbours apart; farther away they shrink, turn green and fade. Everything underneath is the same,
 but not the same as perceived. Deterministic; pure Pillow.
 
-    .venv/bin/python scripts/make_value_attention_bias_image.py [output.png]     # default: content/images/value-attention-bias.png
+    .venv/bin/python scripts/make_attention_bias_decision_making_image.py [output.png]     # default: content/images/attention-bias-decision-making.png
 """
 
 import math
@@ -64,4 +64,4 @@ def draw(path):
 
 
 if __name__ == "__main__":
-    draw(Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / "content" / "images" / "value-attention-bias.png")
+    draw(Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / "content" / "images" / "attention-bias-decision-making.png")

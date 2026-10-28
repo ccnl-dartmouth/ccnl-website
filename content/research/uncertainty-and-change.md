@@ -1,5 +1,5 @@
 ---
-title: Adaptive learning under uncertainty and change
+title: Learning under uncertainty and change
 order: 1
 image_alt: Many thin overlapping lines, fading from green on the left to yellow on the right, wander around a shared level and then all jump together to a higher level. The wandering stands for ordinary randomness; the shared jump stands for a genuine change in the environment.
 ---
