@@ -2,13 +2,18 @@
 {% import "_macros.html" as m %}
 {% block title %}Contact &middot; {{ lab.name }}{% endblock %}
 {% block content %}
-<h1>Contact</h1>
-<address class="card">
-  <strong>{{ lab.name }}</strong><br>
-  {% if lab.department %}{{ lab.department }}<br>{% endif %}
-  {% for line in lab.address %}{{ line }}<br>{% endfor %}
-  {% if lab.email %}<br>Email: {{ m.email(lab.email) }}{% endif %}
-</address>
+<h1 class="sr-only">Contact</h1>
+{# two columns side by side (stacked on narrow screens): contact details, and the openings #}
+<div class="contact-grid">
+<section id="contact-details">
+  <h2>Contact details</h2>
+  <address class="card">
+    <strong>{{ lab.name }}</strong><br>
+    {% if lab.department %}{{ lab.department }}<br>{% endif %}
+    {% for line in lab.address %}{{ line }}<br>{% endfor %}
+    {% if lab.email %}<br>Email: {{ m.email(lab.email) }}{% endif %}
+  </address>
+</section>
 
 {% if site.join %}
 <section id="join">
@@ -30,4 +35,5 @@
   {% if site.join.updated %}<p class="small">Last updated {{ site.join.updated.strftime('%B %Y') }}</p>{% endif %}
 </section>
 {% endif %}
+</div>
 {% endblock %}

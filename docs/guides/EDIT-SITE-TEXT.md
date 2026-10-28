@@ -59,10 +59,10 @@ One file per course, shown on the Resources page. `code` is the course number, `
 ## Contact page
 
 - **Address and email:** in `content/lab.yaml` (`address`, `email`).
-- **"Join us" block:** `content/join.md`. List only the positions that are open now, one item each, and the page shows
-  them as small cards. When the list is empty or left out, the page says the lab is not currently recruiting, so there
-  is nothing to switch off. The text below the settings is a general note that is always shown, for example how to get
-  in touch. `updated` is the month the page was last checked (the build warns after a year).
+- **"Join us" block:** `content/join.md`, shown in the right-hand column beside the address and email (which are the
+  contact details, so there is no need to repeat how to get in touch). List only the positions that are open now, one
+  item each, and the page shows them as small cards. When the list is empty or left out, the page says the lab is not currently recruiting, so there
+  is nothing to switch off. The text below the settings is an optional general note, shown under the openings. `updated` is the month the page was last checked (the build warns after a year).
 
 ```yaml
 ---

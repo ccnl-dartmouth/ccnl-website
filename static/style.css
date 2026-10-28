@@ -183,6 +183,10 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 
 /* ---- other pages ---- */
 .banner { background: var(--soft); border-left: 4px solid var(--line); padding: .75rem 1rem; max-width: 42rem; }
+.contact-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 1rem 3rem; align-items: start; }
+.contact-grid h2 { margin-top: 1.5rem; }
+.contact-grid > section:only-child { grid-column: 1 / -1; }
+@media (max-width: 44rem) { .contact-grid { grid-template-columns: minmax(0, 1fr); } }
 .openings { max-width: none; }
 .opening-meta { margin: 0; color: var(--muted); font-size: .95rem; }
 .stack { list-style: none; padding: 0; display: grid; gap: 1rem; max-width: 50rem; }

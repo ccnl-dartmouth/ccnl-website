@@ -3,7 +3,7 @@
 {% block title %}Publications &middot; {{ lab.name }}{% endblock %}
 {% block content %}
 <div class="pubs-page">
-<h1>Publications</h1>
+<h1 class="sr-only">Publications</h1>
 {% set roles = site.author_roles %}
 {% if roles.member or roles.cofirst or roles.corresponding %}
 <p class="author-key small">Authors:
