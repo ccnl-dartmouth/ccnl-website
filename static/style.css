@@ -76,14 +76,13 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .hero-affil span { display: block; }
 .intro { margin: 2.5rem auto 2rem; font-size: 1.15rem; text-align: center; }
 .entry-cards { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
-.entry { position: relative; border: 1px solid var(--line); border-top: 4px solid var(--green); border-radius: 4px; padding: 1.1rem 1.25rem; background: var(--soft); }
+.entry { position: relative; border: 1px solid var(--line); border-top: 4px solid var(--green); border-radius: 4px; padding: 1.5rem 1.25rem; background: var(--soft); text-align: center; }
 .entry:hover { border-color: var(--green); }
-.entry h2 { margin: 0 0 .25rem; font-size: 1.35rem; }
+.entry h2 { margin: 0; font-size: 1.75rem; }
 .entry h2 a { text-decoration: none; }
 .entry h2 a::after { content: ""; position: absolute; inset: 0; }
 .entry:focus-within { outline: 3px solid var(--green); outline-offset: 3px; }
 .entry a:focus-visible { outline: none; }
-.entry p { margin: 0; color: var(--muted); }
 
 /* ---- people ---- */
 .people-groups { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0 3.5rem; }

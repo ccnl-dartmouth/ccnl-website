@@ -156,7 +156,6 @@ A complete example (the lines after `year` are all optional):
   pdf = {https://example.org/learning.pdf},
   cofirst = {Doe, Smith},
   corresponding = {Soltani},
-  corresponding_email = {alireza.soltani@dartmouth.edu},
   abstract = {A short summary of the paper, copied from the journal or Google Scholar.},
 }
 ```
@@ -177,8 +176,7 @@ A complete example (the lines after `year` are all optional):
 | `abstract = {...}` | the abstract, shown in full on the paper's own page |
 | `keywords = {learning, uncertainty}` | keyword chips on the paper's page; clicking one searches the Publications page. Separate with commas or semicolons |
 | `cofirst = {Doe, Smith}` | marks these authors (by last name) as co-first authors, shown in purple |
-| `corresponding = {Soltani}` | marks corresponding authors: a yellow highlight on the Publications list, and a "Corresponding author" line under Cite on the paper's page |
-| `corresponding_email = {name@example.edu}` | the corresponding author's email on the paper's page; only needed if that person's profile has no email |
+| `corresponding = {Soltani}` | marks corresponding authors: a yellow highlight on the Publications list, and a "Corresponding author" line under Cite on the paper's page that links to their profile (put your email on your profile if you want it shown) |
 | `status = {preprint}` | lists the paper under "Preprints" |
 | `note = {...}` | a short note shown under the venue, for example "Highlighted in Nature" |
 | `image = {figure.jpg}` | optional: use this file from `content/images/` instead of the one named like the paper's file (see "A thumbnail" below) |
@@ -197,7 +195,7 @@ name and add `image = {shared-figure.jpg}` to each of those `.bib` files.
 
 Every paper gets its own page, built from its `.bib` file: the cards on the Publications page open it. It shows the
 venue and date, authors (lab members link to their profiles), buttons, the full abstract, keywords, a formatted
-citation with a copy-BibTeX button, and the corresponding author with an email. The page's web address is the `.bib`
+citation with a copy-BibTeX button, and the corresponding author (linked to their profile). The page's web address is the `.bib`
 file name, so use lowercase letters, digits and hyphens only. Nothing extra to write: just fill in more BibTeX lines.
 
 ### Good to know

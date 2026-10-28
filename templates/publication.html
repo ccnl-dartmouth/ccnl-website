@@ -50,8 +50,9 @@
       <dt>Citation</dt><dd>{{ pub.citation }}</dd>
       {% if pub.doi %}<dt>DOI</dt><dd><a href="{{ pub.doi }}">{{ pub.doi|replace('https://doi.org/', '') }}</a></dd>{% endif %}
       {% if pub.pmid %}<dt>PubMed ID</dt><dd><a href="https://pubmed.ncbi.nlm.nih.gov/{{ pub.pmid }}/">{{ pub.pmid }}</a></dd>{% endif %}
-      {% if pub.corresponding %}<dt>Corresponding author{{ "s" if pub.corresponding|length > 1 }}</dt>
-      <dd>{% for c in pub.corresponding %}{% if c.slug %}<a href="{{ url('people/' ~ c.slug ~ '/') }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %}{% if c.email %} &middot; {{ m.email(c.email) }}{% endif %}{% if not loop.last %}<br>{% endif %}{% endfor %}</dd>{% endif %}
+      {% set corresponding = pub.authors|selectattr("corresponding")|list %}
+      {% if corresponding %}<dt>Corresponding author{{ "s" if corresponding|length > 1 }}</dt>
+      <dd>{% for c in corresponding %}{% set name = c.last ~ ', ' ~ (c.initials|list|join('. ')) ~ '.' %}{% if c.slug %}<a href="{{ url('people/' ~ c.slug ~ '/') }}">{{ name }}</a>{% else %}{{ name }}{% endif %}{{ ", " if not loop.last }}{% endfor %}</dd>{% endif %}
     </dl>
     <details class="bibtex">
       <summary>BibTeX</summary>

@@ -48,6 +48,16 @@ def test_hero_without_description_warns(sandbox):
 # ----- home entry cards
 
 
+def test_home_cards_are_just_a_centered_title(sandbox):
+    result = sandbox.build()
+    html = result.page("index.html")
+    cards = html.split('<ul class="entry-cards">')[1].split("</ul>")[0]
+    assert "<p>" not in cards and cards.count('class="entry"') == 4
+    css = (sandbox.out / "static" / "style.css").read_text()
+    assert "text-align: center" in css.split(".entry {")[1].split("}")[0]
+    assert "font-size: 1.75rem" in css.split(".entry h2 {")[1].split("}")[0]
+
+
 def test_home_cards_follow_the_menu(sandbox):
     html = sandbox.build().page("index.html")
     for target in ("research/", "publications/", "people/", "contact/"):

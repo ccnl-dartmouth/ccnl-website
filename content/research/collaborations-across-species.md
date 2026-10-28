@@ -1,6 +1,6 @@
 ---
-title: Collaborations across species
+title: Topic 4
 order: 4
-image_alt: Placeholder illustration, to be replaced with a figure from this line of research
+image_alt: Placeholder illustration, to be replaced with a figure from this topic
 ---
-A central part of our research involves collaboration with experimentalists who study relevant questions across different species (rodents, non-human primates, and humans) and use a wide range of methods such as electrophysiology, MEG, fMRI, psychophysics, and behavioral economics.
+Topic 4 summary. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.

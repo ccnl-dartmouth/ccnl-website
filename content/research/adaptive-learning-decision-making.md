@@ -1,6 +1,6 @@
 ---
-title: Adaptive learning and decision making
+title: Topic 1
 order: 1
-image_alt: Placeholder illustration, to be replaced with a figure from this line of research
+image_alt: Placeholder illustration, to be replaced with a figure from this topic
 ---
-We focus on elucidating the cognitive processes and neural mechanisms underlying adaptive learning and decision making. To that end, we explore computational and neural mechanisms that allow humans and other animals to be flexible, and when and how these mechanisms fail.
+Topic 1 summary. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
