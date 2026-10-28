@@ -1,3 +1,5 @@
+import re
+
 from conftest import ROOT, bib, image_bytes
 
 from ccnl.content import parse_authors
@@ -81,7 +83,7 @@ def test_author_roles_are_styled_by_class_not_marked_with_symbols(sandbox):
     sandbox.write("publications/new.bib", bib(cofirst="Doe, Investigator", corresponding="Investigator"))
     result = sandbox.build()
     assert result.ok, result.errors
-    block = result.page("publications/index.html").split('pub-title">A title')[1].split("</li>")[0]
+    block = result.page("publications/index.html").split('>A title</a>')[1].split("</li>")[0]
     # Doe is not in People: co-first only. Pat Investigator is a lab member, co-first and corresponding.
     assert '<span class="au au-cofirst">Doe J<span class="sr-only"> (co-first author)</span></span>' in block
     assert ('<span class="au au-member au-cofirst au-corr">Investigator P'
@@ -91,14 +93,14 @@ def test_author_roles_are_styled_by_class_not_marked_with_symbols(sandbox):
 
 def test_corresponding_author_and_lab_member_styles_are_separate(sandbox):
     sandbox.write("publications/new.bib", bib(corresponding="Doe"))
-    block = sandbox.build().page("publications/index.html").split('pub-title">A title')[1].split("</li>")[0]
+    block = sandbox.build().page("publications/index.html").split('>A title</a>')[1].split("</li>")[0]
     assert '<span class="au au-corr">Doe J<span class="sr-only"> (corresponding author)</span></span>' in block
     assert '<span class="au au-member">Investigator P<span class="sr-only"> (lab member)</span></span>' in block
 
 
 def test_authors_outside_the_lab_are_not_styled(sandbox):
     html = sandbox.build().page("publications/index.html")
-    block = html.split('pub-title">A range-normalization model')[1].split("</li>")[0]
+    block = html.split('A range-normalization model of context-dependent choice</a>')[1].split("</li>")[0]
     assert ", Outsider M, " in block  # plain text, no span
     assert "Collaborator K" in block and 'au-member' in block.split("Collaborator K")[0][-120:]
 
@@ -239,8 +241,8 @@ def test_publications_page_has_search_box_year_links_and_year_sections(sandbox):
 def test_every_paper_carries_all_its_bibtex_fields_for_the_search(sandbox):
     sandbox.write("publications/zed.bib", bib("zed2030", title="Searchable title", abstract="Unusual zebrafish abstract", note="Highlighted note"))
     html = sandbox.build().page("publications/index.html")
-    item = html.split("Searchable title")[0].rsplit('<li class="pub"', 1)[1]
-    assert "zebrafish" in item and "highlighted note" in item.lower()
+    attribute = re.search(r'<li class="pub" data-search="([^"]*Searchable title[^"]*)"', html).group(1).lower()
+    assert "zebrafish" in attribute and "highlighted note" in attribute
 
 
 def test_search_script_filters_on_every_word_and_hides_empty_years():

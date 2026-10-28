@@ -48,5 +48,19 @@ window.addEventListener('hashchange', openSectionFromHash);
   }
   input.addEventListener('input', update);
   clear.addEventListener('click', function () { input.value = ''; update(); input.focus(); });
+  var start = new URLSearchParams(location.search).get('q');  // keyword chips link here as /publications/?q=word
+  if (start) input.value = start;
   update();
 })();
+
+// A paper's page: the Copy BibTeX button only appears when the browser can copy; the text is always shown.
+document.querySelectorAll('.copy-bibtex').forEach(function (button) {
+  if (!navigator.clipboard) return;
+  button.hidden = false;
+  button.addEventListener('click', function () {
+    navigator.clipboard.writeText(document.getElementById(button.dataset.target).textContent).then(function () {
+      button.textContent = 'Copied';
+      setTimeout(function () { button.textContent = 'Copy BibTeX'; }, 2000);
+    });
+  });
+});

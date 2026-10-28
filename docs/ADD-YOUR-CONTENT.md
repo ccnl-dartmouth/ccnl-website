@@ -126,6 +126,10 @@ Google Scholar and journals provide.
 
 ### Step 2: create the file
 
+The easiest start is the template https://github.com/ccnl-dartmouth/ccnl-website/blob/main/content/publications/_TEMPLATE.bib:
+it lists every line the website understands, and every paper file already has the same blank lines, so you only fill in
+the ones you want. Lines left as `{}` are ignored. The steps below work either way.
+
 1. Go to https://github.com/ccnl-dartmouth/ccnl-website/tree/main/content/publications, click **Add file**, then
    **Create new file**.
 2. Name it `content/publications/` + year + your last name + a few words from the title + `.bib`, in lowercase with
@@ -145,7 +149,10 @@ A complete example (the lines after `year` are all optional):
   number = {3},
   pages = {100--112},
   year = {2026},
+  month = {mar},
   doi = {10.1000/example.2026.1},
+  pmid = {12345678},
+  keywords = {learning, uncertainty},
   pdf = {https://example.org/learning.pdf},
   cofirst = {Doe, Smith},
   corresponding = {Soltani},
@@ -162,9 +169,12 @@ A complete example (the lines after `year` are all optional):
 
 | Line | What it does |
 |---|---|
+| `month = {mar}` | shown as "Mar 2026" on the paper's page (a number 1 to 12 or a month name) |
 | `doi = {...}` | adds a DOI button |
-| `pdf`, `si`, `data`, `code`, `url` | adds link buttons; values must start with `https://` |
-| `abstract = {...}` | adds a collapsible "Abstract" under the paper |
+| `pmid = {12345678}` | adds a PubMed button; just the number |
+| `pdf`, `preprint`, `si`, `data`, `code`, `video`, `slides`, `poster`, `url` | adds link buttons; values must start with `https://` |
+| `abstract = {...}` | the abstract, shown in full on the paper's own page |
+| `keywords = {learning, uncertainty}` | keyword chips on the paper's page; clicking one searches the Publications page. Separate with commas or semicolons |
 | `cofirst = {Doe, Smith}` | marks these authors (by last name) as co-first authors, shown in purple |
 | `corresponding = {Soltani}` | marks corresponding authors, shown with a yellow highlight |
 | `status = {preprint}` | lists the paper under "Preprints" |
@@ -181,12 +191,21 @@ give it **the same name as the paper's `.bib` file**. For `2026-doe-learning-und
 To use a picture with a different name, or one picture for several papers, upload it to `content/images` under any
 name and add `image = {shared-figure.jpg}` to each of those `.bib` files.
 
+### The paper's own page
+
+Every paper gets its own page, built from its `.bib` file: the cards on the Publications page open it. It shows the
+venue and date, authors (lab members link to their profiles), buttons, the full abstract, keywords, a formatted
+citation with a copy-BibTeX button, and related papers that share a keyword. The page's web address is the `.bib`
+file name, so use lowercase letters, digits and hyphens only. Nothing extra to write: just fill in more BibTeX lines.
+
 ### Good to know
 
 - **Your name links papers to your page.** Papers appear on a person's page when an author matches their name by
   **last name and first initial** (so "Doe, Jane" matches Jane Doe). Anyone listed on the People page is
   highlighted in bold blue in the author lists. Write author names the same way in each paper.
-- **Fixing a paper:** open its `.bib` file, click the pencil, change it, and commit.
+- **Fixing or completing a paper:** open its `.bib` file, click the pencil, change it, and commit. Every paper file already
+  has all the optional lines with empty braces (`doi = {},`), so to add a missing keyword, abstract, DOI or link, just
+  type the value between the braces. Blank lines are ignored and never shown on the website.
 
 ## 4. Change other details in your profile
 
@@ -246,6 +265,8 @@ in the meantime. A GitHub issue titled "The website build failed" is also opened
 | `contains 2 entries` | put each paper in its own `.bib` file |
 | `entry '...' is missing: year` | add `year = {2026},` |
 | `BibTeX key '...' is also used in ...` | change the word after `@article{` so it's unique |
+| `` `month` must be a number from 1 to 12 `` | write `month = {3}` or `month = {mar}` |
+| `` `pmid` must be just the number `` | write only the digits, for example `pmid = {12345678}` |
 | `` `cofirst` lists ..., who is not among the authors `` | use last names exactly as they appear in the author list |
 
 Still stuck? Ask the lab's website maintainer and send them the error text.

@@ -45,7 +45,7 @@ def test_thumbnail_named_like_the_bib_file_is_used_without_an_image_line(sandbox
     result = sandbox.build()
     assert result.ok and result.warnings == [], result.errors + result.warnings
     assert (sandbox.out / "images" / "publications" / "doe2026paper.jpg").is_file()
-    block = result.page("publications/index.html").split('pub-title">Thumbnail paper')[1].split("</li>")[0]
+    block = result.page("publications/index.html").split('>Thumbnail paper</a>')[1].split("</li>")[0]
     assert "images/publications/doe2026paper.jpg" in block and "pub-placeholder.svg" not in block
 
 

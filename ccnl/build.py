@@ -117,6 +117,9 @@ def render_site(site, out_dir, templates_dir, static_dir, base_path):
         if person["profile"]:
             write_page(env, out_dir, f"people/{person['slug']}/", "person.html", page="people", person=person, site=site)
 
+    for pub in site["publications"]:
+        write_page(env, out_dir, f"publications/{pub['slug']}/", "publication.html", page="publications", pub=pub, site=site)
+
     (Path(out_dir) / "404.html").write_text(
         env.get_template("404.html").render(page="404", site=site), encoding="utf-8"
     )

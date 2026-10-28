@@ -60,17 +60,16 @@ def test_home_cards_follow_the_menu(sandbox):
 # ----- publications
 
 
-def test_abstract_is_collapsible_and_names_its_paper(sandbox):
-    html = sandbox.build().page("publications/index.html")
-    assert "<details" in html and "explains context effects" in html
-    assert "<summary>Abstract<span class=\"sr-only\"> of Context effects in Bayesian choice</span></summary>" in html
+def test_cards_have_no_abstract_toggle_because_the_paper_page_shows_it(sandbox):
+    result = sandbox.build()
+    assert "<details" not in result.page("publications/index.html")
+    page = result.page("publications/2024-student-context/index.html")
+    assert "<h2>Abstract</h2>" in page and "explains context effects" in page
 
 
-def test_entry_without_abstract_has_no_details(sandbox):
+def test_paper_without_abstract_has_no_abstract_section(sandbox):
     sandbox.write("publications/new.bib", "@article{plain2024,\n  author = {Doe, Jane},\n  title = {No abstract here},\n  journal = {J},\n  year = {2024},\n}\n")
-    html = sandbox.build().page("publications/index.html")
-    block = html.split("No abstract here")[1].split("</li>")[0]
-    assert "<details" not in block
+    assert "<h2>Abstract</h2>" not in sandbox.build().page("publications/new/index.html")
 
 
 def test_thumbnails_are_on_the_publications_page_and_home_lists_no_papers(sandbox):

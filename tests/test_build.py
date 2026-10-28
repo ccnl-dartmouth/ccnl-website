@@ -127,6 +127,7 @@ def test_every_internal_link_and_anchor_resolves(sandbox):
     for page in out.rglob("*.html"):
         for ref in pattern.findall(page.read_text()):
             path, _, fragment = ref.partition("#")
+            path = path.partition("?")[0]  # a search query (?q=keyword) is not part of the file name
             path = path.removeprefix("/ccnl-website/")
             target = out / path / "index.html" if path == "" or path.endswith("/") else out / path
             assert target.is_file(), f"{page.relative_to(out)} links to missing {ref}"

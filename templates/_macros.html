@@ -38,21 +38,19 @@
 </li>
 {% endmacro %}
 
-{# One publication: text on the left, thumbnail (the paper's own image, or a generic filler) on the right.
+{# One publication card: text on the left, thumbnail (the paper's own image, or a generic filler) on the right.
+   The title link is stretched over the whole card, so the card opens the paper's page; the small links sit above it.
    With person_key (a profile page) only that person is highlighted; otherwise lab members, co-first and corresponding
    authors are styled. #}
 {% macro publication(p, person_key=none) %}
 <li class="pub" data-search="{{ p.search }}">
   <div class="pub-body">
-    <p class="pub-title">{{ p.title }}</p>
+    <p class="pub-title"><a class="card-link" href="{{ url('publications/' ~ p.slug ~ '/') }}">{{ p.title }}</a></p>
     <p class="pub-authors">{% for a in p.authors %}{% if a.etal %}et al.{% elif person_key %}{% if a.key == person_key %}<span class="au au-member">{{ a.last }} {{ a.initials }}<span class="sr-only"> (this person)</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{% elif a.classes %}<span class="au {{ a.classes }}">{{ a.last }} {{ a.initials }}<span class="sr-only"> ({{ a.role_text }})</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{{ ", " if not loop.last }}{% endfor %}</p>
     <p class="pub-venue"><em>{{ p.venue }}</em>{% if p.volume %} {{ p.volume }}{% if p.number %}({{ p.number }}){% endif %}{% endif %}{% if p.pages %}, {{ p.pages }}{% endif %}</p>
     {% if p.note %}<p class="pub-note">{{ p.note }}</p>{% endif %}
     {% if p.links %}
     <ul class="pub-links">{% for l in p.links %}<li><a href="{{ l.url }}">{{ l.label }}<span class="sr-only"> for {{ p.title }}</span></a></li>{% endfor %}</ul>
-    {% endif %}
-    {% if p.abstract %}
-    <details class="pub-abstract"><summary>Abstract<span class="sr-only"> of {{ p.title }}</span></summary><p>{{ p.abstract }}</p></details>
     {% endif %}
   </div>
   <img class="pub-thumb" src="{{ url('images/' ~ p.image) if p.image else url('static/pub-placeholder.svg') }}" alt="" loading="lazy">
@@ -79,4 +77,9 @@
 </section>
 {% endfor %}
 {% endif %}
+{% endmacro %}
+
+{# Authors on a paper's own page: lab members link to their profile; roles are styled and spelled out for screen readers. #}
+{% macro paper_authors(p) %}
+{% for a in p.authors %}{% if a.etal %}et al.{% else %}{% set name = a.last ~ ', ' ~ (a.initials|list|join('. ')) ~ '.' %}{% if a.classes %}{% if a.slug %}<a class="au {{ a.classes }}" href="{{ url('people/' ~ a.slug ~ '/') }}">{{ name }}<span class="sr-only"> ({{ a.role_text }})</span></a>{% else %}<span class="au {{ a.classes }}">{{ name }}<span class="sr-only"> ({{ a.role_text }})</span></span>{% endif %}{% else %}{{ name }}{% endif %}{% endif %}{{ ", " if not loop.last }}{% endfor %}
 {% endmacro %}

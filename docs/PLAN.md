@@ -100,6 +100,17 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       `content/people` vs `content/images/people` was confusing. Existing images (including Peter's trial photo and
       thumbnail) moved with `git mv`; only logos and the hero are published as site images. Not yet run or pushed.
       Peter's paper (Duggins & Eliasmith, Psychological Review) was corrected from 2025 to 2024: file `duggins2024spiking.bib`, key, year and its thumbnail `duggins2024spiking_thumb.png`.
+- [~] 7d Design round 4 (Oct 2026, built and tested, not yet pushed): every People listing is a fixed-size clickable card
+      showing role and affiliation (not years); publications are bordered, condensed cards with a search box (all BibTeX
+      fields), year links and big year headings; every paper gets its own page (`publication.html`) built from its `.bib`
+      (keywords, month, pmid, extra link fields, citation + BibTeX copy, related papers, Google Scholar meta tags); cards
+      open the page and the abstract toggle moved there. `content/publications/_TEMPLATE.bib` lists every field and every
+      paper file carries the blank optional lines. Skipped on purpose: auto topic tagging, citation counts, "my list".
+      Literature fill (PubMed, Crossref, OpenAlex by DOI): added pmid, month, keywords and 22 missing abstracts to the 49
+      existing papers (20 sets of author keywords from PubMed, 29 from OpenAlex's generated keywords) and added 7 papers
+      (2 articles, 4 preprints, 1 CCN paper). Open: Peter to review those 7 and ask students for papers a name search
+      cannot find (e.g. pre-Dartmouth work), SSRN preprints have no abstract, an optional `contact`/email on people cards
+      is undecided.
 - [~] 10 Documentation: contributor guide written (`docs/ADD-YOUR-CONTENT.md`: bio, profile picture, papers, profile
       fields, troubleshooting) and linked from the README; `tests/test_docs.py` builds the guide's examples so it
       cannot drift. Next: Peter follows the guide himself as a test; then a maintainer/handover page.

@@ -604,12 +604,14 @@ def group_people(people):
 # ----- publications
 
 VENUE_FIELDS = ("journal", "booktitle", "howpublished", "publisher", "school", "institution")
-LINK_LABELS = (("pdf", "PDF"), ("si", "SI"), ("data", "Data"), ("code", "Code"), ("url", "Link"))
+LINK_LABELS = (("pdf", "PDF"), ("preprint", "Preprint"), ("si", "SI"), ("data", "Data"), ("code", "Code"),
+               ("video", "Video"), ("slides", "Slides"), ("poster", "Poster"), ("url", "Link"))
+MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
 
 def clean_bib_text(value):
     value = latex_to_unicode(str(value))
-    return re.sub(r"\s+", " ", value.replace("{", "").replace("}", "")).strip()
+    return re.sub(r"\s+", " ", value.replace("{", "").replace("}", "").replace("--", "\u2013")).strip()
 
 
 def parse_authors(raw):
@@ -630,6 +632,47 @@ def parse_authors(raw):
         initials = "".join(tok if (tok.isupper() and len(tok) > 1) else tok[0] for tok in re.split(r"[\s.\-]+", first) if tok)
         names.append({"last": last, "initials": initials.upper(), "etal": False})
     return names
+
+
+def month_label(value, year, where, key, problems):
+    """'Nov 2026' from `month = {11}` / `{nov}` / `{November}`; just the year when there is no month."""
+    text = clean_bib_text(value or "")
+    if not text:
+        return str(year)
+    number = int(text) if text.isdigit() else next((i for i, m in enumerate(MONTHS, 1) if text.lower().startswith(m.lower())), 0)
+    if not 1 <= number <= 12:
+        problems.error(where, f"entry '{key}': `month` must be a number from 1 to 12 or a month name like `nov` (got '{text}').")
+        return str(year)
+    return f"{MONTHS[number - 1]} {year}"
+
+
+def clean_bibtex(text):
+    """The entry as shown on the paper's page: no comments before it and no blank `field = {}` lines."""
+    start = re.search(r"^\s*@", text, re.M)
+    raw = text[start.start():] if start else text
+    return "\n".join(l for l in raw.strip().splitlines() if not re.match(r"\s*\w+\s*=\s*\{\s*\}\s*,?\s*$", l))
+
+
+def split_keywords(value):
+    """`keywords = {learning, decision making; reward}` -> ['learning', 'decision making', 'reward'] (no repeats)."""
+    text = clean_bib_text(value or "")
+    seen, out = set(), []
+    for word in (w.strip() for w in re.split(r";" if ";" in text else ",", text)):
+        if word and word.lower() not in seen:
+            seen.add(word.lower())
+            out.append(word)
+    return out
+
+
+def format_citation(authors, year, title, venue, volume, number, pages, doi_url):
+    """One plain-text reference in a fixed APA-like style, built from the BibTeX fields."""
+    names = ["et al." if a.get("etal") else f"{a['last']}, {'. '.join(a['initials'])}." for a in authors]
+    if len(names) > 1 and not authors[-1].get("etal"):
+        names[-1] = "& " + names[-1]
+    text = f"{', '.join(names)} ({year}). {title}"
+    text += "" if title[-1] in ".?!" else "."
+    where = venue + (f", {volume}" if volume else "") + (f"({number})" if volume and number else "") + (f", {pages}" if pages else "")
+    return f"{text} {where}." + (f" {doi_url}" if doi_url else "")
 
 
 def name_list(value):
@@ -722,9 +765,22 @@ def load_publications(content_dir, root, problems, images):
                 url = check_url(entry[field].strip(), where, field, problems)
                 if url:
                     links.append({"label": label, "url": url})
+        doi_url = None
         if entry.get("doi"):
             doi = entry["doi"].strip()
-            links.insert(0, {"label": "DOI", "url": doi if doi.startswith("http") else f"https://doi.org/{doi}"})
+            doi_url = doi if doi.startswith("http") else f"https://doi.org/{doi}"
+            links.insert(0, {"label": "DOI", "url": doi_url})
+        pmid = clean_bib_text(entry.get("pmid", ""))
+        if pmid and not pmid.isdigit():
+            problems.error(where, f"entry '{key}': `pmid` must be just the number, like `pmid = {{12345678}}` (got '{pmid}').")
+            pmid = ""
+        if pmid:
+            links.append({"label": "PubMed", "url": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/"})
+        if not SLUG.match(path.stem):
+            problems.error(where, "the file name must use only lowercase letters, digits and hyphens, e.g. '2026-doe-learning.bib'. It becomes the web address of the paper's page. Rename the file.")
+            continue
+        volume, number = clean_bib_text(entry.get("volume", "")), clean_bib_text(entry.get("number", ""))
+        pages = clean_bib_text(entry.get("pages", "")).replace("--", "–")
 
         # the thumbnail is content/images/<same name as the .bib file>.jpg, or the file named in `image =`
         if entry.get("image"):
@@ -734,16 +790,24 @@ def load_publications(content_dir, root, problems, images):
         pubs.append(
             {
                 "key": key,
+                "slug": path.stem,  # the paper's page is publications/<file name>/
                 "title": clean_bib_text(entry["title"]),
                 "authors": authors,
                 "year": int(year_text),
+                "date": month_label(entry.get("month"), year_text, where, key, problems),
                 "venue": venue,
-                "volume": clean_bib_text(entry.get("volume", "")),
-                "number": clean_bib_text(entry.get("number", "")),
-                "pages": clean_bib_text(entry.get("pages", "")).replace("--", "–"),
+                "volume": volume,
+                "number": number,
+                "pages": pages,
+                "keywords": split_keywords(entry.get("keywords") or entry.get("keyword")),
+                "doi": doi_url,
+                "pmid": pmid,
+                "citation": format_citation(authors, year_text, clean_bib_text(entry["title"]), venue, volume, number, pages, doi_url),
+                "bibtex": clean_bibtex(text),
                 "links": links,
                 "note": clean_bib_text(entry.get("note", "")),
                 "abstract": clean_bib_text(entry.get("abstract", "")),
+                "related": [],
                 "preprint": preprint,
                 "search": " ".join(clean_bib_text(v) for k, v in entry.items() if k not in ("image", "id", "entrytype") and v),  # every BibTeX field, for the search box
                 "image_src": image_src,
@@ -858,12 +922,17 @@ def member_keys(people):
 def style_authors(publications, people):
     """Flag authors who are listed in People and prepare their CSS classes and screen-reader text."""
     keys = member_keys(people)
+    profile_slugs = {}
+    for person in people:
+        if person.get("profile"):
+            profile_slugs.setdefault(person_key(person["name"]), person["slug"])
     for pub in publications:
         for a in pub["authors"]:
             if a.get("etal"):
                 continue
             a["key"] = f"{ascii_key(a['last'])}|{a['initials'][0].lower()}" if a["initials"] else None
             a["member"] = a["key"] in keys
+            a["slug"] = profile_slugs.get(a["key"])  # lets a paper's page link the author to their profile
             roles = [(a["member"], "member", "lab member"), (a.get("cofirst"), "cofirst", "co-first author"),
                      (a.get("corresponding"), "corr", "corresponding author")]
             a["classes"] = " ".join(f"au-{css}" for on, css, _ in roles if on)
@@ -929,6 +998,11 @@ def load_site(content_dir, root, problems, today=None):
     )
 
     style_authors(publications, people)
+    for pub in publications:  # up to four other papers that share keywords with this one (most shared first, then newest)
+        mine = {k.lower() for k in pub["keywords"]}
+        scored = [(len(mine & {k.lower() for k in o["keywords"]}), o) for o in publications if o is not pub and mine]
+        ranked = sorted((x for x in scored if x[0]), key=lambda x: (-x[0], -x[1]["year"], x[1]["key"]))
+        pub["related"] = [{k: o[k] for k in ("slug", "title", "year", "venue")} for _, o in ranked[:4]]
     for person in people:  # each profile page lists the person's own papers (newest first, as loaded)
         person["author_key"] = person_key(person["name"])
         person["publications"] = [

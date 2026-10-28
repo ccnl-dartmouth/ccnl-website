@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}{{ pub.title }} &middot; {{ lab.name }}{% endblock %}
+{% block head %}
+  {# Citation metadata that Google Scholar and other indexes read. #}
+  <meta name="citation_title" content="{{ pub.title }}">
+  {% for a in pub.authors if not a.etal %}<meta name="citation_author" content="{{ a.last }}, {{ a.initials|list|join('. ') }}.">
+  {% endfor %}
+  <meta name="citation_publication_date" content="{{ pub.year }}">
+  {% if not pub.preprint %}<meta name="citation_journal_title" content="{{ pub.venue }}">{% endif %}
+  {% if pub.volume %}<meta name="citation_volume" content="{{ pub.volume }}">{% endif %}
+  {% if pub.number %}<meta name="citation_issue" content="{{ pub.number }}">{% endif %}
+  {% if pub.doi %}<meta name="citation_doi" content="{{ pub.doi|replace('https://doi.org/', '') }}">{% endif %}
+{% endblock %}
+{% block content %}
+<p class="back"><a href="{{ url('publications/') }}">&larr; All publications</a></p>
+<article class="paper">
+  <header class="paper-head{% if pub.image %} has-thumb{% endif %}">
+    <div class="paper-head-text">
+      <p class="meta"><em>{{ pub.venue }}</em>{% if pub.volume %} {{ pub.volume }}{% if pub.number %}({{ pub.number }}){% endif %}{% endif %}{% if pub.pages %}, {{ pub.pages }}{% endif %} &middot; {{ pub.date }}</p>
+      <h1>{{ pub.title }}</h1>
+      <p class="paper-authors">{{ m.paper_authors(pub) }}</p>
+      {% set cofirst = pub.authors|selectattr("cofirst")|list %}
+      {% set corresponding = pub.authors|selectattr("corresponding")|list %}
+      {% if cofirst or corresponding %}
+      <p class="author-key small">{% if cofirst %}<span class="au au-cofirst">co-first author</span>{% endif %}{% if corresponding %}<span class="au au-corr">corresponding author</span>{% endif %}</p>
+      {% endif %}
+      {% if pub.note %}<p class="pub-note">{{ pub.note }}</p>{% endif %}
+      {% if pub.links %}
+      <ul class="pub-links paper-links">{% for l in pub.links %}<li><a href="{{ l.url }}">{{ l.label }}</a></li>{% endfor %}</ul>
+      {% endif %}
+    </div>
+    {% if pub.image %}<img class="paper-thumb" src="{{ url('images/' ~ pub.image) }}" alt="">{% endif %}
+  </header>
+
+  {% if pub.abstract %}
+  <section>
+    <h2>Abstract</h2>
+    <p class="paper-abstract">{{ pub.abstract }}</p>
+  </section>
+  {% endif %}
+
+  {% if pub.keywords %}
+  <section>
+    <h2>Keywords</h2>
+    <ul class="chips">{% for k in pub.keywords %}<li><a href="{{ url('publications/') }}?q={{ k|urlencode }}">{{ k }}<span class="sr-only"> (search the publications for this keyword)</span></a></li>{% endfor %}</ul>
+  </section>
+  {% endif %}
+
+  <section>
+    <h2>Cite</h2>
+    <dl class="paper-facts">
+      <dt>Citation</dt><dd>{{ pub.citation }}</dd>
+      {% if pub.doi %}<dt>DOI</dt><dd><a href="{{ pub.doi }}">{{ pub.doi|replace('https://doi.org/', '') }}</a></dd>{% endif %}
+      {% if pub.pmid %}<dt>PubMed ID</dt><dd><a href="https://pubmed.ncbi.nlm.nih.gov/{{ pub.pmid }}/">{{ pub.pmid }}</a></dd>{% endif %}
+    </dl>
+    <details class="bibtex">
+      <summary>BibTeX</summary>
+      <pre id="bibtex-text">{{ pub.bibtex }}</pre>
+      <button type="button" class="copy-bibtex" data-target="bibtex-text" hidden>Copy BibTeX</button>
+    </details>
+  </section>
+
+  {% if pub.related %}
+  <section>
+    <h2>Related papers</h2>
+    <ul class="related">{% for r in pub.related %}<li><a href="{{ url('publications/' ~ r.slug ~ '/') }}">{{ r.title }}</a> <span class="meta">{{ r.venue }}, {{ r.year }}</span></li>{% endfor %}</ul>
+  </section>
+  {% endif %}
+</article>
+{% endblock %}
