@@ -31,6 +31,10 @@ One file per topic. `title` is the heading, `order` sets the sequence (lowest fi
 and `image_alt` describes the picture for screen readers. The picture is `content/images/<topic>.jpg`, with the same
 name as the topic's file. To add a topic, add a new file; to remove one, delete its file.
 
+The four current pictures are generated drawings (`.png`). To use a real figure instead, first delete the existing
+picture in `content/images/`, then upload yours under the same name (for example `uncertainty-and-change.jpg`). Two
+pictures with the same name make the build stop, so one has to go first.
+
 Each topic ends with a link such as "12 related papers" that opens the Publications page searched for the topic's file
 name (for `uncertainty-and-change.md` it searches `uncertainty-and-change`). A paper is included when its `keywords` line contains
 that tag, so tagging a paper is one word in its `.bib` file (see [Add or fix a paper](ADD-A-PAPER.md)). For a new

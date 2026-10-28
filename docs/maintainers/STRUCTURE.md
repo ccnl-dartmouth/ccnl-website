@@ -109,7 +109,7 @@ links:                # all optional
 Bio in Markdown. Optional "## Research" section.
 ```
 
-- Photo: `content/images/<slug>.jpg|png|webp|heic` (same name as the `.md`); missing photo gets an initial in a circle. A photo that contains GPS location data triggers a warning (the original stays public in the repository).
+- Photo: `content/images/<slug>.jpg|png|webp|heic` (same name as the `.md`); missing photo gets the person's first and last initials (e.g. MW) in a square. A photo that contains GPS location data triggers a warning (the original stays public in the repository).
 - A profile page also lists the person's papers automatically (matched from the BibTeX author names by last name
   and first initial), grouped like the main Publications page; only the page's owner is highlighted (bold blue).
 - Collaborators are listed at the bottom of the People page as a compact list (name linked to their site,
@@ -236,18 +236,27 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 - **Home:** photo hero with the lab name and affiliation in a solid green card centered on the image, intro text,
   four entry cards. The hero uses a generated placeholder (`static/hero-default.svg`) until the lab adds a real photo.
 - **People:** current groups (PI, postdocs, grad students, undergraduates) sit side by side while they fit and
-  wrap onto new rows as they fill up; every listing is a fixed-size, fully clickable card (photo cards with an initial when there is no photo; compact text cards for alumni and collaborators; cards show role and affiliation, not years: the affiliation is `current_position` if set, otherwise the lab's institution for current members; years stay on the profile page, so rows align when fields are missing and no separator lines are needed); alumni in subsections by role (postdoctoral scholars, graduate students, undergraduates, in that order; empty ones are left out).
+  wrap onto new rows as they fill up; every listing is a fixed-size, fully clickable card (photo cards with first and last initials when there is no photo; compact text cards for alumni and collaborators; cards show role and affiliation, not years: the affiliation is `current_position` if set, otherwise the lab's institution for current members; years stay on the profile page, so rows align when fields are missing and no separator lines are needed); alumni in subsections by role (postdoctoral scholars, graduate students, undergraduates, in that order; empty ones are left out).
   Profile page: details card (photo, role, years, links) beside the bio.
 - **Publications:** semi-dense list by year; each entry has the BibTeX-derived text on the left (authors styled by
-  role, title, venue, link buttons, collapsible abstract; no year after the authors since the list is grouped by year) and a right-aligned thumbnail (own image or generic filler).
-- **Research:** one section per theme with a large figure alternating left/right (stacked on phones). The real
-  site currently uses generated placeholder illustrations, to be replaced with real figures.
+  role, title, venue, link buttons; no year after the authors since the list is grouped by year; the abstract is on the paper's own page) and a right-aligned thumbnail (own image or generic filler).
+- **Page titles:** Research, People, Publications, Resources and Contact start with a centered serif title on a 3 px
+  amber line that spans the content area (class `page-title`; the text sits on top of the line with the page
+  background behind it).
+- **Research:** one section per theme: an abstract-style paragraph (block-justified from 56 rem up, left-aligned on
+  narrower screens, with the "N related papers" link ending the paragraph) beside a figure that alternates left/right
+  (stacked below 56 rem). Titles use a fluid size so they stay on one line. The four figures are generated schematics
+  (`scripts/make_uncertainty_and_change_image.py`, `make_complex_environments_image.py`,
+  `make_attention_bias_decision_making_image.py`, `make_neural_synaptic_mechanisms_image.py`; Pillow only, fixed
+  seed, 1600x1000 PNG written to `content/images/<topic>.png`). To replace one with a real figure, delete the
+  generated PNG and upload the new file under the same name (the build refuses two images with the same name).
 - **Header:** only a centered navigation bar (no lab name at the left); order Home, Research, People, Publications,
   Resources, Contact.
 - **Footer:** lab name and affiliation at the left; small SVG logos at the right (institution from
   `institution_logo` in `lab.yaml`, funders from `funders[].logo`) on white chips so they work in dark mode; an optional
   `credit` line in `lab.yaml` (required for the CC BY-SA Dartmouth D-Pine logo).
-- **Resources, Contact:** simple stacked entries; Resources also holds Teaching, Contact also holds the Join text.
+- **Resources:** simple stacked entries; also holds Teaching.
+- **Contact:** two columns (stacked below 44 rem): contact details on the left, "Join us" openings (cards) on the right.
 - **Home hero:** the lab name in large type, then the department and "Dartmouth College" on separate lines; intro text centered.
 - **Palette:** Dartmouth green `#00693e` (6.8:1 on white), ink `#1c1c1c`, amber `#f2a900` as decoration only;
   automatic dark mode following the system setting.

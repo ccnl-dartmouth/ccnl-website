@@ -99,7 +99,7 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
       placeholder avatars show first and last initials; docs split into `docs/guides/` (members) and
       `docs/maintainers/`; the fake lab moved to `tests/fixture_lab/`. Publication keywords: only author-supplied
       keywords from PubMed were kept (OpenAlex's generated ones were removed, except the topic tags). 245 tests.
-      Titles corrected from Crossref where the old page differed (Gu 2015, Soltani 2021, Song 2024); the Duggins
+      Docs brought up to date for all of this (STRUCTURE.md "Visual design", the site-text guide). Titles corrected from Crossref where the old page differed (Gu 2015, Soltani 2021, Song 2024); the Duggins
       paper is 2025; the unpublished "theory of mind in children" preprint was removed.
 - [~] 8 Content migration (done Oct 2026, needs human review): old WordPress pages fetched through its REST API and
       converted by one-off scripts (not kept in the repo). Migrated: home text, PI profile + photo, 50 people
@@ -173,7 +173,7 @@ once 3 is fixed; 9 needs 5, 6, 8; 11 needs the Dartmouth reply (can launch on gi
 - [x] 1.4 Create public repo `ccnl-website`.
 - [x] 1.5 Lab members invited (Oct 2026). Confirm the team `lab-members` has Write on the repo and org default permission is Read.
 - [x] 1.6 Settings -> Pages -> Source: GitHub Actions (done). Enforce HTTPS and custom domain later.
-- [ ] 1.7 Ruleset on `main`: block force-push and deletion ONLY. Do not require status checks or pull
+- [x] 1.7 Ruleset on `main` created (Oct 2026): block force-push and deletion ONLY. Do not require status checks or pull
       requests: required checks reject direct pushes/web-editor commits, defeating the hands-off design,
       and a failed build already cannot deploy. See `docs/maintainers/OPERATIONS.md`.
 - [x] 1.8 Clone locally (this folder), add `.gitignore`, README stub, this plan, `CLAUDE.md`; first commit; pushed to origin.
