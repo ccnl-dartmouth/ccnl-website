@@ -39,7 +39,35 @@ def test_author_roles_are_explained_only_when_present(sandbox):
     plain = paper_page(sandbox)
     assert 'class="author-key' not in plain
     roles = paper_page(sandbox, "roles", cofirst="Doe, Investigator", corresponding="Investigator")
-    assert "co-first author</span>" in roles and "corresponding author</span>" in roles
+    assert "co-first author</span>" in roles
+    assert "au-corr" not in roles and "corresponding author</span>" not in roles  # no highlight or legend on the paper page
+
+
+def test_corresponding_author_row_shows_name_profile_link_and_profile_email_after_the_ids(sandbox):
+    page = paper_page(sandbox, "corr", corresponding="Investigator", doi="10.1000/x", pmid="123")
+    assert page.index("<dt>PubMed ID</dt>") < page.index("<dt>Corresponding author</dt>")
+    assert '<a href="/people/pat-investigator/">Pat Investigator</a>' in page
+    assert 'data-user="pat" data-domain="example.edu"' in page  # from Pat's profile
+
+
+def test_corresponding_email_field_fills_in_when_the_profile_has_none(sandbox):
+    page = paper_page(sandbox, "mail", corresponding="Doe", corresponding_email="jane.doe@example.org")
+    assert "<dt>Corresponding author</dt>" in page and 'data-user="jane.doe" data-domain="example.org"' in page
+    assert "Doe, J." in page
+
+
+def test_corresponding_email_without_a_marked_author_warns_and_bad_email_errors(sandbox):
+    sandbox.write("publications/lonely.bib", bib("lonely2024", corresponding_email="a@example.org"))
+    result = sandbox.build()
+    assert result.ok and result.has_warning("lonely.bib", "`corresponding_email` is set but no author is marked `corresponding`")
+    sandbox.write("publications/bad-mail.bib", bib("badmail2024", corresponding="Doe", corresponding_email="not an address"))
+    assert sandbox.build().has_error("bad-mail.bib", "does not look like an email address")
+
+
+def test_no_related_papers_section(sandbox):
+    sandbox.write("publications/one.bib", bib("one2024", title="First paper", keywords="alpha"))
+    sandbox.write("publications/two.bib", bib("two2023", title="Second paper", year="2023", keywords="alpha"))
+    assert "Related" not in sandbox.build().page("publications/one/index.html")
 
 
 def test_page_carries_citation_metadata_for_search_engines(sandbox):
@@ -89,17 +117,7 @@ def test_bib_file_name_must_be_url_safe(sandbox):
     assert sandbox.build().has_error("Bad_Name.bib", "the file name must use only lowercase letters, digits and hyphens")
 
 
-# ----- related papers and thumbnails
-
-def test_papers_sharing_a_keyword_list_each_other_as_related(sandbox):
-    sandbox.write("publications/one.bib", bib("one2024", title="First paper", keywords="alpha, beta"))
-    sandbox.write("publications/two.bib", bib("two2023", title="Second paper", year="2023", keywords="beta"))
-    sandbox.write("publications/three.bib", bib("three2022", title="Third paper", year="2022", keywords="gamma"))
-    result = sandbox.build()
-    first = result.page("publications/one/index.html")
-    assert "<h2>Related papers</h2>" in first and 'href="/publications/two/"' in first and "three/" not in first
-    assert "<h2>Related papers</h2>" not in result.page("publications/three/index.html")
-
+# ----- thumbnails and correspondence
 
 def test_thumbnail_is_shown_beside_the_title_only_when_the_paper_has_one(sandbox):
     assert "paper-thumb" not in paper_page(sandbox, "plain")
@@ -129,7 +147,7 @@ def test_search_script_reads_the_q_address_parameter_and_copy_button_exists():
 
 TEMPLATE = (ROOT / "content" / "publications" / "_TEMPLATE.bib").read_text(encoding="utf-8")
 OPTIONAL_FIELDS = ("month", "volume", "number", "pages", "doi", "pmid", "keywords", "abstract", "note", "pdf", "preprint", "si",
-                   "data", "code", "video", "slides", "poster", "url", "cofirst", "corresponding", "status", "image")
+                   "data", "code", "video", "slides", "poster", "url", "cofirst", "corresponding", "corresponding_email", "status", "image")
 
 
 def test_template_lists_every_field_the_site_understands():

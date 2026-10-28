@@ -224,6 +224,4 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .bibtex pre { margin: .6rem 0; padding: .8rem 1rem; overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); font-size: .85rem; white-space: pre-wrap; }
 .copy-bibtex { font: inherit; font-size: .9rem; padding: .3rem .9rem; color: var(--green); background: none; border: 1px solid var(--green); border-radius: 6px; cursor: pointer; }
 .copy-bibtex:hover { background: var(--green); color: var(--on-green); }
-.related { margin: 0; padding-left: 1.1rem; }
-.related li { margin-bottom: .4rem; }
 @media (max-width: 40rem) { .paper-head.has-thumb { grid-template-columns: 1fr; } .paper-thumb { max-width: 16rem; } .paper-facts { grid-template-columns: 1fr; gap: .1rem; } .paper-facts dd { margin-bottom: .6rem; } }

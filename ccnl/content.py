@@ -770,6 +770,8 @@ def load_publications(content_dir, root, problems, images):
             doi = entry["doi"].strip()
             doi_url = doi if doi.startswith("http") else f"https://doi.org/{doi}"
             links.insert(0, {"label": "DOI", "url": doi_url})
+        corr_email = clean_bib_text(entry.get("corresponding_email", ""))
+        corr_email = split_email(corr_email, where, problems) if corr_email else None
         pmid = clean_bib_text(entry.get("pmid", ""))
         if pmid and not pmid.isdigit():
             problems.error(where, f"entry '{key}': `pmid` must be just the number, like `pmid = {{12345678}}` (got '{pmid}').")
@@ -802,12 +804,12 @@ def load_publications(content_dir, root, problems, images):
                 "keywords": split_keywords(entry.get("keywords") or entry.get("keyword")),
                 "doi": doi_url,
                 "pmid": pmid,
+                "corresponding_email": corr_email,
                 "citation": format_citation(authors, year_text, clean_bib_text(entry["title"]), venue, volume, number, pages, doi_url),
                 "bibtex": clean_bibtex(text),
                 "links": links,
                 "note": clean_bib_text(entry.get("note", "")),
                 "abstract": clean_bib_text(entry.get("abstract", "")),
-                "related": [],
                 "preprint": preprint,
                 "search": " ".join(clean_bib_text(v) for k, v in entry.items() if k not in ("image", "id", "entrytype") and v),  # every BibTeX field, for the search box
                 "image_src": image_src,
@@ -939,6 +941,28 @@ def style_authors(publications, people):
             a["role_text"] = ", ".join(text for on, _, text in roles if on)
 
 
+def attach_correspondence(publications, people, problems):
+    """The paper page's "Corresponding author" row: name, profile link and email for each author marked `corresponding`.
+    The email is the person's profile email; the paper's `corresponding_email` fills in for the first one without."""
+    by_key = {}
+    for person in people:
+        by_key.setdefault(person_key(person["name"]), person)
+    for pub in publications:
+        spare, found = pub["corresponding_email"], []
+        for a in pub["authors"]:
+            if a.get("etal") or not a.get("corresponding"):
+                continue
+            person = by_key.get(a["key"])
+            email = person["email"] if person and person["email"] else None
+            if not email and spare:
+                email, spare = spare, None
+            name = person["name"] if person else f"{a['last']}, {'. '.join(a['initials'])}."
+            found.append({"name": name, "slug": a["slug"], "email": email})
+        pub["corresponding"] = found
+        if pub["corresponding_email"] and not found:
+            problems.warn(pub["where"], "`corresponding_email` is set but no author is marked `corresponding`, so it is not shown. Add `corresponding = {Last name}`.")
+
+
 def author_roles(publications):
     """Which author styles occur, for the legend on the Publications page."""
     authors = [a for p in publications for a in p["authors"] if not a.get("etal")]
@@ -998,11 +1022,7 @@ def load_site(content_dir, root, problems, today=None):
     )
 
     style_authors(publications, people)
-    for pub in publications:  # up to four other papers that share keywords with this one (most shared first, then newest)
-        mine = {k.lower() for k in pub["keywords"]}
-        scored = [(len(mine & {k.lower() for k in o["keywords"]}), o) for o in publications if o is not pub and mine]
-        ranked = sorted((x for x in scored if x[0]), key=lambda x: (-x[0], -x[1]["year"], x[1]["key"]))
-        pub["related"] = [{k: o[k] for k in ("slug", "title", "year", "venue")} for _, o in ranked[:4]]
+    attach_correspondence(publications, people, problems)
     for person in people:  # each profile page lists the person's own papers (newest first, as loaded)
         person["author_key"] = person_key(person["name"])
         person["publications"] = [

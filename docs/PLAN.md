@@ -103,7 +103,7 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
 - [~] 7d Design round 4 (Oct 2026, built and tested, not yet pushed): every People listing is a fixed-size clickable card
       showing role and affiliation (not years); publications are bordered, condensed cards with a search box (all BibTeX
       fields), year links and big year headings; every paper gets its own page (`publication.html`) built from its `.bib`
-      (keywords, month, pmid, extra link fields, citation + BibTeX copy, related papers, Google Scholar meta tags); cards
+      (keywords, month, pmid, extra link fields, citation + BibTeX copy, corresponding author + email, Google Scholar meta tags; the related-papers section was dropped); cards
       open the page and the abstract toggle moved there. `content/publications/_TEMPLATE.bib` lists every field and every
       paper file carries the blank optional lines. Skipped on purpose: auto topic tagging, citation counts, "my list".
       Literature fill (PubMed, Crossref, OpenAlex by DOI): added pmid, month, keywords and 22 missing abstracts to the 49

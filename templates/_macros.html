@@ -79,7 +79,8 @@
 {% endif %}
 {% endmacro %}
 
-{# Authors on a paper's own page: lab members link to their profile; roles are styled and spelled out for screen readers. #}
+{# Authors on a paper's own page: lab members link to their profile; lab members and co-first authors are styled and spelled
+   out for screen readers. Corresponding authors are not highlighted here: they get their own row under "Cite". #}
 {% macro paper_authors(p) %}
-{% for a in p.authors %}{% if a.etal %}et al.{% else %}{% set name = a.last ~ ', ' ~ (a.initials|list|join('. ')) ~ '.' %}{% if a.classes %}{% if a.slug %}<a class="au {{ a.classes }}" href="{{ url('people/' ~ a.slug ~ '/') }}">{{ name }}<span class="sr-only"> ({{ a.role_text }})</span></a>{% else %}<span class="au {{ a.classes }}">{{ name }}<span class="sr-only"> ({{ a.role_text }})</span></span>{% endif %}{% else %}{{ name }}{% endif %}{% endif %}{{ ", " if not loop.last }}{% endfor %}
+{% for a in p.authors %}{% if a.etal %}et al.{% else %}{% set name = a.last ~ ', ' ~ (a.initials|list|join('. ')) ~ '.' %}{% set classes = (['au-member'] if a.member else []) + (['au-cofirst'] if a.cofirst else []) %}{% set roles = (['lab member'] if a.member else []) + (['co-first author'] if a.cofirst else []) %}{% if classes %}{% if a.slug %}<a class="au {{ classes|join(' ') }}" href="{{ url('people/' ~ a.slug ~ '/') }}">{{ name }}<span class="sr-only"> ({{ roles|join(', ') }})</span></a>{% else %}<span class="au {{ classes|join(' ') }}">{{ name }}<span class="sr-only"> ({{ roles|join(', ') }})</span></span>{% endif %}{% else %}{{ name }}{% endif %}{% endif %}{{ ", " if not loop.last }}{% endfor %}
 {% endmacro %}

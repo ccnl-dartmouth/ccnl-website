@@ -21,10 +21,7 @@
       <h1>{{ pub.title }}</h1>
       <p class="paper-authors">{{ m.paper_authors(pub) }}</p>
       {% set cofirst = pub.authors|selectattr("cofirst")|list %}
-      {% set corresponding = pub.authors|selectattr("corresponding")|list %}
-      {% if cofirst or corresponding %}
-      <p class="author-key small">{% if cofirst %}<span class="au au-cofirst">co-first author</span>{% endif %}{% if corresponding %}<span class="au au-corr">corresponding author</span>{% endif %}</p>
-      {% endif %}
+      {% if cofirst %}<p class="author-key small"><span class="au au-cofirst">co-first author</span></p>{% endif %}
       {% if pub.note %}<p class="pub-note">{{ pub.note }}</p>{% endif %}
       {% if pub.links %}
       <ul class="pub-links paper-links">{% for l in pub.links %}<li><a href="{{ l.url }}">{{ l.label }}</a></li>{% endfor %}</ul>
@@ -53,6 +50,8 @@
       <dt>Citation</dt><dd>{{ pub.citation }}</dd>
       {% if pub.doi %}<dt>DOI</dt><dd><a href="{{ pub.doi }}">{{ pub.doi|replace('https://doi.org/', '') }}</a></dd>{% endif %}
       {% if pub.pmid %}<dt>PubMed ID</dt><dd><a href="https://pubmed.ncbi.nlm.nih.gov/{{ pub.pmid }}/">{{ pub.pmid }}</a></dd>{% endif %}
+      {% if pub.corresponding %}<dt>Corresponding author{{ "s" if pub.corresponding|length > 1 }}</dt>
+      <dd>{% for c in pub.corresponding %}{% if c.slug %}<a href="{{ url('people/' ~ c.slug ~ '/') }}">{{ c.name }}</a>{% else %}{{ c.name }}{% endif %}{% if c.email %} &middot; {{ m.email(c.email) }}{% endif %}{% if not loop.last %}<br>{% endif %}{% endfor %}</dd>{% endif %}
     </dl>
     <details class="bibtex">
       <summary>BibTeX</summary>
@@ -60,12 +59,5 @@
       <button type="button" class="copy-bibtex" data-target="bibtex-text" hidden>Copy BibTeX</button>
     </details>
   </section>
-
-  {% if pub.related %}
-  <section>
-    <h2>Related papers</h2>
-    <ul class="related">{% for r in pub.related %}<li><a href="{{ url('publications/' ~ r.slug ~ '/') }}">{{ r.title }}</a> <span class="meta">{{ r.venue }}, {{ r.year }}</span></li>{% endfor %}</ul>
-  </section>
-  {% endif %}
 </article>
 {% endblock %}
