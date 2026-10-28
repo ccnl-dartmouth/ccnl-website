@@ -4,7 +4,6 @@ role: postdoc
 status: current
 start: 2024
 degrees: Ph.D.
-email: psipeter@gmail.com
 links:
   scholar: "https://scholar.google.com/citations?user=s0rRjDEAAAAJ"
 ---
