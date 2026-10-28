@@ -16,7 +16,7 @@ def test_author_lines_have_no_year_but_year_headings_remain(sandbox):
     lines = author_lines(html)
     assert len(lines) == 12
     assert not any(re.search(r"\(\d{4}\)", line) for line in lines)
-    assert '<h3 class="year">2024</h3>' in html
+    assert '<h2 class="year">2024</h2>' in html
 
 
 # ----- profile pages
@@ -27,13 +27,13 @@ def test_profile_lists_every_paper_by_that_person(sandbox):
     pat = next(p for p in result.site["people"] if p["slug"] == "pat-investigator")
     html = result.page("people/pat-investigator/index.html")
     assert 'id="publications"' in html
-    assert len(pat["publications"]) == 12 and html.count('<li class="pub">') == 12
+    assert len(pat["publications"]) == 12 and html.count('<li class="pub"') == 12
     assert "Publications <span class=\"count\">(12)</span>" in html
 
 
 def test_only_the_profile_owner_is_highlighted(sandbox):
     html = sandbox.build().page("people/alex-postdoc/index.html")
-    block = html.split("Context effects in Bayesian choice")[1].split("</li>")[0]
+    block = html.split('pub-title">Context effects in Bayesian choice')[1].split("</li>")[0]
     assert '<span class="au au-member">Postdoc A<span class="sr-only"> (this person)</span></span>' in block
     assert "Student S, " in block and "Investigator P" in block and block.count("au-member") == 1
     assert "au-cofirst" not in html and "au-corr" not in html  # no role styles and no legend on profile pages

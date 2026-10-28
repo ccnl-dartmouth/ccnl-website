@@ -104,14 +104,22 @@ def test_every_people_listing_is_a_clickable_fixed_size_card(sandbox):
     css = (sandbox.out / "static" / "style.css").read_text()
     assert ".card-link::after { content: \"\"; position: absolute; inset: 0; }" in css
     assert "border-bottom: 1px solid var(--line); display: flex" not in css  # no more thin separator lines
-    assert "height: 18rem" in css and "height: 5.75rem" in css
+    assert "height: 19rem" in css and "height: 5.75rem" in css
 
 
 def test_publications_are_bordered_cards_without_separator_lines(sandbox):
     sandbox.build()
     css = (sandbox.out / "static" / "style.css").read_text()
     rule = css.split(".pub { ")[1].split("}")[0]
-    assert "border: 1px solid var(--line)" in rule and "border-bottom" not in rule and "min-height" in rule
+    assert "border: 1px solid var(--line)" in rule and "border-bottom" not in rule
+
+
+def test_cards_show_role_and_affiliation_not_years(sandbox):
+    sandbox.write("people/zed-card.md", person_md(name="Zed Card", role="grad", start=2031))
+    html = sandbox.build().page("people/index.html")
+    card = html.split("Zed Card")[1].split("</li>")[0]
+    assert "Graduate Student" in card and "2031" not in card
+    assert "Example University" in card  # current members default to the lab's institution
 
 
 def test_person_without_photo_gets_an_initial(sandbox):

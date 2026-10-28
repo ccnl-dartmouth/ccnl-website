@@ -745,6 +745,7 @@ def load_publications(content_dir, root, problems, images):
                 "note": clean_bib_text(entry.get("note", "")),
                 "abstract": clean_bib_text(entry.get("abstract", "")),
                 "preprint": preprint,
+                "search": " ".join(clean_bib_text(v) for k, v in entry.items() if k not in ("image", "id", "entrytype") and v),  # every BibTeX field, for the search box
                 "image_src": image_src,
                 "image_name": entry["image"].strip() if entry.get("image") else None,
                 "image": None,
@@ -894,6 +895,9 @@ def load_site(content_dir, root, problems, today=None):
     images = scan_images(content_dir)
     research = load_research(content_dir, root, problems, images)
     people = load_people(content_dir, root, problems, images)
+    for person in people:  # shown on the cards: where they are now, or the lab's institution for current members
+        person["affiliation"] = person["current_position"] or (
+            (lab.get("institution") or "") if person["status"] == "current" and person["role"] != "collaborator" else "")
     publications = load_publications(content_dir, root, problems, images)
     resources = load_resources(content_dir, root, problems)
     teaching = load_teaching(content_dir, root, problems, today)

@@ -98,12 +98,13 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .card-link::after { content: ""; position: absolute; inset: 0; }
 .person-card .meta a, .alumnus .meta a { position: relative; z-index: 1; }
 .person-card .meta a:focus-visible, .alumnus .meta a:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
-.person-card { width: 11.5rem; height: 18rem; padding: .5rem; }
+.person-card { width: 11.5rem; height: 19rem; padding: .5rem; }
 .person-card p { margin: 0; }
 .person-name { font-weight: 600; margin-top: .6rem !important; line-height: 1.35; }
 .person-card .meta { line-height: 1.35; }
 .person-name, .person-card .meta, .alumnus-name, .alumnus .meta { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
-.person-card .meta { -webkit-line-clamp: 3; }
+.person-card .meta { -webkit-line-clamp: 2; }
+.person-card .meta:first-of-type { -webkit-line-clamp: 1; }
 .avatar { display: block; border-radius: 4px; object-fit: cover; background: var(--soft); }
 .avatar-card { width: 100%; aspect-ratio: 1; }
 .avatar-profile { width: 100%; max-width: 16rem; aspect-ratio: 1; border-radius: 8px; }
@@ -124,12 +125,13 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .degrees { font-weight: 400; color: var(--muted); }
 
 /* ---- publications ---- */
-.pubs { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: 1rem; }
-.pub { display: grid; grid-template-columns: minmax(0, 1fr) 9rem; gap: 1.25rem; align-items: start; padding: 1rem 1.1rem; min-height: 9.5rem; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); }
+[hidden] { display: none !important; }
+.pubs { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: .6rem; }
+.pub { display: grid; grid-template-columns: minmax(0, 1fr) 6rem; gap: .9rem; align-items: start; padding: .7rem .9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); }
 .pub-thumb { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 4px; border: 1px solid var(--line); background: var(--soft); }
-.pub p { margin: 0 0 .2rem; }
-.pub-title { font-weight: 600; }
-.pub-authors, .pub-venue { color: var(--muted); font-size: .95rem; }
+.pub p { margin: 0 0 .1rem; }
+.pub-title { font-weight: 600; line-height: 1.3; }
+.pub-authors, .pub-venue { color: var(--muted); font-size: .88rem; line-height: 1.4; }
 .pub-note { font-size: .9rem; font-style: italic; }
 .au-member { font-weight: 700; color: var(--au-member); }
 .au-cofirst { color: var(--au-cofirst); }
@@ -142,6 +144,15 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .pub-abstract summary { cursor: pointer; color: var(--green); font-size: .9rem; width: max-content; }
 .pub-abstract p { margin-top: .5rem; max-width: 46rem; font-size: .95rem; }
 .year { margin: 1.75rem 0 .75rem; color: var(--muted); font-family: var(--sans); font-weight: 600; font-size: 1rem; }
+.pubs-page .year { margin: 2.5rem 0 1rem; padding-bottom: .3rem; border-bottom: 2px solid var(--line); color: var(--ink); font-family: var(--serif); font-size: 2rem; line-height: 1.2; }
+.pub-search { display: flex; gap: .5rem; max-width: 36rem; margin: 1rem 0 .5rem; }
+.pub-search input { flex: 1; min-width: 0; font: inherit; padding: .55rem .8rem; color: var(--ink); background: var(--bg); border: 1px solid var(--muted); border-radius: 6px; }
+.pub-search button { font: inherit; padding: .5rem .9rem; color: var(--green); background: none; border: 1px solid var(--green); border-radius: 6px; cursor: pointer; }
+.pub-search button:hover { background: var(--green); color: var(--on-green); }
+#pub-count { margin: 0 0 .75rem; min-height: 1.4em; }
+.year-nav { display: flex; flex-wrap: wrap; gap: .4rem .6rem; margin: 0 0 .5rem; }
+.year-nav a { padding: .1rem .6rem; border: 1px solid var(--line); border-radius: 999px; font-size: .9rem; text-decoration: none; }
+.year-nav a:hover { border-color: var(--green); }
 
 /* ---- research ---- */
 .theme { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1.5rem 3rem; align-items: center; margin: 3rem 0; }

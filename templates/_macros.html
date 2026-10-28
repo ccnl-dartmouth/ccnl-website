@@ -14,8 +14,8 @@
 <li class="person-card">
   {{ avatar(p) }}
   <p class="person-name">{% if p.profile %}<a class="card-link" href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</p>
-  {% set bits = [p.degrees, p.years, p.current_position if p.status == 'current' else None]|select|list %}
-  {% if bits %}<p class="meta">{{ bits|join(' · ') }}</p>{% endif %}
+  <p class="meta">{{ p.role_label }}</p>
+  {% if p.affiliation %}<p class="meta">{{ p.affiliation }}</p>{% endif %}
   {% if not p.profile and p.links %}
   <p class="meta">{% for l in p.links %}<a href="{{ l.url }}">{{ l.label }}</a>{{ " &middot; "|safe if not loop.last }}{% endfor %}</p>
   {% endif %}
@@ -26,7 +26,7 @@
 {% macro collaborator(p) %}
 <li class="alumnus">
   <span class="alumnus-name">{% if p.profile %}<a class="card-link" href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% elif p.links %}<a class="card-link" href="{{ p.links[0].url }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</span>
-  {% if p.current_position %}<span class="meta">{{ p.current_position }}</span>{% endif %}
+  {% if p.affiliation %}<span class="meta">{{ p.affiliation }}</span>{% endif %}
   {% if p.links|length > 1 %}<span class="meta">{% for l in p.links[1:] %}<a href="{{ l.url }}">{{ l.label }}</a>{{ " &middot; "|safe if not loop.last }}{% endfor %}</span>{% endif %}
 </li>
 {% endmacro %}
@@ -34,8 +34,7 @@
 {% macro alumnus(p) %}
 <li class="alumnus">
   <span class="alumnus-name">{% if p.profile %}<a class="card-link" href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}{% if p.degrees %}, {{ p.degrees }}{% endif %}</span>
-  {% set bits = [p.years, p.current_position]|select|list %}
-  {% if bits %}<span class="meta">{{ bits|join(' · ') }}</span>{% endif %}
+  {% if p.affiliation %}<span class="meta">{{ p.affiliation }}</span>{% endif %}
 </li>
 {% endmacro %}
 
@@ -43,7 +42,7 @@
    With person_key (a profile page) only that person is highlighted; otherwise lab members, co-first and corresponding
    authors are styled. #}
 {% macro publication(p, person_key=none) %}
-<li class="pub">
+<li class="pub" data-search="{{ p.search }}">
   <div class="pub-body">
     <p class="pub-title">{{ p.title }}</p>
     <p class="pub-authors">{% for a in p.authors %}{% if a.etal %}et al.{% elif person_key %}{% if a.key == person_key %}<span class="au au-member">{{ a.last }} {{ a.initials }}<span class="sr-only"> (this person)</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{% elif a.classes %}<span class="au {{ a.classes }}">{{ a.last }} {{ a.initials }}<span class="sr-only"> ({{ a.role_text }})</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{{ ", " if not loop.last }}{% endfor %}</p>
@@ -61,23 +60,23 @@
 {% endmacro %}
 
 {# Preprints, then published papers grouped by year (newest first). top=2 on the Publications page; top=3 when it is a
-   section of a profile page, where the years are not nested under a "Published papers" heading. #}
+   section of a profile page. Each group is a section with an id (preprints, year-2024) so the Publications page can
+   link to it and hide it when a search matches nothing in it. #}
 {% macro publication_lists(pubs, person_key=none, top=2) %}
 {% set preprints = pubs|selectattr("preprint")|list %}
 {% set published = pubs|rejectattr("preprint")|list %}
 {% if preprints %}
-<section>
-  <h{{ top }}>Preprints</h{{ top }}>
+<section class="pub-year" id="preprints">
+  <h{{ top }}{% if top == 2 %} class="year"{% endif %}>Preprints</h{{ top }}>
   <ul class="pubs">{% for p in preprints %}{{ publication(p, person_key) }}{% endfor %}</ul>
 </section>
 {% endif %}
 {% if published %}
-<section>
-  {% if top == 2 %}<h2>Published papers</h2>{% endif %}
-  {% for year, group in published|groupby("year")|reverse %}
-  <h3 class="year">{{ year }}</h3>
+{% for year, group in published|groupby("year")|reverse %}
+<section class="pub-year" id="year-{{ year }}">
+  <h{{ top }} class="year">{{ year }}</h{{ top }}>
   <ul class="pubs">{% for p in group %}{{ publication(p, person_key) }}{% endfor %}</ul>
-  {% endfor %}
 </section>
+{% endfor %}
 {% endif %}
 {% endmacro %}

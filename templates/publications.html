@@ -2,6 +2,7 @@
 {% import "_macros.html" as m %}
 {% block title %}Publications &middot; {{ lab.name }}{% endblock %}
 {% block content %}
+<div class="pubs-page">
 <h1>Publications</h1>
 {% set roles = site.author_roles %}
 {% if roles.member or roles.cofirst or roles.corresponding %}
@@ -14,8 +15,22 @@
 {% endif %}
 
 {% if site.publications %}
+{# The search box needs JavaScript, so it stays hidden without it; the full list and the year links work either way. #}
+<form class="pub-search" role="search" hidden>
+  <label for="pub-q" class="sr-only">Search publications</label>
+  <input id="pub-q" type="search" placeholder="Search title, authors, journal, abstract, year&hellip;" autocomplete="off">
+  <button type="button" class="pub-clear" hidden>Clear</button>
+</form>
+<p id="pub-count" class="small" aria-live="polite"></p>
+{% set years = site.publications|rejectattr("preprint")|map(attribute="year")|unique|sort(reverse=true)|list %}
+<nav class="year-nav" aria-label="Jump to a year">
+  {% if site.publications|selectattr("preprint")|list %}<a href="#preprints">Preprints</a>{% endif %}
+  {% for y in years %}<a href="#year-{{ y }}">{{ y }}</a>{% endfor %}
+</nav>
 {{ m.publication_lists(site.publications) }}
+<p id="pub-none" hidden>No papers match your search.</p>
 {% else %}
 <p>Publications will appear here.</p>
 {% endif %}
+</div>
 {% endblock %}

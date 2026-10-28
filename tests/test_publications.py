@@ -1,4 +1,4 @@
-from conftest import bib, image_bytes
+from conftest import ROOT, bib, image_bytes
 
 from ccnl.content import parse_authors
 
@@ -81,7 +81,7 @@ def test_author_roles_are_styled_by_class_not_marked_with_symbols(sandbox):
     sandbox.write("publications/new.bib", bib(cofirst="Doe, Investigator", corresponding="Investigator"))
     result = sandbox.build()
     assert result.ok, result.errors
-    block = result.page("publications/index.html").split("A title")[1].split("</li>")[0]
+    block = result.page("publications/index.html").split('pub-title">A title')[1].split("</li>")[0]
     # Doe is not in People: co-first only. Pat Investigator is a lab member, co-first and corresponding.
     assert '<span class="au au-cofirst">Doe J<span class="sr-only"> (co-first author)</span></span>' in block
     assert ('<span class="au au-member au-cofirst au-corr">Investigator P'
@@ -91,14 +91,14 @@ def test_author_roles_are_styled_by_class_not_marked_with_symbols(sandbox):
 
 def test_corresponding_author_and_lab_member_styles_are_separate(sandbox):
     sandbox.write("publications/new.bib", bib(corresponding="Doe"))
-    block = sandbox.build().page("publications/index.html").split("A title")[1].split("</li>")[0]
+    block = sandbox.build().page("publications/index.html").split('pub-title">A title')[1].split("</li>")[0]
     assert '<span class="au au-corr">Doe J<span class="sr-only"> (corresponding author)</span></span>' in block
     assert '<span class="au au-member">Investigator P<span class="sr-only"> (lab member)</span></span>' in block
 
 
 def test_authors_outside_the_lab_are_not_styled(sandbox):
     html = sandbox.build().page("publications/index.html")
-    block = html.split("A range-normalization model")[1].split("</li>")[0]
+    block = html.split('pub-title">A range-normalization model')[1].split("</li>")[0]
     assert ", Outsider M, " in block  # plain text, no span
     assert "Collaborator K" in block and 'au-member' in block.split("Collaborator K")[0][-120:]
 
@@ -141,7 +141,7 @@ def test_et_al_is_never_styled():
 
 def test_every_publication_has_a_right_aligned_thumbnail_with_a_generic_fallback(sandbox):
     html = sandbox.build().page("publications/index.html")
-    items = html.split('<li class="pub">')[1:]
+    items = html.split('<li class="pub"')[1:]
     assert len(items) == 12
     for item in items:
         assert item.index('class="pub-body"') < item.index('class="pub-thumb"')  # text first, thumbnail after (right column)
@@ -173,7 +173,7 @@ def test_et_al_rendered(sandbox):
 def test_preprints_are_separate_and_published_sorted_newest_first(sandbox):
     result = sandbox.build()
     html = result.page("publications/index.html")
-    assert html.index("Preprints") < html.index("Published papers")
+    assert html.index('id="preprints"') < html.index('id="year-')
     years = [p["year"] for p in result.site["publications"]]
     assert years == sorted(years, reverse=True)
     assert [p["preprint"] for p in result.site["publications"]].count(True) == 2
@@ -221,3 +221,36 @@ def test_html_in_title_is_escaped(sandbox):
 def test_run_together_initials_are_kept_whole():
     names = parse_authors("Wang, MC and Woo, JH and Wang, Xiao-Jing and Public, Jane Q. and Wu, S-W and Soltani, A")
     assert [n["initials"] for n in names] == ["MC", "JH", "XJ", "JQ", "SW", "A"]
+
+
+# ----- search, year navigation and condensed layout
+
+
+def test_publications_page_has_search_box_year_links_and_year_sections(sandbox):
+    result = sandbox.build()
+    html = result.page("publications/index.html")
+    assert 'id="pub-q"' in html and 'role="search"' in html and "<form class=\"pub-search\" role=\"search\" hidden>" in html
+    years = sorted({p["year"] for p in result.site["publications"] if not p["preprint"]}, reverse=True)
+    for y in years:
+        assert f'<a href="#year-{y}">{y}</a>' in html and f'<section class="pub-year" id="year-{y}">' in html
+    assert '<a href="#preprints">Preprints</a>' in html
+
+
+def test_every_paper_carries_all_its_bibtex_fields_for_the_search(sandbox):
+    sandbox.write("publications/zed.bib", bib("zed2030", title="Searchable title", abstract="Unusual zebrafish abstract", note="Highlighted note"))
+    html = sandbox.build().page("publications/index.html")
+    item = html.split("Searchable title")[0].rsplit('<li class="pub"', 1)[1]
+    assert "zebrafish" in item and "highlighted note" in item.lower()
+
+
+def test_search_script_filters_on_every_word_and_hides_empty_years():
+    js = (ROOT / "static" / "site.js").read_text()
+    assert "pub-q" in js and "terms.every" in js and "g.hidden = !any" in js
+
+
+def test_year_headings_are_big_with_a_rule_and_cards_are_condensed(sandbox):
+    sandbox.build()
+    css = (sandbox.out / "static" / "style.css").read_text()
+    rule = css.split(".pubs-page .year {")[1].split("}")[0]
+    assert "border-bottom: 2px solid" in rule and "font-size: 2rem" in rule
+    assert "[hidden] { display: none !important; }" in css
