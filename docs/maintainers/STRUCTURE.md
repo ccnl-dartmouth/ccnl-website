@@ -28,7 +28,7 @@ The old WordPress site is not being recreated; we keep its core information in a
 | Research | `research/*.md` | One file per theme: title, text, optional image |
 | People | `people/*.md` | Current and alumni, grouped by role; profile pages generated |
 | Publications | `publications/*.bib` | Preprints + published, by year |
-| Contact | `lab.yaml` + `join.md` | Address and email; the "Join us" section (recruiting banner + text per career stage) from `join.md` |
+| Contact | `lab.yaml` + `join.md` | Address and email; the "Join us" block (a card per open position, or a "not currently recruiting" line, plus a general note) from `join.md` |
 | Resources | `resources/*.md` + `teaching/*.md` | collapsible "Code and data" and "Teaching" sections (closed by default, with counts; open automatically from a `#teaching` or `#code-data` link), each holding cards (Teaching is not a separate page) |
 
 Deferred (can be added later without touching the rest): Participate / Active Studies, Press,
@@ -173,12 +173,17 @@ Course description in Markdown.
 
 ```yaml
 ---
-recruiting: closed        # open | closed: shows a banner; flip in one line
 updated: 2026-10
+openings:                 # only what is open now; none (or `openings: []`) shows "not currently recruiting"
+  - title: Postdoctoral researcher
+    text: One or two sentences.
+    deadline: 2026-12-01  # optional date; shown as "Apply by December 1, 2026"
+    link: https://...     # optional, https only
 ---
-Sections per career stage (postdoc, graduate, undergraduate) and how to contact the PI.
-Can link to a Google Form or an email address.
+General note shown under the openings (how to get in touch, etc.).
 ```
+
+Each opening becomes a small card in the "Join us" block. The old `recruiting: open|closed` switch was removed (it is an error now): an empty list already means closed.
 
 ### Home: `content/home.md`
 
@@ -224,7 +229,7 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 - No Research page of fixed length: themes are files, the count can change.
 - Obfuscate email addresses in the build.
 - Warn on stale pages (12 months).
-- Recruiting is not done through the site yet; `join.md` has an open/closed switch for later.
+- Recruiting is not done through the site yet; `join.md` lists openings (an empty list means closed).
 
 ## Visual design (decided Oct 2026)
 

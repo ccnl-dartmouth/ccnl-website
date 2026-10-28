@@ -160,14 +160,35 @@ def test_bad_month_format(sandbox):
     assert sandbox.build().has_error("join.md", "'updated' must look like 2026-10")
 
 
-def test_recruiting_switch(sandbox):
-    assert "currently recruiting" in sandbox.build().page("contact/index.html")
-    sandbox.edit("join.md", "recruiting: open", "recruiting: closed")
+def test_no_openings_says_not_recruiting_and_keeps_the_note(sandbox):
+    sandbox.write("join.md", "---\nupdated: 2026-10\n---\nWrite to the PI any time.\n")
+    html = sandbox.build().page("contact/index.html")
+    assert "not currently recruiting" in html and "Write to the PI any time." in html and 'class="stack openings"' not in html
+    sandbox.write("join.md", "---\nupdated: 2026-10\nopenings: []\n---\n")
     assert "not currently recruiting" in sandbox.build().page("contact/index.html")
-    sandbox.edit("join.md", "recruiting: closed", "recruiting: maybe")
-    assert sandbox.build().has_error("join.md", "'recruiting' must be one of: open, closed")
 
 
-def test_teaching_needs_code_and_title(sandbox):
-    sandbox.write("teaching/new.md", "---\ntitle: Only a title\n---\n")
-    assert sandbox.build().has_error("new.md", "missing required field 'code'")
+def test_openings_replace_the_old_recruiting_switch(sandbox):
+    sandbox.edit("join.md", "updated: 2026-10", "updated: 2026-10\nrecruiting: open")
+    assert sandbox.build().has_error("join.md", "`recruiting` is no longer used", "openings")
+
+
+def test_opening_needs_a_title_and_text(sandbox):
+    sandbox.write("join.md", "---\nupdated: 2026-10\nopenings:\n  - title: Postdoc\n---\n")
+    assert sandbox.build().has_error("join.md", "openings item 1 is missing `text`")
+    sandbox.write("join.md", "---\nupdated: 2026-10\nopenings:\n  - text: Something\n---\n")
+    assert sandbox.build().has_error("join.md", "openings item 1 is missing `title`")
+
+
+def test_opening_deadline_and_link_are_checked(sandbox):
+    sandbox.write("join.md", "---\nupdated: 2026-10\nopenings:\n  - {title: A, text: B, deadline: soon}\n---\n")
+    assert sandbox.build().has_error("join.md", "`deadline` must be a date like 2026-12-01")
+    sandbox.write("join.md", "---\nupdated: 2026-10\nopenings:\n  - {title: A, text: B, link: example.org}\n---\n")
+    assert sandbox.build().has_error("join.md", "`link` must start with https://")
+
+
+def test_openings_must_be_a_list_with_known_fields(sandbox):
+    sandbox.write("join.md", "---\nupdated: 2026-10\nopenings: yes\n---\n")
+    assert sandbox.build().has_error("join.md", "`openings` must be a list")
+    sandbox.write("join.md", "---\nupdated: 2026-10\nopenings:\n  - {title: A, text: B, when: now}\n---\n")
+    assert sandbox.build().has_error("join.md", "unknown field(s): when")

@@ -399,12 +399,11 @@ TEXT_PAGE_SPEC = {
     "headline": {"example": "How does the brain learn flexibly?"},
     "hero_image": {"example": "lab-group.jpg"},
     "hero_alt": {"example": "Lab members around a table at the 2026 retreat"},
-    "recruiting": {"choices": ("open", "closed"), "example": "closed"},
     "updated": {"type": "month", "example": "2026-10"},
 }
 
 
-def load_text_page(content_dir, root, name, problems, required, today, allowed=("headline", "recruiting", "updated")):
+def load_text_page(content_dir, root, name, problems, required, today, allowed=("headline", "updated")):
     """Load content/<name>.md: front matter limited to `allowed` fields, plus the Markdown body as HTML."""
     path = Path(content_dir) / f"{name}.md"
     where = where_of(path, root)
@@ -425,6 +424,51 @@ def load_text_page(content_dir, root, name, problems, required, today, allowed=(
         elif not clean.get("hero_alt"):
             problems.warn(where, "add `hero_alt:` describing the photo in a sentence, for people who use screen readers.")
     return {**clean, "html": render_markdown(body), "where": where, "hero": None}
+
+
+OPENING_KEYS = ("title", "text", "deadline", "link")
+
+
+def load_join(content_dir, root, problems, today):
+    """Load content/join.md: `updated`, a list of `openings` (only what is open now), and a general note as the Markdown body."""
+    path = Path(content_dir) / "join.md"
+    where = where_of(path, root)
+    if not path.is_file():
+        return None
+    meta, body = read_front_matter(path, where, problems)
+    if meta is None:
+        return None
+    raw = meta.pop("openings", None)
+    if "recruiting" in meta:
+        meta.pop("recruiting")
+        problems.error(where, "`recruiting` is no longer used. List each open position under `openings:`; with no openings the page says you are not recruiting.")
+    clean = check_meta(meta, where, {"updated": TEXT_PAGE_SPEC["updated"]}, problems)
+    check_stale(clean.get("updated"), where, today, problems)
+    openings = []
+    if raw is not None and not isinstance(raw, list):
+        problems.error(where, "`openings` must be a list: one item per open position, each starting with `- title: ...`. Use `openings: []` or leave it out when nothing is open.")
+        raw = []
+    for i, item in enumerate(raw or [], 1):
+        if not isinstance(item, dict):
+            problems.error(where, f"openings item {i} must be lines like `title: ...` and `text: ...` (indented under a `- `).")
+            continue
+        unknown = set(item) - set(OPENING_KEYS)
+        if unknown:
+            problems.error(where, f"openings item {i} has unknown field(s): {', '.join(sorted(map(str, unknown)))}. Allowed: {', '.join(OPENING_KEYS)}.")
+        for key in ("title", "text"):
+            if not str(item.get(key) or "").strip():
+                problems.error(where, f"openings item {i} is missing `{key}`. Add a line like `{key}: Postdoctoral researcher`.")
+        deadline, link = item.get("deadline"), str(item.get("link") or "").strip()
+        label = None
+        if deadline not in (None, ""):
+            if isinstance(deadline, datetime.date):
+                label = f"{deadline:%B} {deadline.day}, {deadline.year}"
+            else:
+                problems.error(where, f"openings item {i}: `deadline` must be a date like 2026-12-01 (got {deadline!r}).")
+        if link and not link.startswith("https://"):
+            problems.error(where, f"openings item {i}: `link` must start with https:// (got '{link}').")
+        openings.append({"title": str(item.get("title") or "").strip(), "text": str(item.get("text") or "").strip(), "deadline": label, "link": link or None})
+    return {"updated": clean.get("updated"), "openings": openings, "html": render_markdown(body), "where": where}
 
 
 RESEARCH_SPEC = {
@@ -958,7 +1002,7 @@ def load_site(content_dir, root, problems, today=None):
 
     home = load_text_page(content_dir, root, "home", problems, True, today, allowed=("headline", "hero_image", "hero_alt"))
     about = load_text_page(content_dir, root, "about", problems, "about" in nav_pages, today, allowed=())
-    join = load_text_page(content_dir, root, "join", problems, False, today, allowed=("recruiting", "updated"))  # shown on the Contact page
+    join = load_join(content_dir, root, problems, today)  # shown on the Contact page
 
     images = scan_images(content_dir)
     research = load_research(content_dir, root, problems, images)

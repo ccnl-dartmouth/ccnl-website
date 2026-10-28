@@ -57,7 +57,7 @@ Every piece of text or picture on the website comes from one file in the `conten
 | **Publications**: a paper's thumbnail | `content/images/<paper>.jpg` (same name as the paper's file) | [Papers](ADD-A-PAPER.md) |
 | **Resources**: software and datasets; the teaching list | `content/resources/<name>.md`, `content/teaching/<course>.md` | [Site text](EDIT-SITE-TEXT.md) |
 | **Contact**: address and email | `content/lab.yaml` | [Site text](EDIT-SITE-TEXT.md) |
-| **Contact**: "Join us" text and open/closed banner | `content/join.md` | [Site text](EDIT-SITE-TEXT.md) |
+| **Contact**: "Join us" openings and general note | `content/join.md` | [Site text](EDIT-SITE-TEXT.md) |
 
 Everything else (colors, fonts, layout) is part of the website's design and lives outside `content/`. Please leave it
 to the lab's website maintainer.

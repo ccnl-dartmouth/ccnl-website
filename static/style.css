@@ -183,7 +183,8 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 
 /* ---- other pages ---- */
 .banner { background: var(--soft); border-left: 4px solid var(--line); padding: .75rem 1rem; max-width: 42rem; }
-.banner-open { border-left-color: var(--green); }
+.openings { max-width: none; }
+.opening-meta { margin: 0; color: var(--muted); font-size: .95rem; }
 .stack { list-style: none; padding: 0; display: grid; gap: 1rem; max-width: 50rem; }
 .card { border: 1px solid var(--line); border-radius: 4px; padding: 1rem 1.25rem; background: var(--soft); font-style: normal; }
 .card h3 { margin-top: 0; font-size: 1.25rem; }

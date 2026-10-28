@@ -215,8 +215,10 @@ def test_hero_card_shows_name_and_affiliation_on_separate_lines_not_the_tagline(
 def test_contact_page_includes_the_join_section(sandbox):
     result = sandbox.build()
     html = result.page("contact/index.html")
-    assert 'id="join"' in html and "Join us" in html and "currently recruiting" in html
-    assert "Graduate students" in html  # the join.md text
+    assert 'id="join"' in html and "Join us" in html
+    assert "<h3>Graduate students</h3>" in html and "<h3>Undergraduates</h3>" in html  # one card per opening
+    assert "Apply by December 1, 2026" in html and 'href="https://example.edu/apply"' in html
+    assert "General questions are welcome." in html and "not currently recruiting" not in html
 
 
 def test_contact_page_without_join_file_is_just_contact(sandbox):

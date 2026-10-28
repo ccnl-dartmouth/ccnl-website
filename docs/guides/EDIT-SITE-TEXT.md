@@ -59,8 +59,26 @@ One file per course, shown on the Resources page. `code` is the course number, `
 ## Contact page
 
 - **Address and email:** in `content/lab.yaml` (`address`, `email`).
-- **"Join us" text:** `content/join.md`. `recruiting: open` or `closed` switches the banner, and `updated` is the date
-  the text was last checked. The text below the settings is shown on the Contact page.
+- **"Join us" block:** `content/join.md`. List only the positions that are open now, one item each, and the page shows
+  them as small cards. When the list is empty or left out, the page says the lab is not currently recruiting, so there
+  is nothing to switch off. The text below the settings is a general note that is always shown, for example how to get
+  in touch. `updated` is the month the page was last checked (the build warns after a year).
+
+```yaml
+---
+updated: 2026-10
+openings:
+  - title: Postdoctoral researcher
+    text: Computational modeling of learning and decision making.
+    deadline: 2026-12-01              # optional, shown as "Apply by December 1, 2026"
+    link: https://example.org/apply   # optional, must start with https://
+  - title: Undergraduate research
+    text: Projects combining human experiments and modeling. Contact Prof. Soltani.
+---
+General note shown under the openings.
+```
+
+  To close a position, delete its item. To close everything, delete all the items (or write `openings: []`).
 
 ## Lab-wide details: `content/lab.yaml`
 
