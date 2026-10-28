@@ -37,7 +37,7 @@ site on GitHub Pages that lab members can update themselves.
 
 Reviewed other labs' sites (Oct 2026). Layout and content: **Niv Lab (Princeton)**; look and feel:
 Contextual Dynamics Lab (Dartmouth) and Murray Lab (Yale). Also seen: Kable (Penn), LNCC (Brown),
-Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change later.
+Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and can change later.
 
 ## Open items
 
@@ -51,7 +51,7 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       external UptimeRobot monitor (no GitHub account needed); add him as an alert contact there.
 - [ ] List of lab members' GitHub usernames.
 - [ ] **Peter to check Dartmouth's brand guidelines** for the D-Pine logo on a lab site (decided Oct 2026 to keep it with no
-      visible credit meanwhile). The file is CC BY-SA 4.0, which asks for credit; see `docs/CREDITS.md` for the options
+      visible credit meanwhile). The file is CC BY-SA 4.0, which asks for credit; see `docs/maintainers/CREDITS.md` for the options
       (credit line, public-domain block D, or an official Dartmouth file). Same question for the NIH and NSF logos.
 - [ ] Long-lived contact email for the org (PI or lab list address).
 - [ ] Get admin access to the old WordPress site.
@@ -63,7 +63,7 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
 | 0 | Decisions | Org name, go-ahead (done except Dartmouth reply) |
 | 1 | GitHub setup | Org, repo, team, Pages, protections |
 | 2 | Content audit | Inventory of old pages, people, papers, images |
-| 3 | Structure design | Data schemas, repo layout, validation rules (machinery and member recipes then fixed; sections stay flexible). See `docs/STRUCTURE.md` |
+| 3 | Structure design | Data schemas, repo layout, validation rules (machinery and member recipes then fixed; sections stay flexible). See `docs/maintainers/STRUCTURE.md` |
 | 4 | Core build | Python build, placeholder styling, local preview |
 | 5 | Validation and tests | Friendly errors, pytest with broken fixtures |
 | 6 | Automation | Actions build/deploy, failure alerts, uptime monitor, link check |
@@ -78,10 +78,10 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
 
 - [x] 0 Decisions, 1 GitHub setup (remaining: PI as owner, 2FA, team/invites, `main` ruleset), 3 Structure design
 - [x] 4 Core build: `build.py` + `ccnl/` (loading, validation, images, rendering), templates, placeholder CSS,
-      `sample_content/`, smoke tests. Validation already gives friendly errors; phase 5 adds the full test suite.
+      `tests/fixture_lab/` (formerly `sample_content/`), smoke tests. Validation already gives friendly errors; phase 5 adds the full test suite.
 - [x] 5 Validation and tests: 101 pytest tests (`tests/`) cover every validation rule, image handling (resize,
       EXIF strip, HEIC, corrupt/oversized), atomic output, base path, CLI exit codes. Each runs against a
-      throwaway copy of `sample_content/` broken in one specific way. Known gap: BibTeX errors name the file
+      throwaway copy of `tests/fixture_lab/` broken in one specific way. Known gap: BibTeX errors name the file
       and entry key but not a line number (the parser does not report them).
 - [~] 8 Content migration (done Oct 2026, needs human review): old WordPress pages fetched through its REST API and
       converted by one-off scripts (not kept in the repo). Migrated: home text, PI profile + photo, 50 people
@@ -111,12 +111,12 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       (2 articles, 4 preprints, 1 CCN paper). Open: Peter to review those 7 and ask students for papers a name search
       cannot find (e.g. pre-Dartmouth work), SSRN preprints have no abstract, an optional `contact`/email on people cards
       is undecided.
-- [~] 10 Documentation: contributor guide written (`docs/ADD-YOUR-CONTENT.md`: bio, profile picture, papers, profile
-      fields, troubleshooting) and linked from the README; `tests/test_docs.py` builds the guide's examples so it
+- [~] 10 Documentation: contributor guides in `docs/guides/` (START-HERE with a where-does-it-come-from table, profile, papers, site text,
+      troubleshooting), linked from the README; maintainer docs in `docs/maintainers/`; `sample_content/` retired (fake lab is now `tests/fixture_lab/`); `tests/test_docs.py` builds the guide's examples so it
       cannot drift. Next: Peter follows the guide himself as a test; then a maintainer/handover page.
 - [~] 7c Design round 3 (Oct 2026): hero title larger with the department and Dartmouth College on separate lines;
       intro centered; Teaching moved into Resources; footer uses the Dartmouth D-Pine mark (Wikimedia, CC BY-SA 4.0, credit
-      line, removed from the footer on request: see docs/CREDITS.md) and the standard NIH logo; research page has generated placeholder illustrations in the
+      line, removed from the footer on request: see docs/maintainers/CREDITS.md) and the standard NIH logo; research page has generated placeholder illustrations in the
       alternating layout; publications show co-first/corresponding authors by color (no ° or *) and a right-aligned
       thumbnail on every entry (generic filler when the paper has none).
 - [~] 7b Design round 2 (Oct 2026): header is a centered nav only; hero card centered on the image with the
@@ -125,13 +125,13 @@ Gershman (Harvard). Sections are chosen in `docs/STRUCTURE.md` and can change la
       wordmark public domain but marked "trademarked"). TODO: check Dartmouth's identity/brand guidelines before launch
       (is a Dartmouth wordmark on a lab site fine, and which file is official?); NIH/NSF have their own logo-use rules.
       Awards and programs of 7 alumni were moved into their bios.
-- [~] 7 Design: layout and visual decisions recorded in `docs/STRUCTURE.md` ("Visual design"); templates, CSS,
+- [~] 7 Design: layout and visual decisions recorded in `docs/maintainers/STRUCTURE.md` ("Visual design"); templates, CSS,
       self-hosted fonts and placeholder hero built and checked in a browser (desktop, phone, light and dark).
       Still open: real hero photo and default people photo (placeholders now), fine-tuning publications,
       automated accessibility checks (e.g. axe in CI), print stylesheet review.
 - [~] 6 Automation: `deploy.yml` builds, tests and deploys on every push to `main` (skeleton live at
       https://ccnl-dartmouth.github.io/ccnl-website/); failures open/close alert issues (`ccnl/alerts.py`);
-      `uptime.yml` (6-hourly) and `links.yml` (weekly, `ccnl/linkcheck.py`) added; see `docs/OPERATIONS.md`.
+      `uptime.yml` (6-hourly) and `links.yml` (weekly, `ccnl/linkcheck.py`) added; see `docs/maintainers/OPERATIONS.md`.
       Build-failure alert drilled end to end (Oct 2026): a broken person file failed the build, the live site
       stayed up (200), issue #1 opened with the plain-language error, and closed itself on the next good deploy.
       Alerts are tiered (quiet first issue mentioning only the committer; `escalate.yml` mentions the team after
@@ -157,9 +157,9 @@ once 3 is fixed; 9 needs 5, 6, 8; 11 needs the Dartmouth reply (can launch on gi
 - [x] 1.6 Settings -> Pages -> Source: GitHub Actions (done). Enforce HTTPS and custom domain later.
 - [ ] 1.7 Ruleset on `main`: block force-push and deletion ONLY. Do not require status checks or pull
       requests: required checks reject direct pushes/web-editor commits, defeating the hands-off design,
-      and a failed build already cannot deploy. See `docs/OPERATIONS.md`.
+      and a failed build already cannot deploy. See `docs/maintainers/OPERATIONS.md`.
 - [x] 1.8 Clone locally (this folder), add `.gitignore`, README stub, this plan, `CLAUDE.md`; first commit; pushed to origin.
-- [ ] 1.9 Write `docs/OWNERSHIP.md` (owners, alert email, domain contact, monitor account, offboarding).
+- [ ] 1.9 Write `docs/maintainers/OWNERSHIP.md` (owners, alert email, domain contact, monitor account, offboarding).
 
 ## Risks
 

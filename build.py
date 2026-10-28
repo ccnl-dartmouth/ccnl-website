@@ -3,7 +3,6 @@
 
     python build.py                    build content/ into _site/
     python build.py --serve            build, then preview at http://localhost:8000
-    python build.py --content sample_content    build the fake sample content instead
 
 On GitHub the base path is set to /ccnl-website (the site lives at <org>.github.io/ccnl-website/).
 """

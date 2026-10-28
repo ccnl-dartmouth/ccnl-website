@@ -50,13 +50,13 @@ class Result:
 
 
 class Sandbox:
-    """A copy of sample_content/ in a temp folder, plus helpers to edit it and build it."""
+    """A copy of tests/fixture_lab/ in a temp folder, plus helpers to edit it and build it."""
 
     def __init__(self, tmp_path):
         self.root = tmp_path
         self.dir = tmp_path / "content"
         self.out = tmp_path / "_site"
-        shutil.copytree(ROOT / "sample_content", self.dir)
+        shutil.copytree(ROOT / "tests" / "fixture_lab", self.dir)
 
     def path(self, rel):
         return self.dir / rel

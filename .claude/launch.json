@@ -7,7 +7,7 @@
       "runtimeArgs": [
         "build.py",
         "--content",
-        "sample_content",
+        "tests/fixture_lab",
         "--out",
         "_site",
         "--serve",

@@ -1,6 +1,6 @@
 name: Uptime check
 
-# Backup to an external monitor (see docs/OPERATIONS.md): every 6 hours, fetch the live site and open
+# Backup to an external monitor (see docs/maintainers/OPERATIONS.md): every 6 hours, fetch the live site and open
 # an issue if it does not answer. Set the repository variable SITE_URL if the address ever changes.
 on:
   schedule:

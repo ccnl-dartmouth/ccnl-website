@@ -30,7 +30,7 @@ def test_real_content_builds(tmp_path):
     assert research.count('class="theme-fig"') == research.count('class="theme"') >= 1  # every theme has its image
 
 
-def test_sample_content_is_clean(sandbox):
+def test_fixture_lab_is_clean(sandbox):
     result = sandbox.build()
     assert result.ok, result.errors
     assert result.warnings == []

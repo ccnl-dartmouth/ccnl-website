@@ -2,7 +2,7 @@ name: Weekly link check
 
 # Finds dead links in the published content. Does not touch the live site; it only opens
 # (or closes) an issue. GitHub disables scheduled workflows in a public repo after 60 days
-# without repository activity; any commit re-arms them (see docs/OPERATIONS.md).
+# without repository activity; any commit re-arms them (see docs/maintainers/OPERATIONS.md).
 on:
   schedule:
     - cron: "23 7 * * 1"

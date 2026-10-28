@@ -1,4 +1,4 @@
-"""Generate the placeholder images used by sample_content/. Run once; the output is committed.
+"""Generate the placeholder images used by tests/fixture_lab/. Run once; the output is committed.
 
     .venv/bin/python scripts/make_sample_images.py
 
@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-ROOT = Path(__file__).resolve().parent.parent / "sample_content"
+ROOT = Path(__file__).resolve().parent.parent / "tests" / "fixture_lab"
 INK, GREEN, BLUE, ORANGE, GRAY = (28, 28, 28), (0, 105, 62), (46, 100, 170), (214, 130, 40), (120, 120, 120)
 
 

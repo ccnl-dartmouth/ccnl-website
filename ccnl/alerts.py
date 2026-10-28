@@ -139,7 +139,7 @@ def main(argv=None):
     if args.command == "escalate":
         mentions = mentions_from_env(args.mentions_env)
         if not mentions:
-            print("No mentions configured (see docs/OPERATIONS.md); nobody to escalate to.")
+            print("No mentions configured (see docs/maintainers/OPERATIONS.md); nobody to escalate to.")
             return 0
         done = escalate_alerts(args.label, args.after_hours, mentions, args.message)
         print("Escalated issues:", done or "none")

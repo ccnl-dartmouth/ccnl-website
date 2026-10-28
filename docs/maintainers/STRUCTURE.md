@@ -55,13 +55,15 @@ content/
   teaching/
     psyc-50-02-decision-making.md
   images/                  # ALL pictures: photos, thumbnails, research figures (paired by name), logos, hero
-sample_content/            # fake lab with every content type; used for previews and tests
 templates/                 # Jinja2 HTML
 static/                    # CSS, small JS
 build.py                   # command-line entry point
 ccnl/                      # the build: content.py (load + validate), images.py, build.py (render)
 tests/
+  fixture_lab/            # fake lab with every content type; the tests copy it and break it on purpose
 docs/
+  guides/                 # for lab members: START-HERE (with the where-does-it-come-from table), profile, papers, site text, troubleshooting
+  maintainers/            # PLAN, STRUCTURE, OPERATIONS, CREDITS
 .github/workflows/
 ```
 

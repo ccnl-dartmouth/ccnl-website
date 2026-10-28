@@ -5,7 +5,7 @@ name: Escalate lasting problems
 #   build keeps failing    -> team after 3 days (the live site is fine; content just cannot update)
 #   site not responding    -> team and PI after 12 hours (two missed 6-hourly checks)
 #   dead links             -> team after 14 days (cosmetic)
-# Set the repository variables ALERT_MENTIONS_TEAM and ALERT_MENTIONS_PI (see docs/OPERATIONS.md).
+# Set the repository variables ALERT_MENTIONS_TEAM and ALERT_MENTIONS_PI (see docs/maintainers/OPERATIONS.md).
 on:
   schedule:
     - cron: "5 */6 * * *"

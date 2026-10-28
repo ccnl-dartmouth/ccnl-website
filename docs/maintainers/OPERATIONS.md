@@ -48,7 +48,7 @@ something independent of GitHub, also set up a free external monitor (about 5 mi
 2. Add monitor -> type *HTTP(s)* (or *Keyword*, keyword `Computational`) -> URL of the site
    -> interval 5 minutes.
 3. Alert contacts: add the PI's email and yours (and a lab list address if there is one).
-4. Write the account name and who owns it in `docs/OWNERSHIP.md`.
+4. Write the account name and who owns it in `docs/maintainers/OWNERSHIP.md`.
 
 If the address changes (custom domain), set the repository variable `SITE_URL` so `uptime.yml`
 checks the new one, and update the external monitor.

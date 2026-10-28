@@ -4,7 +4,9 @@ import re
 
 from conftest import ROOT
 
-GUIDE = (ROOT / "docs" / "ADD-YOUR-CONTENT.md").read_text()
+# profile guide first: its markdown example must be the first one
+GUIDE = "\n".join((ROOT / "docs" / "guides" / name).read_text() for name in (
+    "UPDATE-PROFILE.md", "ADD-A-PAPER.md", "TROUBLESHOOTING.md", "START-HERE.md", "EDIT-SITE-TEXT.md"))
 
 
 def fenced(language):
