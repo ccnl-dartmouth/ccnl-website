@@ -24,7 +24,7 @@ jobs:
       ALERT_MENTIONS_TEAM: ${{ vars.ALERT_MENTIONS_TEAM }}
       ALERT_MENTIONS_PI: ${{ vars.ALERT_MENTIONS_PI }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build has been failing for days
         run: >
