@@ -14,7 +14,7 @@ caused it fixes, never goes further.
 | A commit breaks the build or tests | `deploy.yml` (every push to `main`) | Issue `build-failure` with the error message; mentions **only the person who pushed**. The site is not updated, but the live site is fine. | After **3 days**: team mentioned once |
 | GitHub Pages deploy fails | `deploy.yml` | Same issue, with a note to re-run the workflow | Same |
 | The site stops answering | `uptime.yml` (every 6 hours) | Issue `site-down`; mentions nobody | After **12 hours** (two missed checks): **team and PI** mentioned |
-| Dead links on the site | `links.yml` (Mondays) | Issue `dead-links` listing each link and its page; mentions nobody. Sites that block bots are only listed as "could not verify". | After **14 days**: team mentioned |
+| Dead links on the site | `links.yml` (Mondays) | Issue `dead-links` listing each link and its page; mentions nobody. Sites that block bots (403) are counted but never listed. | After **14 days**: team mentioned |
 
 Every issue closes itself with a comment when the problem is gone. Repeated failures add a comment
 to the existing issue instead of opening duplicates. The escalation check is `escalate.yml`, which

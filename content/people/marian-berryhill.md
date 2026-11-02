@@ -5,5 +5,5 @@ status: current
 current_position: University of Nevada
 profile: false
 links:
-  website: "https://packpages.unr.edu/mberryhill/"
+  website: "https://www.unr.edu/psychology/people/marian-berryhill"
 ---

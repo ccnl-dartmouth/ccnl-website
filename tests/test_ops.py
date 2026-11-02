@@ -244,9 +244,7 @@ def test_cli_exit_code_and_report(tmp_path, server, capsys):
     text = report.read_text()
     assert code == 1
     assert f"{server}/missing" in text and "HTTP 404" in text and "index.html" in text
-    assert "Could not verify" in text and f"{server}/blocked" in text
-    dead_section = text.split("## Dead links")[1].split("<details>")[0]
-    assert f"{server}/ok" not in dead_section and f"{server}/blocked" not in dead_section
+    assert "not verifiable" in text and f"{server}/blocked" not in text and f"{server}/ok" not in text
 
 
 def test_cli_passes_when_only_soft_failures(tmp_path, server):
