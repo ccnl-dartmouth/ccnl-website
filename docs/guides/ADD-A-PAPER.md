@@ -67,16 +67,18 @@ A complete example (the lines after `year` are all optional):
 | `pdf`, `preprint`, `si`, `data`, `code`, `video`, `slides`, `poster`, `url` | adds link buttons; values must start with `https://` |
 | `abstract = {...}` | the abstract, shown in full on the paper's own page |
 | `keywords = {learning, uncertainty}` | keyword chips on the paper's page; clicking one searches the Publications page. Separate with commas or semicolons. To list the paper on the Research page, add the tag of each research topic it belongs to: `uncertainty-and-change`, `complex-environments`, `attention-bias-decision-making`, `neural-synaptic-mechanisms` |
-| `cofirst = {Doe, Smith}` | marks these authors (by last name) as co-first authors, shown in purple. Use the same last names as in the author line. |
-| `corresponding = {Soltani}` | marks corresponding authors: a yellow highlight on the Publications list, and a "Corresponding author" line under Cite on the paper's page that links to their profile (put your email on your profile if you want it shown) |
-| `senior = {Soltani, Izquierdo}` | marks the senior (supervising) authors by last name; several are allowed for co-senior papers. Follow the PI's CV, where senior authors are double-underlined. It is recorded but not displayed on the website yet. |
+| `cofirst = {Doe, Smith}` | marks these authors (by last name) as co-first authors, shown with a ¶ after the name. Use the same last names as in the author line. |
+| `corresponding = {Soltani}` | marks corresponding authors: a ♦ after the name, and a "Corresponding author" line under Cite on the paper's page that links to their profile (put your email on your profile if you want it shown) |
+| `senior = {Soltani, Izquierdo}` | marks the senior (supervising) authors by last name; several are allowed for co-senior papers. Follow the PI's CV. Senior authors get a ★ after the name. |
 | `status = {preprint}` | lists the paper under "Preprints" |
 | `note = {...}` | a short note shown under the venue, for example "Highlighted in Nature" |
 | `image = {figure.jpg}` | optional: use this file from `content/images/` instead of the one named like the paper's file (see "A thumbnail" below) |
 
 ## A thumbnail (optional)
 
-Papers without a thumbnail get a generic picture. To add your own (a figure from the paper, for example), upload it
+The lab's convention is the journal's cover for the issue the paper appeared in (or the journal logo if the journal has
+no issue covers); see `docs/maintainers/COVER-IMAGES.md` for what is in place. Papers without an image show no thumbnail. To add your own
+(a figure from the paper, for example), upload it
 to https://github.com/ccnl-dartmouth/ccnl-website/tree/main/content/images (the same `images` folder as photos) and
 give it **the same name as the paper's `.bib` file**. For `2026-doe-learning-under-uncertainty.bib` upload
 `2026-doe-learning-under-uncertainty.jpg`. No other change is needed.
@@ -95,8 +97,8 @@ file name, so use lowercase letters, digits and hyphens only. Nothing extra to w
 
 - **Write the first name in full for anyone on the People page.** A paper joins a person's page when an author has their
   last name and first name (`Doe, Jane` matches Jane Doe; a nickname in parentheses on the People page counts too).
-  Lab members (postdocs, graduate and undergraduate students, past and present) are highlighted in bold blue in the author
-  lists; the PI and collaborators are not.
+  Lab members (postdocs, graduate and undergraduate students, past and present) are bold blue in the author lists, the PI
+  is bold, and collaborators are plain. A key at the top of the page explains the marks.
 - **If the build stops on an author:** an author written with initials only (`Doe, J`) who could be someone on the People
   page makes the build stop, because it can't tell whether it is them or another person with the same name. The message names
   the author. If it is the person on the People page, write their first name in full. If it is someone else, write that

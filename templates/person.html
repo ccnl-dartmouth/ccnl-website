@@ -7,7 +7,7 @@
   <aside class="profile-card" aria-label="Details">
     {{ m.avatar(person, "profile") }}
     <dl>
-      <dt>Role</dt><dd>{{ person.role_label }}{% if person.status == 'alumni' %} (alumnus){% endif %}</dd>
+      <dt>Role</dt><dd>{{ person.role_label }}{% if person.honors %}{{ m.honors_mark() }}{% endif %}{% if person.status == 'alumni' %} (alumnus){% endif %}</dd>
       {% if person.years %}<dt>In the lab</dt><dd>{{ m.years(person) }}</dd>{% endif %}
       {% if person.current_position %}<dt>Now</dt><dd>{{ person.current_position }}</dd>{% endif %}
       {% if person.email %}<dt>Email</dt><dd>{{ m.email(person.email) }}</dd>{% endif %}
@@ -16,6 +16,7 @@
       <dd><ul class="plain">{% for l in person.links %}<li><a href="{{ l.url }}">{{ l.label }}</a></li>{% endfor %}</ul></dd>
       {% endif %}
     </dl>
+    {% if person.honors %}<p class="author-key small">{{ m.honors_mark() }} honors</p>{% endif %}
   </aside>
   <article class="profile-main">
     <h1>{{ person.name }}{% if person.degrees %}<span class="degrees">, {{ person.degrees }}</span>{% endif %}</h1>
@@ -26,7 +27,8 @@
 {% if person.publications %}
 <section class="profile-pubs" id="publications">
   <h2>Publications <span class="count">({{ person.publications|length }})</span></h2>
-  {{ m.publication_lists(person.publications, person.slug, 3) }}
+  {{ m.author_key(person.publications) }}
+  {{ m.publication_lists(person.publications, 3) }}
 </section>
 {% endif %}
 {% endblock %}

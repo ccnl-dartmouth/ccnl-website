@@ -5,7 +5,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
-from .content import load_site, where_of
+from .content import COFIRST_MARK, CORRESPONDING_MARK, SENIOR_MARK, load_site, where_of
 from .images import IMAGE_EXTS, process_image
 from .problems import BuildFailed, Problems
 
@@ -85,6 +85,9 @@ def make_environment(templates_dir, base_path, site):
         nav=site["nav"],
         year=site["today"].year,
         base_path=base,
+        cofirst_mark=COFIRST_MARK,
+        corresponding_mark=CORRESPONDING_MARK,
+        senior_mark=SENIOR_MARK,
     )
     return env
 

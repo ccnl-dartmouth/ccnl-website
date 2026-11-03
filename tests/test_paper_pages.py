@@ -37,10 +37,10 @@ def test_lab_member_authors_link_to_their_profile_and_others_do_not(sandbox):
 
 def test_author_roles_are_explained_only_when_present(sandbox):
     plain = paper_page(sandbox)
-    assert 'class="author-key' not in plain
+    assert "co-first author" not in plain
     roles = paper_page(sandbox, "roles", cofirst="Doe, Investigator", corresponding="Investigator")
-    assert "co-first author</span>" in roles
-    assert "au-corr" not in roles and "corresponding author</span>" not in roles  # no highlight or legend on the paper page
+    legend = roles.split('class="author-key')[1].split("</p>")[0]  # the same legend as on the Publications page
+    assert "co-first author" in legend and "corresponding author" in legend
 
 
 def test_corresponding_author_row_links_to_the_profile_after_the_ids(sandbox):

@@ -147,7 +147,7 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
       intro centered; Teaching moved into Resources; footer uses the Dartmouth D-Pine mark (Wikimedia, CC BY-SA 4.0, credit
       line, removed from the footer on request: see docs/maintainers/CREDITS.md) and the standard NIH logo; research page has generated placeholder illustrations in the
       alternating layout; publications show co-first/corresponding authors by color (no ° or *) and a right-aligned
-      thumbnail on every entry (generic filler when the paper has none).
+      thumbnail on every entry that has an image (no generic filler; text uses the full width otherwise).
 - [~] 7b Design round 2 (Oct 2026): header is a centered nav only; hero card centered on the image with the
       affiliation; selected publications and funders removed from Home; Join moved into Contact; Teaching before
       Resources; SVG logos in the footer (Wikimedia Commons: NSF logo public domain, NIH logo public domain, Dartmouth

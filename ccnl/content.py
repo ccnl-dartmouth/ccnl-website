@@ -29,9 +29,10 @@ ROLE_LABELS = {
     "grad": "Graduate Student",
     "masters": "Master's Student",
     "undergrad": "Undergraduate Student",
-    "honors": "Undergraduate Honors Student",
+    "honors": "Undergraduate Student",
     "collaborator": "Collaborator",
 }
+COFIRST_MARK, CORRESPONDING_MARK, SENIOR_MARK = "\u00b6", "\u2666", "\u2605"  # co-first and corresponding are the CV's own marks
 ROLE_GROUPS = {"honors": "undergrad"}  # listed under another tag's heading
 GROUP_ORDER = ("pi", "postdoc", "grad", "masters", "undergrad", "collaborator")
 ROLE_GROUP_TITLES = {
@@ -609,6 +610,7 @@ def load_people(content_dir, root, problems, images):
                 "roles": roles,
                 "role": group,  # the People-page group of the highest tag
                 "role_label": ROLE_LABELS.get(primary, ""),
+                "honors": "honors" in roles,
                 "status": "alumni" if alumni else "current",
                 "lab": any(tag in LAB_ROLES for tag in roles),
                 "start": clean["start"],
@@ -1022,7 +1024,7 @@ def link_authors(publications, people, problems):
             entries.append((person, last, firsts))
     for pub in publications:
         for a in pub["authors"]:
-            a.update({"person": None, "slug": None, "member": False, "classes": "", "role_text": ""})
+            a.update({"person": None, "slug": None, "member": False, "pi": False, "classes": "", "marks": "", "role_text": ""})
             if a.get("etal"):
                 continue
             last = ascii_key(a["last"])
@@ -1049,20 +1051,19 @@ def link_authors(publications, people, problems):
                 a["person"] = person["slug"]
                 a["slug"] = person["slug"] if person.get("profile") else None  # lets a paper's page link the author to their profile
                 a["member"] = person["lab"]
+                a["pi"] = "pi" in person["roles"]
         for a in pub["authors"]:
             if a.get("etal"):
                 continue
-            roles = [(a["member"], "member", "lab member"), (a.get("cofirst"), "cofirst", "co-first author"),
-                     (a.get("corresponding"), "corr", "corresponding author")]
-            a["classes"] = " ".join(f"au-{css}" for on, css, _ in roles if on)
-            a["role_text"] = ", ".join(text for on, _, text in roles if on)
-
-
-def author_roles(publications):
-    """Which author styles occur, for the legend on the Publications page."""
-    authors = [a for p in publications for a in p["authors"] if not a.get("etal")]
-    return {"member": any(a["member"] for a in authors), "cofirst": any(a.get("cofirst") for a in authors),
-            "corresponding": any(a.get("corresponding") for a in authors)}
+            # One set of rules for every page: lab members bold blue and the PI bold (classes); co-first, corresponding and
+            # senior authors get a small mark after the name (marks).
+            roles = [(a["member"], "au-member", "", "lab member"), (a["pi"], "au-pi", "", "principal investigator"),
+                     (a.get("cofirst"), "", COFIRST_MARK, "co-first author"),
+                     (a.get("corresponding"), "", CORRESPONDING_MARK, "corresponding author"),
+                     (a.get("senior"), "", SENIOR_MARK, "senior author")]
+            a["classes"] = " ".join(css for on, css, _, _ in roles if on and css)
+            a["marks"] = "".join(mark for on, _, mark, _ in roles if on)
+            a["role_text"] = ", ".join(text for on, _, _, text in roles if on)
 
 
 def load_site(content_dir, root, problems, today=None):
@@ -1136,7 +1137,6 @@ def load_site(content_dir, root, problems, today=None):
         "alumni": alumni,
         "alumni_groups": group_alumni(alumni),
         "publications": publications,
-        "author_roles": author_roles(publications),
         "resources": resources,
         "teaching": teaching,
         "site_image_names": sorted(site_image_names),

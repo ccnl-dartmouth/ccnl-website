@@ -31,13 +31,12 @@ def test_profile_lists_every_paper_by_that_person(sandbox):
     assert "Publications <span class=\"count\">(12)</span>" in html
 
 
-def test_only_the_profile_owner_is_highlighted(sandbox):
+def test_profile_pages_style_authors_like_the_publications_page_and_repeat_the_legend(sandbox):
     html = sandbox.build().page("people/alex-postdoc/index.html")
     block = html.split('>Context effects in Bayesian choice</a>')[1].split("</li>")[0]
-    assert '<span class="au au-member">Postdoc A<span class="sr-only"> (this person)</span></span>' in block
-    assert "Student S, " in block and "Investigator P" in block and block.count("au-member") == 1
-    assert "au-cofirst" not in html and "au-corr" not in html  # no role styles and no legend on profile pages
-    assert 'class="author-key' not in html
+    assert '<span class="au au-member">Postdoc A<span class="sr-only"> (lab member' in block
+    assert "au-pi" in block  # the PI is bold here too, not only on the Publications page
+    assert 'class="author-key' in html and "lab member" in html.split('class="author-key')[1].split("</p>")[0]
 
 
 def test_profile_groups_preprints_and_years_under_one_publications_heading(sandbox):

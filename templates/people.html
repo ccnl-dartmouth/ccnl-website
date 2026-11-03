@@ -3,6 +3,7 @@
 {% block title %}People &middot; {{ lab.name }}{% endblock %}
 {% block content %}
 <h1 class="page-title"><span>People</span></h1>
+{% if site.people|selectattr("honors")|list %}<p class="author-key small">{{ m.honors_mark() }} honors</p>{% endif %}
 {% set collaborators = site.people_groups|selectattr("role", "equalto", "collaborator")|list %}
 {# Current groups sit side by side while they fit (e.g. PI next to postdocs) and wrap onto new rows as they fill up. #}
 <div class="people-groups">

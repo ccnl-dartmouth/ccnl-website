@@ -110,7 +110,7 @@ Bio in Markdown. Optional "## Research" section.
 
 - Photo: `content/images/<slug>.jpg|png|webp|heic` (same name as the `.md`); missing photo gets the person's first and last initials (e.g. MW) in a square. A photo that contains GPS location data triggers a warning (the original stays public in the repository).
 - A profile page also lists the person's papers automatically (matched from the BibTeX author names, see "Roles and author matching"
-  below), grouped like the main Publications page; only the page's owner is highlighted (bold blue).
+  below), grouped like the main Publications page, with the same author styles and the same legend (the formatting is identical on every page).
 - Collaborators are listed at the bottom of the People page as a compact list (name linked to their site,
   institution, any other links), without profile pages.
 - `content/people/_TEMPLATE.md` is a commented example to copy when joining (files starting with `_` are ignored).
@@ -132,7 +132,7 @@ carries exceptions for the other.
   person's first name or a nickname in parentheses (`Michael (Chong) Wang` accepts `Wang, Michael` and `Wang, Chong`); a different first
   name never matches (this separates namesakes). If the paper gives initials only and a People entry has the same last name and first initial,
   the build fails and says which name to spell out. Papers are the only place that needs fixing.
-- Not yet shown: timelines of roles (start and end are free years), `senior` and the PI/collaborator/honors styles.
+- Honors: a person tagged `honors` shows a small mortarboard icon after the role on their card and profile (legend "honors" at the top of the People page and on the profile); honors is not marked on the publications. Not yet shown: timelines of roles (start and end are free years).
 
 ### Publications: `content/publications/<anything>.bib`
 
@@ -141,13 +141,13 @@ One standard BibTeX entry per file (paste from Google Scholar or the journal). O
 | Field | Meaning |
 |---|---|
 | `pdf`, `si`, `data`, `code`, `url` | link buttons |
-| `cofirst` | last names of co-first authors (shown in purple; no symbols) |
+| `cofirst` | last names of co-first authors (shown as a ¶ after the name, as in the CV) |
 | `corresponding` | last names of corresponding authors |
 | `senior` | last names of senior authors (the CV double-underlines them); several allowed |
 | `status` | `preprint`, or omitted for published |
 | `note` | short press/recognition note |
 | `abstract` | shown in a collapsible "Abstract" section on the Publications page |
-| `image` | optional: a file in `content/images/` other than the one named like the `.bib` file (see "Images" below); papers without a thumbnail get a generic filler (`static/pub-placeholder.svg`) |
+| `image` | optional: a file in `content/images/` other than the one named like the `.bib` file (see "Images" below); papers without an image have no thumbnail and the card text uses the full width |
 
 ### Research themes: `content/research/<slug>.md`
 
@@ -241,7 +241,7 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 ## Decisions recorded
 
 - One `.bib` file per paper (errors stay local to one file).
-- Author styles in the Publications list (no ° or * symbols): lab members (anyone whose People tags include a lab role, see below) are bold blue; co-first authors are purple; corresponding authors get a yellow highlight. Styles combine. Screen readers hear the roles, and a legend explains the styles. The `senior` field and the collaborator, PI and honors tags are loaded but not displayed yet (design to come).
+- Author styles (the same on the Publications list, paper pages and profile pages; one macro `author` in `templates/_macros.html`, rules in `link_authors`): lab members (anyone whose People tags include a lab role, see below) are bold blue; the PI is bold in the normal text color; co-first authors get a superscript ¶ after the name, corresponding authors ♦ and senior authors ★ (¶ and ♦ are the PI's CV marks). Styles combine; collaborators are plain; honors is not shown on papers. Screen readers hear the roles. A legend (`author_key` macro) lists only the styles present, at the top of the Publications page, each paper page and each profile page. No hover text.
 - Drop News. No selected-publications section on Home.
 - Join is not a page; its text lives on the Contact page (`join.md`).
 - No Research page of fixed length: themes are files, the count can change.
@@ -257,7 +257,7 @@ A weekly scheduled link check (separate from the build) reports dead links witho
   wrap onto new rows as they fill up; every listing is a fixed-size, fully clickable card (photo cards with first and last initials when there is no photo; compact text cards for alumni and collaborators; cards show role and affiliation, not years: the affiliation is `current_position` if set, otherwise the lab's institution for current members; years stay on the profile page, so rows align when fields are missing and no separator lines are needed); alumni in subsections by role (postdoctoral scholars, graduate students, undergraduates, in that order; empty ones are left out).
   Profile page: details card (photo, role, years, links) beside the bio.
 - **Publications:** semi-dense list by year; each entry has the BibTeX-derived text on the left (authors styled by
-  role, title, venue, link buttons; no year after the authors since the list is grouped by year; the abstract is on the paper's own page) and a right-aligned thumbnail (own image or generic filler).
+  role, title, venue, link buttons; no year after the authors since the list is grouped by year; the abstract is on the paper's own page) and a right-aligned thumbnail (own image, shown whole; none when the paper has no image).
 - **Page titles:** Research, People, Publications, Resources and Contact start with a centered serif title on a 3 px
   amber line that spans the content area (class `page-title`; the text sits on top of the line with the page
   background behind it).
@@ -311,5 +311,5 @@ Every picture goes directly in `content/images/` (no subfolders) and is paired w
 - Publications are bordered cards with a minimum height (text left, thumbnail right); unlike people cards they are not wholly clickable, because each has several links and an abstract toggle.
 - Publications page: one search box (needs JavaScript; hidden without it) matching every word against every BibTeX field, a row of links to each year and Preprints, big serif year headings with a rule, and condensed cards (6rem thumbnail). Each year is a `section#year-YYYY`; years with no match are hidden while searching. Profile pages keep the smaller headings.
 - Research topics link to papers by keyword: a paper whose `keywords` include a research file's name (e.g. `uncertainty-and-change`) is counted in that topic's "N related papers" link, which opens `/publications/?q=<name>`. No separate field; tags are plain keywords, so students add them like any other keyword (the four current tags are listed in `_TEMPLATE.bib` and the paper guide).
-- Paper pages: every `.bib` file also builds `publications/<file name>/` (template `publication.html`) from its fields. Shown: venue + date (`month` optional), title, authors (lab members link to profiles; co-first key when present), link buttons, full abstract, `keywords` chips (each searches the Publications page via `?q=`), a generated plain-text citation, DOI/PubMed ID, copyable BibTeX, a "Corresponding author" row under the PubMed ID (names, linked to profiles for lab members; no email on the paper page, the profile holds it; corresponding authors are not highlighted on the paper page, only on the list), and `citation_*` meta tags for Google Scholar. The thumbnail sits top right of the header card at 15rem, uncropped (it stacks below the text on phones); there is no generic filler on the page. List cards open the page through a stretched title link; their small link buttons stay clickable above it, and the abstract toggle moved from the cards to the page. Skipped on purpose: automatic topic/approach tagging, citation counts, a personal reading list. New optional fields: `month`, `pmid`, `keywords`, and extra link fields (`preprint`, `video`, `slides`, `poster`).
+- Paper pages: every `.bib` file also builds `publications/<file name>/` (template `publication.html`) from its fields. Shown: venue + date (`month` optional), title, authors (lab members link to profiles; co-first key when present), link buttons, full abstract, `keywords` chips (each searches the Publications page via `?q=`), a generated plain-text citation, DOI/PubMed ID, copyable BibTeX, a "Corresponding author" row under the PubMed ID (names, linked to profiles for lab members; no email on the paper page, the profile holds it; the author line is styled as everywhere else, with the legend above the buttons), and `citation_*` meta tags for Google Scholar. The thumbnail sits top right of the header card at 15rem, uncropped (it stacks below the text on phones); there is no generic filler on the page. List cards open the page through a stretched title link; their small link buttons stay clickable above it, and the abstract toggle moved from the cards to the page. Skipped on purpose: automatic topic/approach tagging, citation counts, a personal reading list. New optional fields: `month`, `pmid`, `keywords`, and extra link fields (`preprint`, `video`, `slides`, `poster`).
 - `content/publications/_TEMPLATE.bib` (ignored by the build, like `people/_TEMPLATE.md`) lists every supported field with comments; every paper file carries the same blank optional lines (`field = {}`), which the loader ignores and the page's BibTeX view hides, so students fill in values without looking fields up. A test checks the template and all real paper files list every optional field, so a new field means adding it to `OPTIONAL_FIELDS` in `tests/test_paper_pages.py`, the template and the files.

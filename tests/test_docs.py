@@ -38,7 +38,6 @@ def test_example_paper_builds_cleanly_and_uses_every_option_it_shows(sandbox):
     assert "Learning under uncertainty" in html  # the paper appears on Jane's page
     page = result.page("publications/2026-doe-learning-under-uncertainty/index.html")
     assert "<h2>Keywords</h2>" in page and "Mar 2026" in page  # and has a page of its own
-    assert 'au au-cofirst' not in html  # profile pages only highlight their owner
 
 
 def test_example_join_page_builds_cleanly_and_shows_its_openings(sandbox):

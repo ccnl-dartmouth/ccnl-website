@@ -88,23 +88,22 @@ def _block(sandbox):
     return sandbox.build().page("publications/index.html").split(">A title</a>")[1].split("</li>")[0]
 
 
-def test_author_roles_are_styled_by_class_not_marked_with_symbols(sandbox):
+def test_cofirst_and_corresponding_get_marks_and_lab_members_are_bold(sandbox):
     sandbox.write("publications/new.bib", bib(author="Doe, Jane and Student, Sam", cofirst="Doe, Student", corresponding="Student"))
     result = sandbox.build()
     assert result.ok, result.errors
     block = result.page("publications/index.html").split(">A title</a>")[1].split("</li>")[0]
-    # Jane Doe is not on the People page: co-first only. Sam Student is a grad (lab), co-first and corresponding.
-    assert '<span class="au au-cofirst">Doe J<span class="sr-only"> (co-first author)</span></span>' in block
-    assert ('<span class="au au-member au-cofirst au-corr">Student S'
-            '<span class="sr-only"> (lab member, co-first author, corresponding author)</span></span>') in block
-    assert "&deg;" not in block and "\u00b0" not in block and "*" not in block
+    # Jane Doe is not on the People page: co-first mark only. Sam Student is a grad (lab), co-first and corresponding.
+    assert '<span class="au ">Doe J<span class="sr-only"> (co-first author)</span></span><sup class="au-mark" aria-hidden="true">\u00b6</sup>' in block
+    assert ('<span class="au au-member">Student S<span class="sr-only"> (lab member, co-first author, corresponding author)</span></span>'
+            '<sup class="au-mark" aria-hidden="true">\u00b6\u2666</sup>') in block
 
 
-def test_corresponding_author_and_lab_member_styles_are_separate(sandbox):
-    sandbox.write("publications/new.bib", bib(author="Doe, Jane and Student, Sam", corresponding="Doe"))
+def test_senior_authors_get_a_star_and_the_pi_is_bold(sandbox):
+    sandbox.write("publications/new.bib", bib(author="Student, Sam and Investigator, Pat", senior="Investigator"))
     block = _block(sandbox)
-    assert '<span class="au au-corr">Doe J<span class="sr-only"> (corresponding author)</span></span>' in block
-    assert '<span class="au au-member">Student S<span class="sr-only"> (lab member)</span></span>' in block
+    assert '<span class="au au-pi">Investigator P<span class="sr-only"> (principal investigator, senior author)</span></span><sup class="au-mark" aria-hidden="true">\u2605</sup>' in block
+    assert "\u2605" not in block.split("Investigator")[0]  # Sam Student is not senior
 
 
 def test_authors_outside_the_lab_are_not_styled(sandbox):
@@ -144,7 +143,7 @@ def test_initials_that_match_nobody_on_the_people_page_are_fine(sandbox):
 
 def test_legend_lists_the_styles_that_occur(sandbox):
     legend = sandbox.build().page("publications/index.html").split('class="author-key')[1].split("</p>")[0]
-    assert "lab member" in legend and "co-first author" in legend and "corresponding author" in legend
+    assert "lab member" in legend and "principal investigator" in legend and "co-first author" in legend and "corresponding author" in legend
     for name in ("2024-student-context", "2025-postdoc-preprint", "2012-investigator-range"):
         text = sandbox.path(f"publications/{name}.bib").read_text()
         text = "\n".join(line for line in text.splitlines() if not line.strip().startswith(("cofirst", "corresponding")))
@@ -157,7 +156,7 @@ def test_legend_lists_the_styles_that_occur(sandbox):
 
 
 def _people(*specs):
-    return [{"name": n, "profile": True, "slug": n.lower().replace(" ", "-"), "lab": lab} for n, lab in specs]
+    return [{"name": n, "profile": True, "slug": n.lower().replace(" ", "-"), "lab": lab, "roles": []} for n, lab in specs]
 
 
 def _link(authors, people):
@@ -202,15 +201,18 @@ def test_parse_authors_tells_spelled_out_names_from_initials():
     assert given == {"Wang, MC": "", "Woo, Jae H": "Jae", "Wu, S-W": "", "Xiao-Jing Wang": "Xiao-Jing", "Smith, J.": "", "Lee, D": ""}
 
 
-def test_every_publication_has_a_right_aligned_thumbnail_with_a_generic_fallback(sandbox):
+def test_publications_have_a_right_aligned_thumbnail_or_none_at_all(sandbox):
     html = sandbox.build().page("publications/index.html")
     items = html.split('<li class="pub"')[1:]
     assert len(items) == 12
     for item in items:
+        if "data-noimg" in item.split(">")[0]:
+            assert "pub-thumb" not in item  # no image: no thumbnail, no placeholder
+            continue
         assert item.index('class="pub-body"') < item.index('class="pub-thumb"')  # text first, thumbnail after (right column)
         assert 'alt=""' in item.split('class="pub-thumb"')[1][:200]
     assert "images/publications/student2024context.jpg" in html
-    assert html.count("static/pub-placeholder.svg") == 12 - 5  # sample has 5 papers with their own image
+    assert html.count("data-noimg") == 12 - 5 and "pub-placeholder" not in html  # sample has 5 papers with their own image
 
 
 def test_parse_authors_formats():
