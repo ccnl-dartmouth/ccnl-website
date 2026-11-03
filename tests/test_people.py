@@ -44,7 +44,7 @@ def test_honors_shows_as_a_small_mark_on_the_card_and_profile_with_a_legend(sand
     result = sandbox.build()
     for page in ("people/index.html", "people/honors-person/index.html"):
         html = result.page(page)
-        assert 'class="honors-mark"' in html and "honors</p>" in html  # the mark, and the legend line
+        assert 'class="honors-mark"' in html and "honors</span></p>" in html  # the mark, and the legend line
     assert "Honors Student" not in result.page("people/index.html")
 
 

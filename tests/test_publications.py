@@ -291,14 +291,14 @@ def test_run_together_initials_are_kept_whole():
 # ----- search, year navigation and condensed layout
 
 
-def test_publications_page_has_search_box_year_links_and_year_sections(sandbox):
+def test_publications_page_has_search_box_and_year_sections_but_no_year_links(sandbox):
     result = sandbox.build()
     html = result.page("publications/index.html")
     assert 'id="pub-q"' in html and 'role="search"' in html and "<form class=\"pub-search\" role=\"search\" hidden>" in html
     years = sorted({p["year"] for p in result.site["publications"] if not p["preprint"]}, reverse=True)
     for y in years:
-        assert f'<a href="#year-{y}">{y}</a>' in html and f'<section class="pub-year" id="year-{y}">' in html
-    assert '<a href="#preprints">Preprints</a>' in html
+        assert f'<section class="pub-year" id="year-{y}">' in html
+    assert 'class="year-nav"' not in html  # the list follows the search box directly
 
 
 def test_every_paper_carries_all_its_bibtex_fields_for_the_search(sandbox):
