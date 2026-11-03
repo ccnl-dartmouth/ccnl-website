@@ -213,8 +213,9 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 }
 
 /* ---- a paper's own page ---- */
-.paper-layout { display: grid; gap: 1.5rem 2.5rem; }
+.paper-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem 2.5rem; }  /* minmax(0, ...) so a wide image or a long word can never widen the page */
 .paper-layout.has-side { grid-template-columns: minmax(0, 1fr) 13rem; align-items: start; }
+.paper-main { overflow-wrap: anywhere; }
 .paper-main h1 { margin: .35rem 0 .75rem; font-size: clamp(1.6rem, 4vw, 2.2rem); }
 .paper-main .meta, .paper-main p { margin: 0; }
 .paper-authors { line-height: 1.5; margin-bottom: .35rem !important; }
@@ -239,4 +240,4 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .bibtex pre { margin: .6rem 0; padding: .8rem 1rem; overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); font-size: .85rem; white-space: pre-wrap; }
 .copy-bibtex { font: inherit; font-size: .9rem; padding: .3rem .9rem; color: var(--green); background: none; border: 1px solid var(--green); border-radius: 6px; cursor: pointer; }
 .copy-bibtex:hover { background: var(--green); color: var(--on-green); }
-@media (max-width: 40rem) { .paper-layout.has-side { grid-template-columns: 1fr; } .paper-thumb-box { max-width: 12rem; margin: 0 auto; } .paper-facts { grid-template-columns: 1fr; gap: .1rem; } .paper-facts dd { margin-bottom: .6rem; } }
+@media (max-width: 40rem) { .paper-layout.has-side { grid-template-columns: minmax(0, 1fr); } .paper-side { justify-self: center; width: 100%; max-width: 14rem; } .paper-thumb-box { margin: 0 auto; } .paper-facts { grid-template-columns: 1fr; gap: .1rem; } .paper-facts dd { margin-bottom: .6rem; } }
