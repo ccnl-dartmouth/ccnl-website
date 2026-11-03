@@ -91,9 +91,12 @@ def test_thumbnails_are_on_the_publications_page_and_home_lists_no_papers(sandbo
     assert "Selected publications" not in home and "pub-thumb" not in home and "Context effects" not in home
 
 
-def test_link_buttons_have_unambiguous_names(sandbox):
-    html = sandbox.build().page("publications/index.html")
-    assert 'PDF<span class="sr-only"> for A range-normalization model of context-dependent choice</span>' in html
+def test_list_cards_have_no_link_buttons_and_the_paper_page_has_one_plain_row(sandbox):
+    result = sandbox.build()
+    assert "pub-links" not in result.page("publications/index.html")
+    page = result.page("publications/2012-investigator-range/index.html")
+    row = page.split('<ul class="paper-links">')[1].split("</ul>")[0]
+    assert ">PDF</a>" in row and 'class="pub-links"' not in page
 
 
 # ----- people

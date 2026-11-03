@@ -15,19 +15,19 @@
 {% block content %}
 <p class="back"><a href="{{ url('publications/') }}">&larr; All publications</a></p>
 <article class="paper">
-  <header class="paper-head{% if pub.image %} has-thumb{% endif %}">
-    <div class="paper-head-text">
+  <div class="paper-layout{% if pub.image %} has-side{% endif %}">
+    <div class="paper-main">
       <p class="meta"><em>{{ pub.venue }}</em>{% if pub.volume %} {{ pub.volume }}{% if pub.number %}({{ pub.number }}){% endif %}{% endif %}{% if pub.pages %}, {{ pub.pages }}{% endif %} &middot; {{ pub.date }}</p>
       <h1>{{ pub.title }}</h1>
       <p class="paper-authors">{{ m.paper_authors(pub) }}</p>
+      {{ m.author_key([pub], true) }}
       {% if pub.note %}<p class="pub-note">{{ pub.note }}</p>{% endif %}
       {% if pub.links %}
-      <ul class="pub-links paper-links">{% for l in pub.links %}<li><a href="{{ l.url }}">{{ l.label }}</a></li>{% endfor %}</ul>
+      <ul class="paper-links">{% for l in pub.links %}<li><a href="{{ l.url }}">{{ l.label }}</a></li>{% endfor %}</ul>
       {% endif %}
     </div>
-    {% if pub.image %}<div class="paper-thumb-box"><img class="paper-thumb" src="{{ url('images/' ~ pub.image) }}" alt=""></div>{% endif %}
-    {{ m.author_key([pub]) }}
-  </header>
+    {% if pub.image %}<aside class="paper-side"><div class="paper-thumb-box"><img class="paper-thumb" src="{{ url('images/' ~ pub.image) }}" alt=""></div></aside>{% endif %}
+  </div>
 
   {% if pub.abstract %}
   <section>

@@ -64,7 +64,7 @@ A complete example (the lines after `year` are all optional):
 | `month = {mar}` | shown as "Mar 2026" on the paper's page (a number 1 to 12 or a month name) |
 | `doi = {...}` | adds a DOI button |
 | `pmid = {12345678}` | adds a PubMed button; just the number |
-| `pdf`, `preprint`, `si`, `data`, `code`, `video`, `slides`, `poster`, `url` | adds link buttons; values must start with `https://` |
+| `pdf`, `preprint`, `si`, `data`, `code`, `video`, `slides`, `poster`, `url` | adds a link to the row of links on the paper's page (not on the Publications list); values must start with `https://` |
 | `abstract = {...}` | the abstract, shown in full on the paper's own page |
 | `keywords = {learning, uncertainty}` | keyword chips on the paper's page; clicking one searches the Publications page. Separate with commas or semicolons. To list the paper on the Research page, add the tag of each research topic it belongs to: `uncertainty-and-change`, `complex-environments`, `attention-bias-decision-making`, `neural-synaptic-mechanisms` |
 | `cofirst = {Doe, Smith}` | marks these authors (by last name) as co-first authors, shown with a ¶ after the name. Use the same last names as in the author line. |
@@ -89,7 +89,7 @@ name and add `image = {shared-figure.jpg}` to each of those `.bib` files.
 ## The paper's own page
 
 Every paper gets its own page, built from its `.bib` file: the cards on the Publications page open it. It shows the
-venue and date, authors (anyone with a profile links to it), buttons, the full abstract, keywords, a formatted
+venue and date, authors (anyone with a profile links to it), a row of links (DOI, PDF, ...), the full abstract, keywords, a formatted
 citation with a copy-BibTeX button, and the corresponding author (linked to their profile). The page's web address is the `.bib`
 file name, so use lowercase letters, digits and hyphens only. Nothing extra to write: just fill in more BibTeX lines.
 

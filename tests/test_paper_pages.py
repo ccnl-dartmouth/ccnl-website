@@ -114,17 +114,16 @@ def test_thumbnail_is_shown_beside_the_title_only_when_the_paper_has_one(sandbox
     sandbox.write("images/with-image.jpg", image_bytes((800, 600)))
     page = paper_page(sandbox, "with-image")
     assert 'class="paper-thumb" src="/images/publications/withimage2024.jpg"' in page
-    assert "paper-head has-thumb" in page
+    assert "paper-layout has-side" in page and 'class="paper-side"' in page
 
 
 # ----- cards link to the page
 
-def test_the_whole_card_opens_the_paper_page_and_small_links_stay_clickable(sandbox):
+def test_the_whole_card_opens_the_paper_page(sandbox):
     result = sandbox.build()
     html = result.page("publications/index.html")
     assert '<a class="card-link" href="/publications/2024-student-context/">Context effects in Bayesian choice</a>' in html
     css = (sandbox.out / "static" / "style.css").read_text()
-    assert ".pub-links a { position: relative; z-index: 1; }" in css
     assert ".pub-title a { color: inherit; text-decoration: none; }" in css
 
 

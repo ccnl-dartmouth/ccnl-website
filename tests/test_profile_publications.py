@@ -54,7 +54,7 @@ def test_profile_papers_are_newest_first(sandbox):
 
 def test_profile_entries_have_abstracts_links_and_thumbnails_like_the_main_page(sandbox):
     html = sandbox.build().page("people/pat-investigator/index.html")
-    assert "<details" not in html and "pub-links" in html and 'class="pub-thumb"' in html
+    assert "<details" not in html and "pub-links" not in html and 'class="pub-thumb"' in html
     assert "images/publications/student2024context.jpg" in html
 
 
