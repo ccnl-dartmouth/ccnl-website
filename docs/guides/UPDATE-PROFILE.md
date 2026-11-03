@@ -87,7 +87,7 @@ file, click the pencil, change a line, and commit.
 | Line | Meaning | Example |
 |---|---|---|
 | `name` | your name as it should appear | `name: Jane Doe` |
-| `roles` | a list of tags: `postdoc`, `grad`, `masters`, `undergrad`, `honors`, and `alumni` once you have left (the lab manager sets `pi`, `faculty-mentee` and `collaborator`). You can have several, for example `[undergrad, honors]`. Your card shows the highest one. | `roles: [grad]` |
+| `roles` | a list of tags: `postdoc`, `grad`, `masters`, `undergrad`, `honors`, and `alumni` once you have left (the lab manager sets `pi` and `collaborator`). You can have several, for example `[undergrad, honors]`. Your card shows the highest one. | `roles: [grad]` |
 | `start` | the year you joined (required for alumni, otherwise optional) | `start: 2024` |
 | `end` | the year you left (required for alumni; leave it out while you're in the lab) | `end: 2029` |
 | `degrees` | shown after your name | `degrees: M.S.` |

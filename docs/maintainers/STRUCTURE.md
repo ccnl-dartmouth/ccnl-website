@@ -91,7 +91,7 @@ Each `page` must refer to a known page; build fails on unknown names. Reordering
 ```yaml
 ---
 name: Jane Doe
-roles: [grad]         # tags: pi, postdoc, grad, masters, undergrad, honors, faculty-mentee, collaborator; plus alumni
+roles: [grad]         # tags: pi, postdoc, grad, masters, undergrad, honors, collaborator; plus alumni
 start: 2022           # optional; start and end are the only date fields
 end:                  # optional year; leave empty while current
 degrees: B.Sc.        # optional
@@ -123,16 +123,16 @@ One `.md` file per person and one `.bib` file per paper. The two connect only th
 carries exceptions for the other.
 
 - **`roles`** is a list of tags with a fixed vocabulary (`ROLE_ORDER`, plus the state tag `alumni`). Unknown tags are build errors.
-  The **highest** tag in `ROLE_ORDER` (pi, postdoc, grad, masters, undergrad, honors, faculty-mentee, collaborator) sets the person's card label and
-  People-page group (`ROLE_GROUPS`: honors is listed with undergraduates, faculty-mentee with collaborators); `alumni` moves the person to the
+  The **highest** tag in `ROLE_ORDER` (pi, postdoc, grad, masters, undergrad, honors, collaborator) sets the person's card label and
+  People-page group (`ROLE_GROUPS`: honors is listed with undergraduates); `alumni` moves the person to the
   Alumni section under the same group. Adding a person or a tag changes no code; adding a new tag is one line in each table.
 - **Lab authors** are people with any of `LAB_ROLES` (postdoc, grad, masters, undergrad, honors), past or present. The PI,
-  collaborators and faculty mentees are not "lab".
+  collaborators are not "lab".
 - **Matching** (`link_authors`): last name (accents ignored) plus first name. If the paper spells the first name out, it must equal the
   person's first name or a nickname in parentheses (`Michael (Chong) Wang` accepts `Wang, Michael` and `Wang, Chong`); a different first
   name never matches (this separates namesakes). If the paper gives initials only and a People entry has the same last name and first initial,
   the build fails and says which name to spell out. Papers are the only place that needs fixing.
-- Not yet shown: timelines of roles (start and end are free years), `senior` and the PI/collaborator/honors/faculty-mentee styles.
+- Not yet shown: timelines of roles (start and end are free years), `senior` and the PI/collaborator/honors styles.
 
 ### Publications: `content/publications/<anything>.bib`
 
@@ -241,7 +241,7 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 ## Decisions recorded
 
 - One `.bib` file per paper (errors stay local to one file).
-- Author styles in the Publications list (no ° or * symbols): lab members (anyone whose People tags include a lab role, see below) are bold blue; co-first authors are purple; corresponding authors get a yellow highlight. Styles combine. Screen readers hear the roles, and a legend explains the styles. The `senior` field and the collaborator, PI, honors and faculty-mentee tags are loaded but not displayed yet (design to come).
+- Author styles in the Publications list (no ° or * symbols): lab members (anyone whose People tags include a lab role, see below) are bold blue; co-first authors are purple; corresponding authors get a yellow highlight. Styles combine. Screen readers hear the roles, and a legend explains the styles. The `senior` field and the collaborator, PI and honors tags are loaded but not displayed yet (design to come).
 - Drop News. No selected-publications section on Home.
 - Join is not a page; its text lives on the Contact page (`join.md`).
 - No Research page of fixed length: themes are files, the count can change.

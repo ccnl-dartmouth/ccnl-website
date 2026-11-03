@@ -20,7 +20,7 @@ from .images import IMAGE_EXTS
 
 # Each person has a list of tags (`roles:` in people/<name>.md). These tables are the global rules that turn tags into
 # People-page groups and labels; nothing else needs to change when someone joins, graduates or leaves.
-ROLE_ORDER = ("pi", "postdoc", "grad", "masters", "undergrad", "honors", "faculty-mentee", "collaborator")  # highest first
+ROLE_ORDER = ("pi", "postdoc", "grad", "masters", "undergrad", "honors", "collaborator")  # highest first
 STATE_TAGS = ("alumni",)  # not a role: moves the person to the alumni section
 ROLE_TAGS = ROLE_ORDER + STATE_TAGS
 ROLE_LABELS = {
@@ -30,10 +30,9 @@ ROLE_LABELS = {
     "masters": "Master's Student",
     "undergrad": "Undergraduate Student",
     "honors": "Undergraduate Honors Student",
-    "faculty-mentee": "Faculty Mentee",
     "collaborator": "Collaborator",
 }
-ROLE_GROUPS = {"honors": "undergrad", "faculty-mentee": "collaborator"}  # listed under another tag's heading
+ROLE_GROUPS = {"honors": "undergrad"}  # listed under another tag's heading
 GROUP_ORDER = ("pi", "postdoc", "grad", "masters", "undergrad", "collaborator")
 ROLE_GROUP_TITLES = {
     "pi": "Principal Investigator",

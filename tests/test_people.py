@@ -39,12 +39,10 @@ def test_the_highest_tag_decides_the_group_and_label_and_alumni_is_a_state(sandb
     assert (person["role"], person["role_label"], person["status"], person["lab"]) == ("grad", "Graduate Student", "alumni", True)
 
 
-def test_honors_and_faculty_mentee_are_grouped_with_undergrads_and_collaborators(sandbox):
+def test_honors_is_listed_with_undergraduates_and_counts_as_lab(sandbox):
     sandbox.write("people/honors-person.md", person_md(name="Honors Person", roles="[honors]"))
-    sandbox.write("people/mentee-person.md", person_md(name="Mentee Person", roles="[faculty-mentee]", start=None))
-    people = {p["slug"]: p for p in sandbox.build().site["people"]}
-    assert (people["honors-person"]["role"], people["honors-person"]["role_label"]) == ("undergrad", "Undergraduate Honors Student")
-    assert (people["mentee-person"]["role"], people["mentee-person"]["profile"], people["mentee-person"]["lab"]) == ("collaborator", False, False)
+    person = next(p for p in sandbox.build().site["people"] if p["slug"] == "honors-person")
+    assert (person["role"], person["role_label"], person["lab"]) == ("undergrad", "Undergraduate Honors Student", True)
 
 
 def test_current_member_must_not_have_end(sandbox):

@@ -1,8 +1,7 @@
 ---
 name: Jocelyn Latulippe
-roles: [faculty-mentee, alumni]
-start: 2016
-end: 2019
+roles: [collaborator]
 current_position: Associate Professor, Department of Mathematics, Norwich University, VT
+profile: false
 ---
-Science advisor for the Vermont Genetics Network (VGN) research grant proposal.
+Faculty mentee, 2016-2019: science advisor for the Vermont Genetics Network (VGN) research grant proposal.

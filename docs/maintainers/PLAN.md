@@ -110,7 +110,7 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
       Fixes the collaborator-styled-as-lab bug and the E. Hart namesake (now `Hart, Evan E`). 258 tests.
       CV migration done (Nov 2026, from the PI's Oct 2026 CV): 36 people added (87 on People now), 16 existing entries updated,
       every alumnus has start and end years; lab styling matches the CV's lab marks on 54 of 55 papers.
-      TODO next: design how lab, PI, collaborator, honors, faculty-mentee and the paper roles (co-first, corresponding, senior)
+      TODO next: design how lab, PI, collaborator, honors and the paper roles (co-first, corresponding, senior)
       are shown on the Publications and People pages (same conventions on both); `senior` is stored but not displayed yet.
 - [~] 8 Content migration (done Oct 2026, needs human review): old WordPress pages fetched through its REST API and
       converted by one-off scripts (not kept in the repo). Migrated: home text, PI profile + photo, 50 people
