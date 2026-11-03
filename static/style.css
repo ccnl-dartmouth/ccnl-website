@@ -11,13 +11,12 @@
   --line: #d6ddd8;
   --amber: #f2a900;
   --au-member: #1a5fb4;
-  --au-pi: #a8430a;
   --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --wrap: 70rem;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #151815; --ink: #ececec; --muted: #a9aea9; --green: #5fc08f; --on-green: #0b1a12; --soft: #1e231f; --line: #394039; --au-member: #7fb2f0; --au-pi: #f0a15c; }
+  :root { --bg: #151815; --ink: #ececec; --muted: #a9aea9; --green: #5fc08f; --on-green: #0b1a12; --soft: #1e231f; --line: #394039; --au-member: #7fb2f0; }
 }
 
 * { box-sizing: border-box; }
@@ -130,9 +129,9 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .pubs { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: .6rem; }
 .pub { position: relative; display: flex; gap: .9rem; align-items: stretch; padding: .7rem .9rem; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); }
 .pub-body { flex: 1 1 auto; min-width: 0; }
-/* The thumbnail is as tall as the card and as wide as its shape needs (the box takes its width from the aspect ratio set in
-   the template, up to a limit). It is always on white so transparent logos stay readable in dark mode. */
-.pub-thumb-box { position: relative; flex: 0 0 auto; max-width: 9rem; border: 1px solid var(--line); border-radius: 4px; background: #fff; overflow: hidden; }
+/* The thumbnail is as tall as the card. Its width is fixed from the image's shape (set in the template as 8rem times the
+   aspect ratio, kept between 4rem and 9rem), so the text beside it wraps the same way while the card is being sized. It is always on white so transparent logos stay readable in dark mode. */
+.pub-thumb-box { position: relative; flex: 0 0 auto; min-width: 4rem; max-width: 9rem; border: 1px solid var(--line); border-radius: 4px; background: #fff; overflow: hidden; }
 .pub-thumb { position: absolute; inset: .25rem; width: calc(100% - .5rem); height: calc(100% - .5rem); object-fit: contain; }
 .pub p { margin: 0 0 .1rem; }
 .pub:hover { border-color: var(--green); }
@@ -144,10 +143,10 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .pub-authors, .pub-venue { color: var(--muted); font-size: .88rem; line-height: 1.4; }
 .pub-note { font-size: .9rem; font-style: italic; }
 .au-member { font-weight: 700; color: var(--au-member); }
-.au-pi { color: var(--au-pi); }
+.au-pi { font-weight: 700; color: var(--amber); }  /* the yellow of the lines through the page titles */
 .honors-mark { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; margin-left: .2em; color: var(--muted); }
 .au-mark { font-size: .75em; line-height: 0; margin-left: .05em; }
-.author-key { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem 1.5rem; margin: .75rem 0 1rem; padding: .6rem 1rem; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); font-size: .95rem; }
+.author-key { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-evenly; gap: .35rem 1.5rem; margin: .75rem 0 1rem; padding: .6rem 1rem; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); font-size: .95rem; }
 .key-item { white-space: nowrap; }
 .key-mark { margin-right: .3em; font-weight: 700; }
 .key-item .honors-mark { margin: 0 .3em 0 0; }
@@ -220,13 +219,17 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 
 /* ---- a paper's own page ---- */
 .paper-head { display: grid; gap: 1rem 2rem; padding: 1.25rem 1.5rem; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); }
-.paper-head.has-thumb { grid-template-columns: minmax(0, 1fr) 15rem; align-items: start; }
+.paper-head.has-thumb { grid-template-columns: minmax(0, 1fr) 11rem; align-items: start; }
+.paper-head-text { grid-column: 1; }
+.paper-thumb-box { grid-column: 2; grid-row: 1; display: flex; align-items: center; justify-content: center; padding: .4rem; border: 1px solid var(--line); border-radius: 4px; background: #fff; }
+/* the legend runs along the bottom of the card, under both the text and the image */
+.paper-head .author-key { grid-column: 1 / -1; margin: 0; padding: .75rem 0 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: none; }
 .paper-head h1 { margin: .35rem 0 .75rem; font-size: clamp(1.6rem, 4vw, 2.2rem); }
 .paper-head .meta, .paper-head p { margin: 0; }
 .paper-authors { line-height: 1.5; margin-bottom: .5rem !important; }
 .paper-links { margin-top: 1rem; }
 .paper-links a { padding: .25rem .9rem; font-size: .95rem; }
-.paper-thumb { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 4px; background: #fff; }
+.paper-thumb { display: block; max-width: 100%; max-height: 15rem; width: auto; height: auto; object-fit: contain; }
 .paper h2 { margin: 2rem 0 .6rem; font-size: 1.3rem; }
 .paper-abstract { max-width: 46rem; margin: 0; }
 .chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .4rem .5rem; }
@@ -239,4 +242,4 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .bibtex pre { margin: .6rem 0; padding: .8rem 1rem; overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; background: var(--soft); font-size: .85rem; white-space: pre-wrap; }
 .copy-bibtex { font: inherit; font-size: .9rem; padding: .3rem .9rem; color: var(--green); background: none; border: 1px solid var(--green); border-radius: 6px; cursor: pointer; }
 .copy-bibtex:hover { background: var(--green); color: var(--on-green); }
-@media (max-width: 40rem) { .paper-head.has-thumb { grid-template-columns: 1fr; } .paper-thumb { max-width: 16rem; } .paper-facts { grid-template-columns: 1fr; gap: .1rem; } .paper-facts dd { margin-bottom: .6rem; } }
+@media (max-width: 40rem) { .paper-head.has-thumb { grid-template-columns: 1fr; } .paper-head-text, .paper-thumb-box { grid-column: 1; grid-row: auto; } .paper-thumb-box { max-width: 12rem; } .paper-facts { grid-template-columns: 1fr; gap: .1rem; } .paper-facts dd { margin-bottom: .6rem; } }
