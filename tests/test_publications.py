@@ -95,14 +95,14 @@ def test_cofirst_and_corresponding_get_marks_and_lab_members_are_bold(sandbox):
     block = result.page("publications/index.html").split(">A title</a>")[1].split("</li>")[0]
     # Jane Doe is not on the People page: co-first mark only. Sam Student is a grad (lab), co-first and corresponding.
     assert '<span class="au ">Doe J<span class="sr-only"> (co-first author)</span></span><sup class="au-mark" aria-hidden="true">\u00b6</sup>' in block
-    assert ('<span class="au au-member">Student S<span class="sr-only"> (lab member, co-first author, corresponding author)</span></span>'
+    assert ('<span class="au au-member">Student S<span class="sr-only"> (SNL member, co-first author, corresponding author)</span></span>'
             '<sup class="au-mark" aria-hidden="true">\u00b6\u2666</sup>') in block
 
 
 def test_senior_authors_get_a_star_and_the_pi_is_bold(sandbox):
     sandbox.write("publications/new.bib", bib(author="Student, Sam and Investigator, Pat", senior="Investigator"))
     block = _block(sandbox)
-    assert '<span class="au au-pi">Investigator P<span class="sr-only"> (principal investigator, senior author)</span></span><sup class="au-mark" aria-hidden="true">\u2605</sup>' in block
+    assert '<span class="au au-pi">Investigator P<span class="sr-only"> (SNL principal investigator, senior author)</span></span><sup class="au-mark" aria-hidden="true">\u2605</sup>' in block
     assert "\u2605" not in block.split("Investigator")[0]  # Sam Student is not senior
 
 
@@ -143,13 +143,13 @@ def test_initials_that_match_nobody_on_the_people_page_are_fine(sandbox):
 
 def test_legend_lists_the_styles_that_occur(sandbox):
     legend = sandbox.build().page("publications/index.html").split('class="author-key')[1].split("</p>")[0]
-    assert "lab member" in legend and "principal investigator" in legend and "co-first author" in legend and "corresponding author" in legend
+    assert "SNL member" in legend and "SNL principal investigator" in legend and "co-first author" in legend and "corresponding author" in legend
     for name in ("2024-student-context", "2025-postdoc-preprint", "2012-investigator-range"):
         text = sandbox.path(f"publications/{name}.bib").read_text()
         text = "\n".join(line for line in text.splitlines() if not line.strip().startswith(("cofirst", "corresponding")))
         sandbox.write(f"publications/{name}.bib", text)
     legend = sandbox.build().page("publications/index.html").split('class="author-key')[1].split("</p>")[0]
-    assert "lab member" in legend and "co-first" not in legend and "corresponding" not in legend
+    assert "SNL member" in legend and "co-first" not in legend and "corresponding" not in legend
 
 
 # ----- linking authors to the People page

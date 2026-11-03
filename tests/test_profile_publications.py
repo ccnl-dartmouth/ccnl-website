@@ -34,9 +34,9 @@ def test_profile_lists_every_paper_by_that_person(sandbox):
 def test_profile_pages_style_authors_like_the_publications_page_and_repeat_the_legend(sandbox):
     html = sandbox.build().page("people/alex-postdoc/index.html")
     block = html.split('>Context effects in Bayesian choice</a>')[1].split("</li>")[0]
-    assert '<span class="au au-member">Postdoc A<span class="sr-only"> (lab member' in block
+    assert '<span class="au au-member">Postdoc A<span class="sr-only"> (SNL member' in block
     assert "au-pi" in block  # the PI is yellow here too, not only on the Publications page
-    assert 'class="author-key' in html and "lab member" in html.split('class="author-key')[1].split("</p>")[0]
+    assert 'class="author-key' in html and "SNL member" in html.split('class="author-key')[1].split("</p>")[0]
 
 
 def test_profile_groups_preprints_and_years_under_one_publications_heading(sandbox):

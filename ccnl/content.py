@@ -1010,7 +1010,7 @@ def name_initials(name):
     return letters[0] + letters[-1] if len(letters) > 1 else "".join(letters)
 
 
-def link_authors(publications, people, problems):
+def link_authors(publications, people, problems, lab_name="lab"):
     """Match each paper's authors to the People page and prepare their CSS classes and screen-reader text.
 
     The paper must be specific enough to decide: with the first name written out ("Hart, Elizabeth") it has to equal
@@ -1055,9 +1055,9 @@ def link_authors(publications, people, problems):
         for a in pub["authors"]:
             if a.get("etal"):
                 continue
-            # One set of rules for every page: lab members bold blue and the PI bold yellow (classes); co-first, corresponding and
+            # One set of rules for every page: lab members bold blue and the PI bold yellow (classes; the labels say "CCNL member" and "CCNL principal investigator", so they are identity labels, not roles on the paper); co-first, corresponding and
             # senior authors get a small mark after the name (marks).
-            roles = [(a["member"], "au-member", "", "lab member"), (a["pi"], "au-pi", "", "principal investigator"),
+            roles = [(a["member"], "au-member", "", f"{lab_name} member"), (a["pi"], "au-pi", "", f"{lab_name} principal investigator"),
                      (a.get("cofirst"), "", COFIRST_MARK, "co-first author"),
                      (a.get("corresponding"), "", CORRESPONDING_MARK, "corresponding author"),
                      (a.get("senior"), "", SENIOR_MARK, "senior author")]
@@ -1120,7 +1120,7 @@ def load_site(content_dir, root, problems, today=None):
         problems,
     )
 
-    link_authors(publications, people, problems)
+    link_authors(publications, people, problems, lab.get("short_name") or "lab")
     for person in people:  # each profile page lists the person's own papers (newest first, as loaded)
         person["publications"] = [pub for pub in publications if any(a.get("person") == person["slug"] for a in pub["authors"])]
     people_groups, alumni = group_people(people)

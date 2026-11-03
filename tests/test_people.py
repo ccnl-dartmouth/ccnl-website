@@ -39,13 +39,15 @@ def test_the_highest_tag_decides_the_group_and_label_and_alumni_is_a_state(sandb
     assert (person["role"], person["role_label"], person["status"], person["lab"]) == ("grad", "Graduate Student", "alumni", True)
 
 
-def test_honors_shows_as_a_small_mark_on_the_card_and_profile_with_a_legend(sandbox):
+def test_honors_shows_as_a_small_mark_on_current_cards_alumni_and_the_profile(sandbox):
     sandbox.write("people/honors-person.md", person_md(name="Honors Person", roles="[undergrad, honors]"))
+    sandbox.write("people/honors-alumna.md", person_md(name="Honors Alumna", roles="[undergrad, honors, alumni]", start="2020", end="2022"))
     result = sandbox.build()
-    for page in ("people/index.html", "people/honors-person/index.html"):
-        html = result.page(page)
-        assert 'class="honors-mark"' in html and "honors</span></p>" in html  # the mark, and the legend line
-    assert "Honors Student" not in result.page("people/index.html")
+    index = result.page("people/index.html")
+    assert index.count('class="honors-mark"') == 2  # one on the current card, one in the alumni list
+    assert 'class="honors-mark"' in result.page("people/honors-person/index.html")
+    assert "Honors Student" not in index
+    assert 'class="author-key"' not in index  # no banner on the People page
 
 
 def test_honors_is_listed_with_undergraduates_and_counts_as_lab(sandbox):

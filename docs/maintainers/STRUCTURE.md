@@ -132,7 +132,7 @@ carries exceptions for the other.
   person's first name or a nickname in parentheses (`Michael (Chong) Wang` accepts `Wang, Michael` and `Wang, Chong`); a different first
   name never matches (this separates namesakes). If the paper gives initials only and a People entry has the same last name and first initial,
   the build fails and says which name to spell out. Papers are the only place that needs fixing.
-- Honors: a person tagged `honors` shows a small mortarboard icon after the role on their card and profile (legend "honors" at the top of the People page and on the profile); honors is not marked on the publications. Not yet shown: timelines of roles (start and end are free years).
+- Honors: a person tagged `honors` shows a small mortarboard icon after the role on their card and profile (also in the alumni list; the People page has no legend banner for now, the profile card explains it); honors is not marked on the publications. Not yet shown: timelines of roles (start and end are free years).
 
 ### Publications: `content/publications/<anything>.bib`
 
@@ -241,7 +241,7 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 ## Decisions recorded
 
 - One `.bib` file per paper (errors stay local to one file).
-- Author styles (the same on the Publications list, paper pages and profile pages; one macro `author` in `templates/_macros.html`, rules in `link_authors`): lab members (anyone whose People tags include a lab role, see below) are bold blue; the PI is bold in the palette's yellow (`--amber`, the color of the lines through page titles); co-first authors get a superscript ¶ after the name, corresponding authors ♦ and senior authors ★ (¶ and ♦ are the PI's CV marks). Styles combine; collaborators are plain; honors is not shown on papers. Screen readers hear the roles. A legend (`author_key` macro, a boxed bar with each symbol attached to its text) lists only the styles present, at the top of the Publications page, each paper page and each profile page. No hover text.
+- Author styles (the same on the Publications list, paper pages and profile pages; one macro `author` in `templates/_macros.html`, rules in `link_authors`): lab members (anyone whose People tags include a lab role, see below) are bold blue; the PI is bold in the palette's yellow (`--amber`, the color of the lines through page titles); co-first authors get a superscript ¶ after the name, corresponding authors ♦ and senior authors ★ (¶ and ♦ are the PI's CV marks). Styles combine; collaborators are plain; honors is not shown on papers. The legend and screen readers say "CCNL member" and "CCNL principal investigator" (from `short_name`): they name who the person is in the lab, not their role on that paper (the ★ carries that). Screen readers hear the roles. A legend (`author_key` macro, a boxed bar with each symbol attached to its text) lists only the styles present, at the top of the Publications page, each paper page and each profile page. No hover text.
 - Drop News. No selected-publications section on Home.
 - Join is not a page; its text lives on the Contact page (`join.md`).
 - No Research page of fixed length: themes are files, the count can change.
