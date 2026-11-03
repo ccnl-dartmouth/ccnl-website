@@ -39,8 +39,6 @@ window.addEventListener('hashchange', openSectionFromHash);
     groups.forEach(function (g) {
       var any = g.querySelector('.pub:not([hidden])') !== null;
       g.hidden = !any;
-      var link = document.querySelector('.year-nav a[href="#' + g.id + '"]');
-      if (link) link.hidden = !any;
     });
     clear.hidden = terms.length === 0;
     none.hidden = shown !== 0;

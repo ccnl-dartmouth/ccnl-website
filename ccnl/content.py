@@ -1055,7 +1055,7 @@ def link_authors(publications, people, problems):
         for a in pub["authors"]:
             if a.get("etal"):
                 continue
-            # One set of rules for every page: lab members bold blue and the PI bold (classes); co-first, corresponding and
+            # One set of rules for every page: lab members bold blue and the PI orange (classes); co-first, corresponding and
             # senior authors get a small mark after the name (marks).
             roles = [(a["member"], "au-member", "", "lab member"), (a["pi"], "au-pi", "", "principal investigator"),
                      (a.get("cofirst"), "", COFIRST_MARK, "co-first author"),

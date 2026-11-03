@@ -16,7 +16,7 @@
       <dd><ul class="plain">{% for l in person.links %}<li><a href="{{ l.url }}">{{ l.label }}</a></li>{% endfor %}</ul></dd>
       {% endif %}
     </dl>
-    {% if person.honors %}<p class="author-key small">{{ m.honors_mark() }} honors</p>{% endif %}
+    {% if person.honors %}<p class="author-key"><span class="key-item">{{ m.honors_mark() }}honors</span></p>{% endif %}
   </aside>
   <article class="profile-main">
     <h1>{{ person.name }}{% if person.degrees %}<span class="degrees">, {{ person.degrees }}</span>{% endif %}</h1>

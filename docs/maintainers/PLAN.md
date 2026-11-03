@@ -131,7 +131,7 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
       Peter's paper (Duggins & Eliasmith, Psychological Review, vol. 132(5), Oct 2025) is `duggins2025spiking.bib`; it was briefly renamed to 2024 (online-first date) and restored to 2025, with pages 1090--1127.
 - [~] 7d Design round 4 (Oct 2026, built and tested, not yet pushed): every People listing is a fixed-size clickable card
       showing role and affiliation (not years); publications are bordered, condensed cards with a search box (all BibTeX
-      fields), year links and big year headings; every paper gets its own page (`publication.html`) built from its `.bib`
+      fields), big year headings (the row of year links was removed later); every paper gets its own page (`publication.html`) built from its `.bib`
       (keywords, month, pmid, extra link fields, citation + BibTeX copy, corresponding author (linked to profile), Google Scholar meta tags; the related-papers section was dropped); cards
       open the page and the abstract toggle moved there. `content/publications/_TEMPLATE.bib` lists every field and every
       paper file carries the blank optional lines. Skipped on purpose: auto topic tagging, citation counts, "my list".

@@ -21,7 +21,7 @@ Names used so far: `cover-<journal>-v<volume>-n<issue>.<ext>` for issue covers, 
 
 The PNAS, Neuron, Elsevier, Cerebral Cortex, J Cognitive Neuroscience and Memory covers were downloaded by hand. Notes:
 several Elsevier covers are small GIFs (about 150 x 200 px), which the build copies unchanged, so they look soft;
-J Cognitive Neuroscience only has a generic cover (`cover-j-cognitive-neuroscience.png`, shared by both papers).
+J Cognitive Neuroscience only has a generic cover (`cover-j-cognitive-neuroscience.jpg`, shared by both papers).
 
 ## Still missing: journal logos (12 papers)
 

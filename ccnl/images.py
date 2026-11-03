@@ -73,3 +73,13 @@ def process_image(src, dest_dir, name, max_px, where, problems):
     clean.paste(im)
     clean.save(dest_dir / out, fmt, **kwargs)
     return out
+
+
+def image_ratio(path):
+    """Width divided by height of a finished image (1.0 for a vector file or anything that can't be read); the
+    Publications cards use it to give the thumbnail the height of the card."""
+    try:
+        with Image.open(path) as im:
+            return im.width / im.height
+    except Exception:
+        return 1.0

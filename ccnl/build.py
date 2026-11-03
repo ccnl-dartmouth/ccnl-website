@@ -6,7 +6,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from .content import COFIRST_MARK, CORRESPONDING_MARK, SENIOR_MARK, load_site, where_of
-from .images import IMAGE_EXTS, process_image
+from .images import IMAGE_EXTS, image_ratio, process_image
 from .problems import BuildFailed, Problems
 
 PAGE_TEMPLATES = {
@@ -39,6 +39,7 @@ def process_site_images(site, out_dir, root, problems):
         if pub["image_src"]:
             name = process_image(pub["image_src"], images_out / "publications", pub["key"], 500, pub["where"], problems)
             pub["image"] = f"publications/{name}" if name else None
+            pub["image_ratio"] = image_ratio(images_out / "publications" / name) if name else 1.0
 
     # site-wide images (logos, banners): keep their names so lab.yaml can refer to them
     site_images = Path(site["content_dir"]) / "images"

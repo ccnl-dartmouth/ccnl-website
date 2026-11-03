@@ -98,7 +98,7 @@ file name, so use lowercase letters, digits and hyphens only. Nothing extra to w
 - **Write the first name in full for anyone on the People page.** A paper joins a person's page when an author has their
   last name and first name (`Doe, Jane` matches Jane Doe; a nickname in parentheses on the People page counts too).
   Lab members (postdocs, graduate and undergraduate students, past and present) are bold blue in the author lists, the PI
-  is bold, and collaborators are plain. A key at the top of the page explains the marks.
+  is orange, and collaborators are plain. A key at the top of the page explains the marks.
 - **If the build stops on an author:** an author written with initials only (`Doe, J`) who could be someone on the People
   page makes the build stop, because it can't tell whether it is them or another person with the same name. The message names
   the author. If it is the person on the People page, write their first name in full. If it is someone else, write that

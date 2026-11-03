@@ -55,7 +55,7 @@
     <ul class="pub-links">{% for l in p.links %}<li><a href="{{ l.url }}">{{ l.label }}<span class="sr-only"> for {{ p.title }}</span></a></li>{% endfor %}</ul>
     {% endif %}
   </div>
-  {% if p.image %}<img class="pub-thumb" src="{{ url('images/' ~ p.image) }}" alt="" loading="lazy">{% endif %}
+  {% if p.image %}<span class="pub-thumb-box" style="aspect-ratio: {{ '%.3f'|format(p.image_ratio) }}"><img class="pub-thumb" src="{{ url('images/' ~ p.image) }}" alt="" loading="lazy"></span>{% endif %}
 </li>
 {% endmacro %}
 
@@ -81,7 +81,7 @@
 {% endif %}
 {% endmacro %}
 
-{# One author, styled the same on every page: lab members bold blue, the PI bold, and a small mark after
+{# One author, styled the same on every page: lab members bold blue, the PI orange, and a small mark after
    the name for co-first (¶), corresponding (♦) and senior (★) authors. With link=true, anyone with a profile links
    to it. The roles are also spelled out for screen readers. #}
 {% macro author(a, text, link=false) %}{% if link and a.slug %}<a class="au {{ a.classes }}" href="{{ url('people/' ~ a.slug ~ '/') }}">{{ text }}{% if a.role_text %}<span class="sr-only"> ({{ a.role_text }})</span>{% endif %}</a>{% elif a.classes or a.role_text %}<span class="au {{ a.classes }}">{{ text }}{% if a.role_text %}<span class="sr-only"> ({{ a.role_text }})</span>{% endif %}</span>{% else %}{{ text }}{% endif %}{% if a.marks %}<sup class="au-mark" aria-hidden="true">{{ a.marks }}</sup>{% endif %}{% endmacro %}
@@ -93,12 +93,12 @@
 {% set senior = authors|selectattr("senior")|list %}
 {% set cofirst = authors|selectattr("cofirst")|list %}{% set corr = authors|selectattr("corresponding")|list %}
 {% if lab or pi or senior or cofirst or corr %}
-<p class="author-key small">Authors:
-  {% if lab %}<span class="au au-member">lab member</span>{% endif %}
-  {% if pi %}<span class="au au-pi">principal investigator</span>{% endif %}
-  {% if cofirst %}<span><sup class="au-mark">{{ cofirst_mark }}</sup> co-first author</span>{% endif %}
-  {% if corr %}<span><sup class="au-mark">{{ corresponding_mark }}</sup> corresponding author</span>{% endif %}
-  {% if senior %}<span><sup class="au-mark">{{ senior_mark }}</sup> senior author</span>{% endif %}
+<p class="author-key"><strong>Authors:</strong>
+  {% if lab %}<span class="key-item"><span class="au au-member">lab member</span></span>{% endif %}
+  {% if pi %}<span class="key-item"><span class="au au-pi">principal investigator</span></span>{% endif %}
+  {% if cofirst %}<span class="key-item"><span class="key-mark">{{ cofirst_mark }}</span>co-first author</span>{% endif %}
+  {% if corr %}<span class="key-item"><span class="key-mark">{{ corresponding_mark }}</span>corresponding author</span>{% endif %}
+  {% if senior %}<span class="key-item"><span class="key-mark">{{ senior_mark }}</span>senior author</span>{% endif %}
 </p>
 {% endif %}
 {% endmacro %}
