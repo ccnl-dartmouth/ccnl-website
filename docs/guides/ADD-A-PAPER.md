@@ -69,7 +69,7 @@ A complete example (the lines after `year` are all optional):
 | `keywords = {learning, uncertainty}` | keyword chips on the paper's page; clicking one searches the Publications page. Separate with commas or semicolons. To list the paper on the Research page, add the tag of each research topic it belongs to: `uncertainty-and-change`, `complex-environments`, `attention-bias-decision-making`, `neural-synaptic-mechanisms` |
 | `cofirst = {Doe, Smith}` | marks these authors (by last name) as co-first authors, shown with a ¶ after the name. Use the same last names as in the author line. |
 | `corresponding = {Soltani}` | marks corresponding authors: a ♦ after the name, and a "Corresponding author" line under Cite on the paper's page that links to their profile (put your email on your profile if you want it shown) |
-| `senior = {Soltani, Izquierdo}` | marks the senior (supervising) authors by last name; several are allowed for co-senior papers. Follow the PI's CV. Senior authors get a ★ after the name. |
+| `senior = {Soltani, Izquierdo}` | marks the senior (supervising) authors by last name; several are allowed for co-senior papers. Follow the PI's CV. Senior authors get a ★ after the name. Leave `cofirst`, `corresponding` and `senior` empty on a single-author paper: there is nothing to tell apart. |
 | `status = {preprint}` | lists the paper under "Preprints" |
 | `note = {...}` | a short note shown under the venue, for example "Highlighted in Nature" |
 | `image = {figure.jpg}` | optional: use this file from `content/images/` instead of the one named like the paper's file (see "A thumbnail" below) |
