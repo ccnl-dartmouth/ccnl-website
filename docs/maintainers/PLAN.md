@@ -101,6 +101,17 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
       keywords from PubMed were kept (OpenAlex's generated ones were removed, except the topic tags). 245 tests.
       Docs brought up to date for all of this (STRUCTURE.md "Visual design", the site-text guide). Titles corrected from Crossref where the old page differed (Gu 2015, Soltani 2021, Song 2024); the Duggins
       paper is 2025; the unpublished "theory of mind in children" preprint was removed.
+- [~] 7f People roles and author linking (Nov 2026, built and tested locally, not pushed): each person has a `roles:` tag list
+      (replaces `role` + `status`; `alumni` is a tag; fixed vocabulary and global rules in `ccnl/content.py`, see STRUCTURE.md
+      "Roles and author matching"); papers carry only author roles (`cofirst`, `corresponding`, new `senior`, filled from the
+      PI's CV: ¶ co-first, diamond corresponding, double underline senior); the per-paper `lab` idea was dropped. Authors are
+      linked to People by last name plus first name; an initials-only author that could be a People entry is a build error
+      (message says which name to spell out), so `.bib` author lines of lab members and collaborators now spell the first name in full.
+      Fixes the collaborator-styled-as-lab bug and the E. Hart namesake (now `Hart, Evan E`). 258 tests.
+      CV migration done (Nov 2026, from the PI's Oct 2026 CV): 36 people added (87 on People now), 16 existing entries updated,
+      every alumnus has start and end years; lab styling matches the CV's lab marks on 54 of 55 papers.
+      TODO next: design how lab, PI, collaborator, honors, faculty-mentee and the paper roles (co-first, corresponding, senior)
+      are shown on the Publications and People pages (same conventions on both); `senior` is stored but not displayed yet.
 - [~] 8 Content migration (done Oct 2026, needs human review): old WordPress pages fetched through its REST API and
       converted by one-off scripts (not kept in the repo). Migrated: home text, PI profile + photo, 50 people
       (roles/years/positions parsed from the old People page), 48 publications as `.bib` files (matched to Crossref:

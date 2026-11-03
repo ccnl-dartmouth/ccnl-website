@@ -1,7 +1,6 @@
 ---
 name: Jordan Postdoc
-role: postdoc
-status: current
+roles: [postdoc]
 start: 2025
 degrees: Ph.D.
 links:

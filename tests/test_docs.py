@@ -28,7 +28,7 @@ def test_example_profile_builds_cleanly(sandbox):
 def test_example_paper_builds_cleanly_and_uses_every_option_it_shows(sandbox):
     sandbox.write("people/jane-doe.md", fenced("markdown")[0])
     sandbox.write("publications/2026-doe-learning-under-uncertainty.bib", fenced("bibtex")[0])
-    sandbox.write("people/alireza-soltani-example.md", "---\nname: Alireza Soltani\nrole: postdoc\nstatus: current\n---\n")
+    sandbox.write("people/alireza-soltani-example.md", "---\nname: Alireza Soltani\nroles: [pi]\n---\n")
     result = sandbox.build()
     assert result.ok and result.warnings == [], result.errors + result.warnings
     paper = next(p for p in result.site["publications"] if p["key"] == "doe2026learning")

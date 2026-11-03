@@ -1,6 +1,7 @@
 ---
 name: Vivian Lee
-role: undergrad
-status: alumni
+roles: [undergrad, alumni]
+start: 2015
+end: 2018
 ---
 **Program:** WISP intern, Sophomore/Junior science scholar.

@@ -1,7 +1,6 @@
 ---
 name: Casey Student
-role: grad
-status: current
+roles: [grad]
 start: 2023
 degrees: B.Sc.
 links:

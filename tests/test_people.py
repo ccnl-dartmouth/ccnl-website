@@ -10,29 +10,47 @@ def test_new_person_appears_on_people_page_and_gets_profile(sandbox):
 
 
 def test_unknown_field_suggests_the_right_name(sandbox):
-    sandbox.write("people/new-person.md", person_md(rol="grad", role=None))
+    sandbox.write("people/new-person.md", person_md(rols="[grad]", roles=None))
     result = sandbox.build()
-    assert result.has_error("people/new-person.md", "unknown field 'rol'", "did you mean 'role'")
-    assert result.has_error("people/new-person.md", "missing required field 'role'")
+    assert result.has_error("people/new-person.md", "unknown field 'rols'", "did you mean 'roles'")
+    assert result.has_error("people/new-person.md", "missing required field 'roles'")
 
 
 def test_missing_required_fields_say_how_to_fix(sandbox):
     sandbox.write("people/new-person.md", "---\nname: New Person\n---\nBio\n")
     result = sandbox.build()
-    for field in ("role", "status"):
-        assert result.has_error("new-person.md", f"missing required field '{field}'", "Add a line like")
+    assert result.has_error("new-person.md", "missing required field 'roles'", "Add a line like `roles: [grad]`")
 
 
 def test_bad_role_lists_choices_and_suggests(sandbox):
-    sandbox.write("people/new-person.md", person_md(role="postdoctoral"))
+    sandbox.write("people/new-person.md", person_md(roles="[postdoctoral]"))
     result = sandbox.build()
-    assert result.has_error("new-person.md", "'role' must be one of", "pi, postdoc, grad")
+    assert result.has_error("new-person.md", "roles: unknown tag 'postdoctoral'", "Did you mean 'postdoc'", "pi, postdoc, grad")
+
+
+def test_alumni_alone_is_not_a_role(sandbox):
+    sandbox.write("people/new-person.md", person_md(roles="[alumni]", start=2020, end=2022))
+    assert sandbox.build().has_error("new-person.md", "needs at least one of", "`alumni` alone")
+
+
+def test_the_highest_tag_decides_the_group_and_label_and_alumni_is_a_state(sandbox):
+    sandbox.write("people/new-person.md", person_md(roles="[undergrad, grad, alumni]", start=2015, end=2021, current_position="X"))
+    person = next(p for p in sandbox.build().site["people"] if p["slug"] == "new-person")
+    assert (person["role"], person["role_label"], person["status"], person["lab"]) == ("grad", "Graduate Student", "alumni", True)
+
+
+def test_honors_and_faculty_mentee_are_grouped_with_undergrads_and_collaborators(sandbox):
+    sandbox.write("people/honors-person.md", person_md(name="Honors Person", roles="[honors]"))
+    sandbox.write("people/mentee-person.md", person_md(name="Mentee Person", roles="[faculty-mentee]", start=None))
+    people = {p["slug"]: p for p in sandbox.build().site["people"]}
+    assert (people["honors-person"]["role"], people["honors-person"]["role_label"]) == ("undergrad", "Undergraduate Honors Student")
+    assert (people["mentee-person"]["role"], people["mentee-person"]["profile"], people["mentee-person"]["lab"]) == ("collaborator", False, False)
 
 
 def test_current_member_must_not_have_end(sandbox):
     sandbox.write("people/new-person.md", person_md(end=2025))
     result = sandbox.build()
-    assert result.has_error("new-person.md", "status: alumni")
+    assert result.has_error("new-person.md", "`alumni` is not in `roles`")
 
 
 def test_end_before_start(sandbox):
@@ -59,14 +77,14 @@ def test_filename_must_be_lowercase_with_hyphens(sandbox):
 
 
 def test_invalid_yaml_header_explains_cause(sandbox):
-    sandbox.write("people/new-person.md", "---\nname: Bad: colon\nrole: grad\n---\nBio\n")
+    sandbox.write("people/new-person.md", "---\nname: Bad: colon\nroles: [grad]\n---\nBio\n")
     result = sandbox.build()
     assert result.has_error("new-person.md", "not valid YAML", "quotes")
 
 
 def test_header_must_be_closed(sandbox):
     # no closing '---': treated as plain text, so required fields are reported missing
-    sandbox.write("people/new-person.md", "---\nname: New Person\nrole: grad\nBio\n")
+    sandbox.write("people/new-person.md", "---\nname: New Person\nroles: [grad]\nBio\n")
     result = sandbox.build()
     assert result.has_error("new-person.md", "missing required field")
 
@@ -84,7 +102,7 @@ def test_windows_line_endings_and_bom_are_fine(sandbox):
 def test_links_are_validated_and_built(sandbox):
     sandbox.write(
         "people/new-person.md",
-        "---\nname: New Person\nrole: grad\nstatus: current\nstart: 2023\nlinks:\n"
+        "---\nname: New Person\nroles: [grad]\nstart: 2023\nlinks:\n"
         "  scholar: https://scholar.google.com/x\n  orcid: 0000-0002-1825-0097\n"
         "  github: someone\n  email: n@example.edu\n---\nBio.\n",
     )
@@ -98,7 +116,7 @@ def test_links_are_validated_and_built(sandbox):
 def test_bad_link_entries(sandbox):
     sandbox.write(
         "people/new-person.md",
-        "---\nname: N\nrole: grad\nstatus: current\nstart: 2023\nlinks:\n  scholr: https://x.org\n  website: example.org\n  email: nope\n---\n",
+        "---\nname: N\nroles: [grad]\nstart: 2023\nlinks:\n  scholr: https://x.org\n  website: example.org\n  email: nope\n---\n",
     )
     result = sandbox.build()
     assert result.has_error("new-person.md", "unknown entry 'scholr'", "scholar")
@@ -174,7 +192,7 @@ def test_profile_false_lists_person_without_page(sandbox):
 
 def test_groups_and_alumni_ordering(sandbox):
     site = sandbox.build().site
-    assert [g["role"] for g in site["people_groups"]] == ["pi", "postdoc", "grad", "undergrad", "collaborator"]
+    assert [g["role"] for g in site["people_groups"]] == ["pi", "postdoc", "grad", "undergrad", "collaborator"]  # no masters in the fixture lab
     assert "Lee Alumna" in [p["name"] for p in site["alumni"]]
     assert all(p["status"] == "alumni" for p in site["alumni"])
 
@@ -191,7 +209,7 @@ def test_alumni_sorted_newest_first(sandbox):
 
 def test_dates_are_optional_for_everyone(sandbox):
     sandbox.write("people/current-person.md", person_md(start=None))
-    sandbox.write("people/old-person.md", person_md(name="Old Person", status="alumni", start=None))
+    sandbox.write("people/old-person.md", person_md(name="Old Person", start=None, end=None, role="grad"))
     result = sandbox.build()
     assert result.ok and result.warnings == [], result.errors + result.warnings
     assert next(p for p in result.site["people"] if p["slug"] == "current-person")["years"] == ""
@@ -262,3 +280,9 @@ def test_template_file_for_new_people_is_valid_and_ignored_until_copied(sandbox)
     result = sandbox.build()
     assert result.ok and result.warnings == [], result.errors + result.warnings
     assert (sandbox.out / "people" / "jane-doe" / "index.html").is_file()
+
+
+def test_an_alumnus_without_start_and_end_years_is_a_warning(sandbox):
+    sandbox.write("people/old-person.md", person_md(name="Old Person", status="alumni", start=None))
+    result = sandbox.build()
+    assert result.ok and result.has_warning("old-person.md", "needs both `start:` and `end:`")

@@ -1,6 +1,5 @@
 ---
-name: Yu Ching Huang
-role: grad
-status: current
+name: Yu-Ching Huang
+roles: [grad]
 start: 2026
 ---

@@ -1,7 +1,6 @@
 ---
 name: Jeremiah Cohen
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: Allen Institute
 profile: false
 links:

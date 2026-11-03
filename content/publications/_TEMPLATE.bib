@@ -4,7 +4,8 @@
 %
 % REQUIRED: author, title, journal (or booktitle / howpublished for a chapter, proceedings or preprint), year.
 %   Change the word after @article{ (the "key") to something unique, like doe2026learning.
-%   Write authors as: Last, First and Last, First
+%   Write authors as: Last, First and Last, First. Write the first name IN FULL for anyone on the People page
+%   (Hart, Elizabeth, not Hart, E): the build stops with a message if a name could be a lab member but only has initials.
 %
 % OPTIONAL:
 %   month, volume, number, pages  the details shown with the venue (month: 3 or mar)
@@ -18,8 +19,8 @@
 %   pdf, preprint, si, data,      link buttons; each must start with https://
 %   code, video, slides,
 %   poster, url
-%   cofirst, corresponding        authors' last names, e.g. Doe, Smith (co-first: purple; corresponding: yellow highlight on the
-%                                 Publications list, and a "Corresponding author" line on the paper's page that links to their profile)
+%   cofirst, corresponding,      authors' last names, e.g. Doe, Smith: co-first authors, corresponding authors, senior authors
+%   senior                        (a "Corresponding author" line on the paper's page links to their profile)
 %   status                        write preprint to list the paper under "Preprints"
 %   image                         a file in content/images/ to use as the thumbnail, if it is not named like this .bib file
 %
@@ -50,6 +51,7 @@
   url = {},
   cofirst = {},
   corresponding = {},
+  senior = {},
   status = {},
   image = {},
 }

@@ -1,7 +1,6 @@
 ---
 name: Hannah Hoffman
-role: undergrad
-status: alumni
+roles: [undergrad, alumni]
 start: 2019
 end: 2019
 ---

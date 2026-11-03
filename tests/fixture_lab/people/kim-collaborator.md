@@ -1,7 +1,6 @@
 ---
 name: Kim Collaborator
-role: collaborator
-status: current
+roles: [collaborator]
 start: 2019
 current_position: Example Institute
 profile: false

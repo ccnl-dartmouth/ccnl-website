@@ -1,7 +1,6 @@
 ---
 name: Quinn Alumnus
-role: postdoc
-status: alumni
+roles: [postdoc, alumni]
 start: 2013
 end: 2018
 degrees: Ph.D.

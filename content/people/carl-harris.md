@@ -1,7 +1,6 @@
 ---
 name: Carl Harris
-role: undergrad
-status: alumni
+roles: [undergrad, alumni]
 start: 2019
 end: 2021
 ---

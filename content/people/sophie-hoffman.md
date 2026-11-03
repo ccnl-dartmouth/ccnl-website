@@ -1,7 +1,6 @@
 ---
 name: Sophie Hoffman
-role: undergrad
-status: alumni
+roles: [undergrad, alumni]
 start: 2014
 end: 2016
 ---

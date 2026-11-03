@@ -1,7 +1,6 @@
 ---
 name: Katherine Rowe
-role: undergrad
-status: alumni
+roles: [undergrad, honors, alumni]
 start: 2014
 end: 2016
 current_position: medical student at Harvard University

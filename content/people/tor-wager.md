@@ -1,7 +1,6 @@
 ---
 name: Tor Wager
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: Dartmouth College
 profile: false
 links:

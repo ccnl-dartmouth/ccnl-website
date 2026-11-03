@@ -1,7 +1,6 @@
 ---
 name: Shiva Farashahi
-role: grad
-status: alumni
+roles: [grad, alumni]
 start: 2014
 end: 2019
 degrees: Ph.D.

@@ -1,7 +1,6 @@
 ---
 name: Gerhard Jocham
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: Heinrich-Heine-Universität Düsseldorf, Germany
 profile: false
 links:

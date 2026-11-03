@@ -1,7 +1,6 @@
 ---
 name: Michael (Chong) Wang
-role: grad
-status: current
+roles: [grad]
 start: 2021
 degrees: B.Sc.
 ---

@@ -137,7 +137,7 @@ def test_search_script_reads_the_q_address_parameter_and_copy_button_exists():
 
 TEMPLATE = (ROOT / "content" / "publications" / "_TEMPLATE.bib").read_text(encoding="utf-8")
 OPTIONAL_FIELDS = ("month", "volume", "number", "pages", "doi", "pmid", "keywords", "abstract", "note", "pdf", "preprint", "si",
-                   "data", "code", "video", "slides", "poster", "url", "cofirst", "corresponding", "status", "image")
+                   "data", "code", "video", "slides", "poster", "url", "cofirst", "corresponding", "senior", "status", "image")
 
 
 def test_template_lists_every_field_the_site_understands():

@@ -1,7 +1,6 @@
 ---
 name: Shih-Wei Wu
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: National Yang Ming Chiao Tung University, Taiwan
 profile: false
 links:

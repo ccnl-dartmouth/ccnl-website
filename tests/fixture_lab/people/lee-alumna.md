@@ -1,7 +1,6 @@
 ---
 name: Lee Alumna
-role: grad
-status: alumni
+roles: [grad, alumni]
 start: 2016
 end: 2021
 degrees: Ph.D.

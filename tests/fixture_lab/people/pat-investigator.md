@@ -1,7 +1,6 @@
 ---
 name: Pat Investigator
-role: pi
-status: current
+roles: [pi]
 start: 2015
 degrees: Ph.D.
 links:

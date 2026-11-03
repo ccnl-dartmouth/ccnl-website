@@ -1,6 +1,7 @@
 ---
 name: Ethan Trepka
-role: undergrad
-status: alumni
+roles: [undergrad, alumni]
+start: 2019
+end: 2022
 current_position: PhD student at Stanford University
 ---

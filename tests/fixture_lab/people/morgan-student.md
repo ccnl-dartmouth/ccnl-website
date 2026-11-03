@@ -1,7 +1,6 @@
 ---
 name: Morgan Student
-role: grad
-status: current
+roles: [grad]
 start: 2024
 degrees: B.A.
 ---

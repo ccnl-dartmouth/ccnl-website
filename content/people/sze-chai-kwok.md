@@ -1,7 +1,6 @@
 ---
 name: Sze Chai Kwok
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: Duke Kunshan University, China
 profile: false
 links:

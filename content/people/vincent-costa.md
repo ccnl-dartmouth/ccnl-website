@@ -1,7 +1,6 @@
 ---
 name: Vincent Costa
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: Emory University
 profile: false
 links:

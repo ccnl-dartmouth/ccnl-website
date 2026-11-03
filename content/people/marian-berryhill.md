@@ -1,7 +1,6 @@
 ---
 name: Marian Berryhill
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: University of Nevada
 profile: false
 links:

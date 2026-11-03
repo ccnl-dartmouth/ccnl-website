@@ -91,8 +91,7 @@ Each `page` must refer to a known page; build fails on unknown names. Reordering
 ```yaml
 ---
 name: Jane Doe
-role: grad            # pi | postdoc | grad | undergrad | collaborator
-status: current       # current | alumni
+roles: [grad]         # tags: pi, postdoc, grad, masters, undergrad, honors, faculty-mentee, collaborator; plus alumni
 start: 2022           # optional; start and end are the only date fields
 end:                  # optional year; leave empty while current
 degrees: B.Sc.        # optional
@@ -110,13 +109,30 @@ Bio in Markdown. Optional "## Research" section.
 ```
 
 - Photo: `content/images/<slug>.jpg|png|webp|heic` (same name as the `.md`); missing photo gets the person's first and last initials (e.g. MW) in a square. A photo that contains GPS location data triggers a warning (the original stays public in the repository).
-- A profile page also lists the person's papers automatically (matched from the BibTeX author names by last name
-  and first initial), grouped like the main Publications page; only the page's owner is highlighted (bold blue).
+- A profile page also lists the person's papers automatically (matched from the BibTeX author names, see "Roles and author matching"
+  below), grouped like the main Publications page; only the page's owner is highlighted (bold blue).
 - Collaborators are listed at the bottom of the People page as a compact list (name linked to their site,
   institution, any other links), without profile pages.
 - `content/people/_TEMPLATE.md` is a commented example to copy when joining (files starting with `_` are ignored).
 - People page, menu and profile URLs are generated from these files, so they cannot disagree.
-- Moving to alumni = edit your own file (`status`, `end`, `current_position`).
+- Moving to alumni = edit your own file: add `alumni` to `roles`, set `end` and `current_position`.
+
+### Roles and author matching (global rules, one place each)
+
+One `.md` file per person and one `.bib` file per paper. The two connect only through global rules in `ccnl/content.py`; no file
+carries exceptions for the other.
+
+- **`roles`** is a list of tags with a fixed vocabulary (`ROLE_ORDER`, plus the state tag `alumni`). Unknown tags are build errors.
+  The **highest** tag in `ROLE_ORDER` (pi, postdoc, grad, masters, undergrad, honors, faculty-mentee, collaborator) sets the person's card label and
+  People-page group (`ROLE_GROUPS`: honors is listed with undergraduates, faculty-mentee with collaborators); `alumni` moves the person to the
+  Alumni section under the same group. Adding a person or a tag changes no code; adding a new tag is one line in each table.
+- **Lab authors** are people with any of `LAB_ROLES` (postdoc, grad, masters, undergrad, honors), past or present. The PI,
+  collaborators and faculty mentees are not "lab".
+- **Matching** (`link_authors`): last name (accents ignored) plus first name. If the paper spells the first name out, it must equal the
+  person's first name or a nickname in parentheses (`Michael (Chong) Wang` accepts `Wang, Michael` and `Wang, Chong`); a different first
+  name never matches (this separates namesakes). If the paper gives initials only and a People entry has the same last name and first initial,
+  the build fails and says which name to spell out. Papers are the only place that needs fixing.
+- Not yet shown: timelines of roles (start and end are free years), `senior` and the PI/collaborator/honors/faculty-mentee styles.
 
 ### Publications: `content/publications/<anything>.bib`
 
@@ -127,6 +143,7 @@ One standard BibTeX entry per file (paste from Google Scholar or the journal). O
 | `pdf`, `si`, `data`, `code`, `url` | link buttons |
 | `cofirst` | last names of co-first authors (shown in purple; no symbols) |
 | `corresponding` | last names of corresponding authors |
+| `senior` | last names of senior authors (the CV double-underlines them); several allowed |
 | `status` | `preprint`, or omitted for published |
 | `note` | short press/recognition note |
 | `abstract` | shown in a collapsible "Abstract" section on the Publications page |
@@ -205,11 +222,12 @@ Edited rarely, by anyone.
 ## Validation (errors fail the build with a plain-language message naming the file)
 
 Errors (build fails, last good site stays live):
-- Required fields missing; `role`/`status` not in the allowed list; `end` missing for alumni;
+- Required fields missing; an unknown `roles` tag (or only `alumni`); `end` set without `alumni`;
+  an author written with initials only who could be a People entry (the message says which first name to spell out);
   dates not parseable; unknown page in `site.yaml`.
 - Filename not lowercase-with-hyphens; duplicate slugs; image filename case mismatch (`Photo.JPG` vs `photo.jpg`).
 - BibTeX: parse failure (file and line), missing author/title/year/venue, duplicate keys,
-  `cofirst`/`corresponding` names not matching an author, `paper:` key not found.
+  `cofirst`/`corresponding`/`senior` names not matching an author, `paper:` key not found.
 - Images that cannot be opened or larger than a hard cap (e.g. 25 MB).
 - Malformed URLs.
 
@@ -223,7 +241,7 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 ## Decisions recorded
 
 - One `.bib` file per paper (errors stay local to one file).
-- Author styles in the Publications list (no ° or * symbols): lab members (anyone on the People page, matched by last name + first initial) are bold blue; co-first authors are purple; corresponding authors get a yellow highlight. Styles combine. Screen readers hear the roles, and a legend explains the styles.
+- Author styles in the Publications list (no ° or * symbols): lab members (anyone whose People tags include a lab role, see below) are bold blue; co-first authors are purple; corresponding authors get a yellow highlight. Styles combine. Screen readers hear the roles, and a legend explains the styles. The `senior` field and the collaborator, PI, honors and faculty-mentee tags are loaded but not displayed yet (design to come).
 - Drop News. No selected-publications section on Home.
 - Join is not a page; its text lives on the Contact page (`join.md`).
 - No Research page of fixed length: themes are files, the count can change.

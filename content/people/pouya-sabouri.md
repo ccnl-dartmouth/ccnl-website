@@ -1,7 +1,6 @@
 ---
 name: Pouya Sabouri
-role: postdoc
-status: alumni
+roles: [postdoc, alumni]
 start: 2014
 end: 2015
 degrees: Ph.D.

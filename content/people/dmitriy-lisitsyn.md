@@ -1,7 +1,6 @@
 ---
 name: Dmitriy Lisitsyn
-role: postdoc
-status: alumni
+roles: [postdoc, alumni]
 start: 2022
 end: 2023
 degrees: Ph.D.

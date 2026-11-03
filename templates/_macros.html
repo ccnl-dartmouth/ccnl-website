@@ -40,13 +40,13 @@
 
 {# One publication card: text on the left, thumbnail (the paper's own image, or a generic filler) on the right.
    The title link is stretched over the whole card, so the card opens the paper's page; the small links sit above it.
-   With person_key (a profile page) only that person is highlighted; otherwise lab members, co-first and corresponding
+   With person_slug (a profile page) only that person is highlighted; otherwise lab members, co-first and corresponding
    authors are styled. #}
-{% macro publication(p, person_key=none) %}
+{% macro publication(p, person_slug=none) %}
 <li class="pub" data-search="{{ p.search }}">
   <div class="pub-body">
     <p class="pub-title"><a class="card-link" href="{{ url('publications/' ~ p.slug ~ '/') }}">{{ p.title }}</a></p>
-    <p class="pub-authors">{% for a in p.authors %}{% if a.etal %}et al.{% elif person_key %}{% if a.key == person_key %}<span class="au au-member">{{ a.last }} {{ a.initials }}<span class="sr-only"> (this person)</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{% elif a.classes %}<span class="au {{ a.classes }}">{{ a.last }} {{ a.initials }}<span class="sr-only"> ({{ a.role_text }})</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{{ ", " if not loop.last }}{% endfor %}</p>
+    <p class="pub-authors">{% for a in p.authors %}{% if a.etal %}et al.{% elif person_slug %}{% if a.person == person_slug %}<span class="au au-member">{{ a.last }} {{ a.initials }}<span class="sr-only"> (this person)</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{% elif a.classes %}<span class="au {{ a.classes }}">{{ a.last }} {{ a.initials }}<span class="sr-only"> ({{ a.role_text }})</span></span>{% else %}{{ a.last }} {{ a.initials }}{% endif %}{{ ", " if not loop.last }}{% endfor %}</p>
     <p class="pub-venue"><em>{{ p.venue }}</em>{% if p.volume %} {{ p.volume }}{% if p.number %}({{ p.number }}){% endif %}{% endif %}{% if p.pages %}, {{ p.pages }}{% endif %}</p>
     {% if p.note %}<p class="pub-note">{{ p.note }}</p>{% endif %}
     {% if p.links %}
@@ -60,27 +60,27 @@
 {# Preprints, then published papers grouped by year (newest first). top=2 on the Publications page; top=3 when it is a
    section of a profile page. Each group is a section with an id (preprints, year-2024) so the Publications page can
    link to it and hide it when a search matches nothing in it. #}
-{% macro publication_lists(pubs, person_key=none, top=2) %}
+{% macro publication_lists(pubs, person_slug=none, top=2) %}
 {% set preprints = pubs|selectattr("preprint")|list %}
 {% set published = pubs|rejectattr("preprint")|list %}
 {% if preprints %}
 <section class="pub-year" id="preprints">
   <h{{ top }}{% if top == 2 %} class="year"{% endif %}>Preprints</h{{ top }}>
-  <ul class="pubs">{% for p in preprints %}{{ publication(p, person_key) }}{% endfor %}</ul>
+  <ul class="pubs">{% for p in preprints %}{{ publication(p, person_slug) }}{% endfor %}</ul>
 </section>
 {% endif %}
 {% if published %}
 {% for year, group in published|groupby("year")|reverse %}
 <section class="pub-year" id="year-{{ year }}">
   <h{{ top }} class="year">{{ year }}</h{{ top }}>
-  <ul class="pubs">{% for p in group %}{{ publication(p, person_key) }}{% endfor %}</ul>
+  <ul class="pubs">{% for p in group %}{{ publication(p, person_slug) }}{% endfor %}</ul>
 </section>
 {% endfor %}
 {% endif %}
 {% endmacro %}
 
-{# Authors on a paper's own page: lab members link to their profile; lab members and co-first authors are styled and spelled
+{# Authors on a paper's own page: anyone with a profile links to it; lab members and co-first authors are styled and spelled
    out for screen readers. Corresponding authors are not highlighted here: they get their own row under "Cite". #}
 {% macro paper_authors(p) %}
-{% for a in p.authors %}{% if a.etal %}et al.{% else %}{% set name = a.last ~ ', ' ~ (a.initials|list|join('. ')) ~ '.' %}{% set classes = (['au-member'] if a.member else []) + (['au-cofirst'] if a.cofirst else []) %}{% set roles = (['lab member'] if a.member else []) + (['co-first author'] if a.cofirst else []) %}{% if classes %}{% if a.slug %}<a class="au {{ classes|join(' ') }}" href="{{ url('people/' ~ a.slug ~ '/') }}">{{ name }}<span class="sr-only"> ({{ roles|join(', ') }})</span></a>{% else %}<span class="au {{ classes|join(' ') }}">{{ name }}<span class="sr-only"> ({{ roles|join(', ') }})</span></span>{% endif %}{% else %}{{ name }}{% endif %}{% endif %}{{ ", " if not loop.last }}{% endfor %}
+{% for a in p.authors %}{% if a.etal %}et al.{% else %}{% set name = a.last ~ ', ' ~ (a.initials|list|join('. ')) ~ '.' %}{% set classes = (['au-member'] if a.member else []) + (['au-cofirst'] if a.cofirst else []) %}{% set roles = (['lab member'] if a.member else []) + (['co-first author'] if a.cofirst else []) %}{% if a.slug %}<a class="au{{ ' ' ~ classes|join(' ') if classes }}" href="{{ url('people/' ~ a.slug ~ '/') }}">{{ name }}{% if roles %}<span class="sr-only"> ({{ roles|join(', ') }})</span>{% endif %}</a>{% elif classes %}<span class="au {{ classes|join(' ') }}">{{ name }}<span class="sr-only"> ({{ roles|join(', ') }})</span></span>{% else %}{{ name }}{% endif %}{% endif %}{{ ", " if not loop.last }}{% endfor %}
 {% endmacro %}

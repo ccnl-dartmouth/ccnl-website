@@ -1,7 +1,6 @@
 ---
 name: Mohsen Rakhshan
-role: grad
-status: alumni
+roles: [grad, alumni]
 start: 2017
 end: 2022
 degrees: Ph.D.

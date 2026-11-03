@@ -1,7 +1,6 @@
 ---
 name: Alicia Izquierdo
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: UCLA
 profile: false
 links:

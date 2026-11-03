@@ -1,7 +1,6 @@
 ---
 name: Alex Postdoc
-role: postdoc
-status: current
+roles: [postdoc]
 start: 2024
 degrees: Ph.D.
 links:

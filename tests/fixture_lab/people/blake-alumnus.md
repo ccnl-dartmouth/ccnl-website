@@ -1,7 +1,6 @@
 ---
 name: Blake Alumnus
-role: undergrad
-status: alumni
+roles: [undergrad, alumni]
 start: 2019
 end: 2022
 degrees: B.A.

@@ -1,7 +1,6 @@
 ---
 name: Mia J Lee
-role: grad
-status: alumni
+roles: [masters, alumni]
 start: 2020
 end: 2022
 degrees: M.S.

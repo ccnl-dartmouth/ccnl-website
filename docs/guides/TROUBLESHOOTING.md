@@ -7,8 +7,12 @@ in the meantime. A GitHub issue titled "The website build failed" is also opened
 | The message says | What to do |
 |---|---|
 | `the file name must use only lowercase letters, digits and hyphens` | rename the file, for example `jane-doe.md` |
-| `unknown field 'rol' (did you mean 'role'?)` | fix the spelling of the line |
-| `missing required field 'role'` | add the line shown in the message |
+| `unknown field 'rol' (did you mean 'roles'?)` | fix the spelling of the line |
+| `missing required field 'roles'` | add the line shown in the message, for example `roles: [grad]` |
+| `roles: unknown tag '...'` | use one of the tags listed in the message |
+| `roles needs at least one of ...` | `alumni` goes next to a role, for example `roles: [grad, alumni]` |
+| `` `end:` is set but `alumni` is not in `roles` `` | add `alumni` to `roles`, or delete the `end:` line while you are still in the lab |
+| `author 'Doe, J' could be Jane Doe (People page)...` | in the paper's `author` line, write the first name in full: `Doe, Jane` if it is her, or the other person's first name if it is someone else |
 | `... is not valid YAML` | a value with a colon in it needs quotes, for example `current_position: "Lab: Example"` |
 | `rename the image to 'jane-doe.jpg'` | the picture name must be lowercase and match your page name (or the paper's `.bib` name) |
 | `images do not go in this folder` | a picture was uploaded next to the text files: move it to `content/images/` |
@@ -22,6 +26,8 @@ in the meantime. A GitHub issue titled "The website build failed" is also opened
 | `BibTeX key '...' is also used in ...` | change the word after `@article{` so it's unique |
 | `` `month` must be a number from 1 to 12 `` | write `month = {3}` or `month = {mar}` |
 | `` `pmid` must be just the number `` | write only the digits, for example `pmid = {12345678}` |
-| `` `cofirst` lists ..., who is not among the authors `` | use last names exactly as they appear in the author list |
+| `` `cofirst` (or `corresponding`, `senior`) lists ..., who is not among the authors `` | use last names exactly as they appear in the author list |
+
+Warnings (yellow lines in the same step) don't stop the build, for example "an alumnus needs both `start:` and `end:` years". Fix them when you can.
 
 Still stuck? Ask the lab's website maintainer and send them the error text.

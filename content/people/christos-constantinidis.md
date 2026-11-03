@@ -1,7 +1,6 @@
 ---
 name: Christos Constantinidis
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: Vanderbilt University
 profile: false
 links:

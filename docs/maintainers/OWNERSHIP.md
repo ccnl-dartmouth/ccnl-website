@@ -46,7 +46,7 @@ Whoever is the maintainer must have email notifications on for mentions.
 
 ## When a lab member leaves
 
-- **Alumni:** in their profile, change `status: current` to `status: alumni` (they move to the Alumni list). Their
+- **Alumni:** in their profile, add the `alumni` tag to `roles` and fill in `end` (they move to the Alumni list). Their
   page and papers stay.
 - **Access:** remove them from the `lab-members` team when they no longer edit the site (org Settings, Teams).
   Their past commits and their files remain.

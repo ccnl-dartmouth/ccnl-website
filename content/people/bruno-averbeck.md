@@ -1,7 +1,6 @@
 ---
 name: Bruno Averbeck
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: NIMH
 profile: false
 links:

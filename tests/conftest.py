@@ -103,7 +103,10 @@ def sandbox(tmp_path):
 
 
 def person_md(body="Bio.\n", **over):
-    fields = {"name": "New Person", "role": "grad", "status": "current", "start": 2023}
+    """A people file. `role=` and `status=` are shortcuts for the `roles:` list (status="alumni" adds the alumni tag)."""
+    role, status = over.pop("role", "grad"), over.pop("status", "current")
+    roles = ([role] if role else []) + (["alumni"] if status == "alumni" else [])
+    fields = {"name": "New Person", "roles": "[" + ", ".join(roles) + "]", "start": 2023}
     fields.update(over)
     lines = [f"{k}: {v}" for k, v in fields.items() if v is not None]
     return "---\n" + "\n".join(lines) + "\n---\n" + body

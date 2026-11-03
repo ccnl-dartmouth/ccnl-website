@@ -1,5 +1,7 @@
 ---
 name: Cara Lewis
-role: undergrad
-status: current
+roles: [undergrad, honors, alumni]
+start: 2024
+end: 2026
 ---
+Honors thesis, 2026.

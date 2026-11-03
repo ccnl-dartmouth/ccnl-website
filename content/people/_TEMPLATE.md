@@ -2,8 +2,8 @@
 # Copy this file to people/<your-name>.md (lowercase, hyphens, e.g. jane-doe.md) and edit it.
 # Lines starting with # are comments. Delete anything you don't want to fill in.
 name: Your Name
-role: grad              # postdoc | grad | undergrad
-status: current         # current | alumni
+roles: [grad]          # one or more tags: postdoc, grad, masters, undergrad, honors, faculty-mentee, collaborator
+                        # when you leave, add alumni: roles: [grad, alumni] (and fill in end: below)
 start: 2025             # the year you joined
 # end: 2029             # add the year you leave (leave this out while you are here)
 # degrees: B.Sc.

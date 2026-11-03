@@ -1,12 +1,13 @@
 # Update your profile
 
-Your bio, photo, links and role live in one file named after you in `content/people/`, plus a photo in
+Your bio, photo, links and roles live in one file named after you in `content/people/`, plus a photo in
 `content/images/`. New to editing? Read [Start here](START-HERE.md) first for how saving ("committing") works.
 
 ## Write your bio
 
-Everyone listed on the People page has a page of their own, made from one file named after you. The file has two parts:
-a block of details at the top between `---` lines, and your bio underneath.
+Lab members listed on the People page have a page of their own (collaborators are only listed, unless their file says
+`profile: true`). The page is made from one file named after you. The file has two parts: a block of details at the top
+between `---` lines, and your bio underneath.
 
 **If you already have a file** (most current lab members do):
 
@@ -30,8 +31,7 @@ A complete example:
 ```markdown
 ---
 name: Jane Doe
-role: grad
-status: current
+roles: [grad]
 start: 2024
 degrees: B.Sc.
 links:
@@ -87,10 +87,9 @@ file, click the pencil, change a line, and commit.
 | Line | Meaning | Example |
 |---|---|---|
 | `name` | your name as it should appear | `name: Jane Doe` |
-| `role` | `postdoc`, `grad`, `undergrad` (the lab manager sets `pi` and `collaborator`) | `role: grad` |
-| `status` | `current` or `alumni` | `status: current` |
-| `start` | the year you joined (optional) | `start: 2024` |
-| `end` | the year you left (optional; leave it out while you're in the lab) | `end: 2029` |
+| `roles` | a list of tags: `postdoc`, `grad`, `masters`, `undergrad`, `honors`, and `alumni` once you have left (the lab manager sets `pi`, `faculty-mentee` and `collaborator`). You can have several, for example `[undergrad, honors]`. Your card shows the highest one. | `roles: [grad]` |
+| `start` | the year you joined (required for alumni, otherwise optional) | `start: 2024` |
+| `end` | the year you left (required for alumni; leave it out while you're in the lab) | `end: 2029` |
 | `degrees` | shown after your name | `degrees: M.S.` |
 | `current_position` | where you are now (for alumni) | `current_position: Data Scientist, Example Co.` |
 | `links` | any of the links below | see below |
@@ -112,13 +111,15 @@ links:
 
 Your email is shown with a spam-protected link. ORCID takes the number, and GitHub takes just your user name.
 
-**When you leave the lab:** change `status: current` to `status: alumni`, add `end: 2029`, and add
-`current_position: ...` if you like. You'll move to the Alumni list automatically, and your page and papers stay.
+**Moving on (graduating, or leaving):** add a tag, don't replace one. For example `roles: [grad]` becomes `roles: [grad, alumni]`, and
+when you finish a degree and stay, `[undergrad]` becomes `[undergrad, grad]`. When you add `alumni`, also write `end: 2029` (and `start:`
+if it is missing) and, if you like, `current_position: ...`. You'll move to the Alumni list automatically, and your page and papers stay.
 
 ## Where it shows up
 
-Your file makes your **card** on the People page and your **own page**. Your card shows your name, role and affiliation (your
+Your file makes your **card** on the People page and your **own page**. Your card shows your name, your highest role and affiliation (your
 `current_position` if you set one, otherwise the lab's institution). Your page also lists every paper whose author list
-matches your name, see [Add or fix a paper](ADD-A-PAPER.md).
+includes you, which means your last name and your first name written out (for example `Doe, Jane`), see [Add or fix a paper](ADD-A-PAPER.md).
+If a paper is missing from your page, check how your name is written in its `.bib` file.
 
 Something wrong? See [When something goes wrong](TROUBLESHOOTING.md).

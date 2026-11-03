@@ -4,7 +4,7 @@ import re
 
 from conftest import person_md
 
-from ccnl.content import person_key
+from ccnl.content import person_names
 
 
 def author_lines(html):
@@ -75,8 +75,8 @@ def test_collaborators_have_no_profile_page_even_with_papers(sandbox):
     assert not (sandbox.out / "people" / "kim-collaborator").exists()
 
 
-def test_person_key_forms():
-    assert person_key("Michael (Chong) Wang") == "wang|m"
-    assert person_key("José Pérez") == "perez|j"
-    assert person_key("Shih-Wei Wu") == "wu|s"
-    assert person_key("Cher") is None
+def test_person_names_forms():
+    assert person_names("Michael (Chong) Wang") == ("wang", {"michael", "chong"})
+    assert person_names("Jos\u00e9 P\u00e9rez") == ("perez", {"jose"})
+    assert person_names("Shih-Wei Wu") == ("wu", {"shihwei"})
+    assert person_names("Cher") == ("cher", set())

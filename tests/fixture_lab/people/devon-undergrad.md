@@ -1,7 +1,6 @@
 ---
 name: Devon Undergrad
-role: undergrad
-status: current
+roles: [undergrad]
 start: 2025
 ---
 Devon helps run behavioral experiments.

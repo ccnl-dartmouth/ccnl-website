@@ -1,7 +1,6 @@
 ---
 name: Taylor Student
-role: grad
-status: current
+roles: [grad]
 start: 2025
 ---
 Taylor is rotating in the lab this year.

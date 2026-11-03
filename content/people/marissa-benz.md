@@ -1,7 +1,6 @@
 ---
 name: Marissa Benz
-role: undergrad
-status: alumni
+roles: [undergrad, alumni]
 start: 2023
 end: 2024
 ---

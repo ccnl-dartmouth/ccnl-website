@@ -1,7 +1,6 @@
 ---
 name: Elizabeth Hart
-role: undergrad
-status: alumni
+roles: [undergrad, alumni]
 start: 2016
 end: 2017
 ---

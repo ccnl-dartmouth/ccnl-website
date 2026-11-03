@@ -1,7 +1,6 @@
 ---
 name: Avery Collaborator
-role: collaborator
-status: current
+roles: [collaborator]
 start: 2021
 current_position: Sample University
 profile: false

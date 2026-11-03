@@ -1,7 +1,6 @@
 ---
 name: Tirin Moore
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: Stanford University
 profile: false
 links:

@@ -1,7 +1,6 @@
 ---
 name: Daeyeol Lee
-role: collaborator
-status: current
+roles: [collaborator]
 current_position: Johns Hopkins University
 profile: false
 links:

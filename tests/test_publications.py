@@ -79,30 +79,67 @@ def test_corresponding_name_must_be_an_author(sandbox):
     assert sandbox.build().has_error("new.bib", "`corresponding`")
 
 
+def test_senior_name_must_be_an_author(sandbox):
+    sandbox.write("publications/new.bib", bib(senior="Typo"))
+    assert sandbox.build().has_error("new.bib", "`senior` lists typo", "not among the authors")
+
+
+def _block(sandbox):
+    return sandbox.build().page("publications/index.html").split(">A title</a>")[1].split("</li>")[0]
+
+
 def test_author_roles_are_styled_by_class_not_marked_with_symbols(sandbox):
-    sandbox.write("publications/new.bib", bib(cofirst="Doe, Investigator", corresponding="Investigator"))
+    sandbox.write("publications/new.bib", bib(author="Doe, Jane and Student, Sam", cofirst="Doe, Student", corresponding="Student"))
     result = sandbox.build()
     assert result.ok, result.errors
-    block = result.page("publications/index.html").split('>A title</a>')[1].split("</li>")[0]
-    # Doe is not in People: co-first only. Pat Investigator is a lab member, co-first and corresponding.
+    block = result.page("publications/index.html").split(">A title</a>")[1].split("</li>")[0]
+    # Jane Doe is not on the People page: co-first only. Sam Student is a grad (lab), co-first and corresponding.
     assert '<span class="au au-cofirst">Doe J<span class="sr-only"> (co-first author)</span></span>' in block
-    assert ('<span class="au au-member au-cofirst au-corr">Investigator P'
+    assert ('<span class="au au-member au-cofirst au-corr">Student S'
             '<span class="sr-only"> (lab member, co-first author, corresponding author)</span></span>') in block
     assert "&deg;" not in block and "\u00b0" not in block and "*" not in block
 
 
 def test_corresponding_author_and_lab_member_styles_are_separate(sandbox):
-    sandbox.write("publications/new.bib", bib(corresponding="Doe"))
-    block = sandbox.build().page("publications/index.html").split('>A title</a>')[1].split("</li>")[0]
+    sandbox.write("publications/new.bib", bib(author="Doe, Jane and Student, Sam", corresponding="Doe"))
+    block = _block(sandbox)
     assert '<span class="au au-corr">Doe J<span class="sr-only"> (corresponding author)</span></span>' in block
-    assert '<span class="au au-member">Investigator P<span class="sr-only"> (lab member)</span></span>' in block
+    assert '<span class="au au-member">Student S<span class="sr-only"> (lab member)</span></span>' in block
 
 
 def test_authors_outside_the_lab_are_not_styled(sandbox):
     html = sandbox.build().page("publications/index.html")
     block = html.split('A range-normalization model of context-dependent choice</a>')[1].split("</li>")[0]
     assert ", Outsider M, " in block  # plain text, no span
-    assert "Collaborator K" in block and 'au-member' in block.split("Collaborator K")[0][-120:]
+    assert "au-member" not in block  # the PI and a collaborator are on the People page but are not lab members
+
+
+def test_collaborators_and_the_pi_are_not_styled_as_lab(sandbox):
+    sandbox.write("publications/new.bib", bib(author="Collaborator, Kim and Investigator, Pat"))
+    assert "au-member" not in _block(sandbox)
+
+
+def test_lab_alumni_are_styled_as_lab(sandbox):
+    sandbox.write("publications/new.bib", bib(author="Alumna, Lee and Doe, Jane"))
+    assert _block(sandbox).count("au-member") == 1
+
+
+def test_a_different_first_name_is_a_different_person(sandbox):
+    sandbox.write("publications/new.bib", bib(author="Student, Samantha and Doe, Jane"))
+    result = sandbox.build()
+    assert result.ok, result.errors  # Samantha Student is not Sam Student: no link, no error
+    assert "au-member" not in _block(sandbox)
+
+
+def test_initials_that_could_be_a_people_entry_are_an_error(sandbox):
+    sandbox.write("publications/new.bib", bib(author="Student, S and Doe, Jane"))
+    result = sandbox.build()
+    assert result.has_error("new.bib", "author 'Student, S' could be Sam Student", "write the first name in full: Student, Sam")
+
+
+def test_initials_that_match_nobody_on_the_people_page_are_fine(sandbox):
+    sandbox.write("publications/new.bib", bib(author="Outsider, Q and Student, Zed and Doe, J"))
+    assert sandbox.build().ok
 
 
 def test_legend_lists_the_styles_that_occur(sandbox):
@@ -116,29 +153,53 @@ def test_legend_lists_the_styles_that_occur(sandbox):
     assert "lab member" in legend and "co-first" not in legend and "corresponding" not in legend
 
 
-# ----- matching authors to the People page
+# ----- linking authors to the People page
 
 
-def _people(*names):
-    return [{"name": n} for n in names]
+def _people(*specs):
+    return [{"name": n, "profile": True, "slug": n.lower().replace(" ", "-"), "lab": lab} for n, lab in specs]
 
 
-def test_lab_members_are_matched_by_last_name_and_first_initial():
-    from ccnl.content import style_authors, parse_authors
+def _link(authors, people):
+    from ccnl.content import link_authors, parse_authors
+    from ccnl.problems import Problems
 
-    people = _people("Michael (Chong) Wang", "Jae Hyung Woo", "Shih-Wei Wu", "Jos\u00e9 P\u00e9rez", "Carl Harris")
-    pub = {"authors": parse_authors("Wang, MC and Woo, JH and Wu, S-W and Perez, J and Harris, L and Harris, C and Smith, A")}
-    style_authors([pub], people)
-    flags = {a["last"] + " " + a["initials"]: a["member"] for a in pub["authors"]}
-    assert flags == {"Wang MC": True, "Woo JH": True, "Wu SW": True, "Perez J": True, "Harris L": False, "Harris C": True, "Smith A": False}
+    pub = {"where": "new.bib", "authors": parse_authors(authors)}
+    problems = Problems()
+    link_authors([pub], people, problems)
+    return pub["authors"], problems
+
+
+def test_authors_are_linked_by_last_name_and_first_name_when_the_paper_spells_it_out():
+    people = _people(("Michael (Chong) Wang", True), ("Jae Hyung Woo", True), ("Shih-Wei Wu", False), ("Jos\u00e9 P\u00e9rez", False), ("Carl Harris", True))
+    authors, problems = _link("Wang, Michael C and Wang, Chong and Woo, Jae Hyung and Wu, S-W and Perez, Jose and Harris, Lauren and Harris, Carl and Smith, Alex", people)
+    # S-W is initials only and Wu is on the People page: ambiguous, reported (the first name must be written out)
+    assert [e for e in problems.errors if "Wu, S-W" in e]
+    linked = {a["raw"]: a["person"] for a in authors}
+    assert linked == {"Wang, Michael C": "michael-(chong)-wang", "Wang, Chong": "michael-(chong)-wang", "Woo, Jae Hyung": "jae-hyung-woo",
+                      "Wu, S-W": None, "Perez, Jose": "jos\u00e9-p\u00e9rez", "Harris, Lauren": None, "Harris, Carl": "carl-harris",
+                      "Smith, Alex": None}
+    assert {a["raw"]: a["member"] for a in authors if a["person"]} == {"Wang, Michael C": True, "Wang, Chong": True, "Woo, Jae Hyung": True,
+                                                                     "Perez, Jose": False, "Harris, Carl": True}
+
+
+def test_initials_only_authors_are_never_linked_silently():
+    authors, problems = _link("Harris, C and Harris, L", _people(("Carl Harris", True)))
+    assert len(problems.errors) == 1 and "Harris, C" in problems.errors[0] and "Carl Harris" in problems.errors[0]
+    assert not any(a["person"] for a in authors)
 
 
 def test_et_al_is_never_styled():
-    from ccnl.content import style_authors, parse_authors
+    authors, problems = _link("Doe, Jane and others", _people(("Jane Doe", True)))
+    assert authors[0]["member"] is True and authors[0]["person"] == "jane-doe"
+    assert authors[1]["etal"] and authors[1]["person"] is None and not authors[1]["member"]
 
-    pub = {"authors": parse_authors("Doe, J and others")}
-    style_authors([pub], _people("Jane Doe"))
-    assert pub["authors"][0]["member"] is True and "member" not in pub["authors"][1]
+
+def test_parse_authors_tells_spelled_out_names_from_initials():
+    from ccnl.content import parse_authors
+
+    given = {a["raw"]: a["given"] for a in parse_authors("Wang, MC and Woo, Jae H and Wu, S-W and Xiao-Jing Wang and Smith, J. and Lee, D")}
+    assert given == {"Wang, MC": "", "Woo, Jae H": "Jae", "Wu, S-W": "", "Xiao-Jing Wang": "Xiao-Jing", "Smith, J.": "", "Lee, D": ""}
 
 
 def test_every_publication_has_a_right_aligned_thumbnail_with_a_generic_fallback(sandbox):

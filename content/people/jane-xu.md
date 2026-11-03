@@ -1,6 +1,7 @@
 ---
 name: Jane Xu
-role: undergrad
-status: alumni
+roles: [undergrad, alumni]
+start: 2017
+end: 2020
 ---
 **Program:** WISP intern, Sophomore science scholar.

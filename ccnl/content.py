@@ -18,21 +18,32 @@ from bibtexparser.latexenc import latex_to_unicode
 
 from .images import IMAGE_EXTS
 
-ROLES = ("pi", "postdoc", "grad", "undergrad", "collaborator")
+# Each person has a list of tags (`roles:` in people/<name>.md). These tables are the global rules that turn tags into
+# People-page groups and labels; nothing else needs to change when someone joins, graduates or leaves.
+ROLE_ORDER = ("pi", "postdoc", "grad", "masters", "undergrad", "honors", "faculty-mentee", "collaborator")  # highest first
+STATE_TAGS = ("alumni",)  # not a role: moves the person to the alumni section
+ROLE_TAGS = ROLE_ORDER + STATE_TAGS
 ROLE_LABELS = {
     "pi": "Principal Investigator",
     "postdoc": "Postdoctoral Scholar",
     "grad": "Graduate Student",
+    "masters": "Master's Student",
     "undergrad": "Undergraduate Student",
+    "honors": "Undergraduate Honors Student",
+    "faculty-mentee": "Faculty Mentee",
     "collaborator": "Collaborator",
 }
+ROLE_GROUPS = {"honors": "undergrad", "faculty-mentee": "collaborator"}  # listed under another tag's heading
+GROUP_ORDER = ("pi", "postdoc", "grad", "masters", "undergrad", "collaborator")
 ROLE_GROUP_TITLES = {
     "pi": "Principal Investigator",
     "postdoc": "Postdoctoral Scholars",
     "grad": "Graduate Students",
+    "masters": "Master's Students",
     "undergrad": "Undergraduate Students",
     "collaborator": "Collaborators",
 }
+LAB_ROLES = ("postdoc", "grad", "masters", "undergrad", "honors")  # a person with any of these counts as lab in author lists
 PAGES = ("home", "about", "research", "people", "publications", "resources", "contact")
 STALE_DAYS = 365
 
@@ -519,8 +530,7 @@ def load_research(content_dir, root, problems, images):
 
 PEOPLE_SPEC = {
     "name": {"required": True, "example": "Jane Doe"},
-    "role": {"required": True, "choices": ROLES, "example": "grad"},
-    "status": {"required": True, "choices": ("current", "alumni"), "example": "current"},
+    "roles": {"required": True, "type": "list", "example": "[grad]"},
     "start": {"type": "year", "example": "2022"},
     "end": {"type": "year"},
     "degrees": {},
@@ -579,24 +589,32 @@ def load_people(content_dir, root, problems, images):
         if meta is None:
             continue
         clean = check_meta(meta, where, PEOPLE_SPEC, problems)
-        if clean["status"] == "current" and clean["end"]:
-            problems.error(where, "`end:` is set but `status` is current. Set `status: alumni` or remove `end:`.")
+        roles = check_roles(clean["roles"], where, problems)
+        alumni = "alumni" in roles
+        primary = next((tag for tag in ROLE_ORDER if tag in roles), None)
+        group = ROLE_GROUPS.get(primary, primary)
+        if clean["end"] and not alumni:
+            problems.error(where, "`end:` is set but `alumni` is not in `roles`. Add `alumni` to `roles` or remove `end:`.")
+        if alumni and not (clean["start"] and clean["end"]):
+            problems.warn(where, "an alumnus needs both `start:` and `end:` years (they are shown on the People page).")
         if clean["start"] and clean["end"] and clean["end"] < clean["start"]:
             problems.error(where, f"`end: {clean['end']}` is before `start: {clean['start']}`.")
         links, email = build_person_links(clean["links"], where, problems)
         # Everyone except collaborators gets a profile page (minimal until they add a bio).
         # Collaborators are only listed, with their links. `profile: true/false` overrides either way.
-        has_profile = clean["profile"] if clean["profile"] is not None else clean["role"] != "collaborator"
+        has_profile = clean["profile"] if clean["profile"] is not None else group != "collaborator"
         people.append(
             {
                 "slug": path.stem,
                 "name": clean["name"] or path.stem,
-                "role": clean["role"],
-                "role_label": ROLE_LABELS.get(clean["role"], ""),
-                "status": clean["status"],
+                "roles": roles,
+                "role": group,  # the People-page group of the highest tag
+                "role_label": ROLE_LABELS.get(primary, ""),
+                "status": "alumni" if alumni else "current",
+                "lab": any(tag in LAB_ROLES for tag in roles),
                 "start": clean["start"],
                 "end": clean["end"],
-                "years": years_label(clean["start"], clean["end"], clean["status"]),
+                "years": years_label(clean["start"], clean["end"], "alumni" if alumni else "current"),
                 "degrees": clean["degrees"],
                 "current_position": clean["current_position"],
                 "profile": has_profile,
@@ -609,6 +627,24 @@ def load_people(content_dir, root, problems, images):
             }
         )
     return people
+
+
+def check_roles(value, where, problems):
+    """The cleaned list of role tags (lowercase, no repeats); errors for unknown tags or no role at all."""
+    roles, unknown = [], False
+    for item in value or []:
+        tag = str(item).strip().lower()
+        if tag in ROLE_TAGS:
+            if tag not in roles:
+                roles.append(tag)
+            continue
+        unknown = True
+        close = difflib.get_close_matches(tag, ROLE_TAGS, n=1)
+        hint = f" Did you mean '{close[0]}'?" if close else ""
+        problems.error(where, f"roles: unknown tag '{item}'.{hint} Allowed: {', '.join(ROLE_TAGS)}.")
+    if value and not unknown and not any(tag in ROLE_ORDER for tag in roles):
+        problems.error(where, f"roles needs at least one of: {', '.join(ROLE_ORDER)} (`alumni` alone is not enough).")
+    return roles
 
 
 def years_label(start, end, status):
@@ -625,7 +661,7 @@ def years_label(start, end, status):
 def group_alumni(alumni):
     """Alumni (already newest first) split into subsections by role, in the same order as the current groups."""
     groups = []
-    for role in ROLES:
+    for role in GROUP_ORDER:
         members = [p for p in alumni if p["role"] == role]
         if members:
             groups.append({"role": role, "title": ROLE_GROUP_TITLES[role], "people": members})
@@ -635,7 +671,7 @@ def group_alumni(alumni):
 def group_people(people):
     """Current people grouped by role in a fixed order; alumni as one list, newest first."""
     groups = []
-    for role in ROLES:
+    for role in GROUP_ORDER:
         members = [p for p in people if p["status"] == "current" and p["role"] == role]
         members.sort(key=lambda p: (p["start"] or 9999, p["name"].lower()))
         if members:
@@ -658,6 +694,14 @@ def clean_bib_text(value):
     return re.sub(r"\s+", " ", value.replace("{", "").replace("}", "").replace("--", "\u2013")).strip()
 
 
+def spelled_out(first):
+    """The first given name if the paper writes it in full ('Jae Hyung' -> 'Jae'), '' for initials ('JH', 'J.', 'S-W')."""
+    words = first.split()
+    word = words[0] if words else ""
+    letters = re.sub(r"[\W\d_]", "", word)
+    return word if len(letters) >= 2 and "." not in word and not word.isupper() else ""
+
+
 def parse_authors(raw):
     names = []
     for part in re.split(r"\s+and\s+", re.sub(r"\s+", " ", raw)):
@@ -665,7 +709,7 @@ def parse_authors(raw):
         if not part:
             continue
         if part.lower() == "others":
-            names.append({"last": "", "initials": "", "etal": True})
+            names.append({"last": "", "initials": "", "given": "", "raw": part, "etal": True})
             continue
         if "," in part:
             last, first = [p.strip() for p in part.split(",", 1)]
@@ -674,7 +718,7 @@ def parse_authors(raw):
             last, first = tokens[-1], " ".join(tokens[:-1])
         # "MC" is already initials (keep both letters); "Xiao-Jing" and "Jane Q." give one letter per name part
         initials = "".join(tok if (tok.isupper() and len(tok) > 1) else tok[0] for tok in re.split(r"[\s.\-]+", first) if tok)
-        names.append({"last": last, "initials": initials.upper(), "etal": False})
+        names.append({"last": last, "initials": initials.upper(), "given": spelled_out(first), "raw": part, "etal": False})
     return names
 
 
@@ -791,7 +835,7 @@ def load_publications(content_dir, root, problems, images):
             problems.error(where, f"entry '{key}': the author field is empty.")
             continue
         lasts = {a["last"].lower() for a in authors}
-        for field in ("cofirst", "corresponding"):
+        for field in ("cofirst", "corresponding", "senior"):
             marked = {n.lower() for n in name_list(entry.get(field, ""))}
             unmatched = marked - lasts
             if unmatched:
@@ -951,10 +995,12 @@ def ascii_key(text):
     return re.sub(r"[^a-z]", "", unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower())
 
 
-def person_key(name):
-    """'last|initial' for a person's name, the form bibliographies use ('Michael (Chong) Wang' -> 'wang|m')."""
-    tokens = [t for t in name.split() if ascii_key(t)]
-    return f"{ascii_key(tokens[-1])}|{ascii_key(tokens[0])[0]}" if len(tokens) >= 2 else None
+def person_names(name):
+    """(last name, first names) of a People entry, accent-folded: 'Michael (Chong) Wang' -> ('wang', {'michael', 'chong'}).
+    A nickname in parentheses counts as a first name."""
+    tokens = [t.strip("()") for t in name.split()]
+    names = {ascii_key(t) for t in tokens[:-1] if ascii_key(t)} if len(tokens) >= 2 else set()
+    return (ascii_key(tokens[-1]) if tokens else ""), names
 
 
 def name_initials(name):
@@ -963,25 +1009,50 @@ def name_initials(name):
     return letters[0] + letters[-1] if len(letters) > 1 else "".join(letters)
 
 
-def member_keys(people):
-    """Keys for everyone listed on the People page."""
-    return {key for key in (person_key(p["name"]) for p in people) if key}
+def link_authors(publications, people, problems):
+    """Match each paper's authors to the People page and prepare their CSS classes and screen-reader text.
 
-
-def style_authors(publications, people):
-    """Flag authors who are listed in People and prepare their CSS classes and screen-reader text."""
-    keys = member_keys(people)
-    profile_slugs = {}
+    The paper must be specific enough to decide: with the first name written out ("Hart, Elizabeth") it has to equal
+    the person's first name (or nickname); with initials only ("Hart, EE") a People entry with the same last name and
+    first initial is an error, because it could be them or a namesake. Lab authors are those whose People entry
+    carries a lab role."""
+    entries = []
     for person in people:
-        if person.get("profile"):
-            profile_slugs.setdefault(person_key(person["name"]), person["slug"])
+        last, firsts = person_names(person["name"])
+        if last and firsts:
+            entries.append((person, last, firsts))
     for pub in publications:
+        for a in pub["authors"]:
+            a.update({"person": None, "slug": None, "member": False, "classes": "", "role_text": ""})
+            if a.get("etal"):
+                continue
+            last = ascii_key(a["last"])
+            candidates = [(p, firsts) for p, plast, firsts in entries if plast == last]
+            if a["given"]:
+                matches = [p for p, firsts in candidates if ascii_key(a["given"]) in firsts]
+            else:
+                initial = a["initials"][:1].lower()
+                matches = [p for p, firsts in candidates if initial and any(n[0] == initial for n in firsts)]
+                if matches:
+                    names = " or ".join(p["name"] for p in matches)
+                    example = f"{a['last']}, {matches[0]['name'].split()[0]}"
+                    problems.error(
+                        pub["where"],
+                        f"author '{a['raw']}' could be {names} (People page) or someone else with the same initial. "
+                        f"If it is them, write the first name in full: {example}. "
+                        f"If it is a different person, write that person's first name in full.",
+                    )
+                    continue
+            if len(matches) > 1:
+                problems.error(pub["where"], f"author '{a['raw']}' matches {len(matches)} People entries with the same name ({', '.join(p['name'] for p in matches)}).")
+            if matches:
+                person = matches[0]
+                a["person"] = person["slug"]
+                a["slug"] = person["slug"] if person.get("profile") else None  # lets a paper's page link the author to their profile
+                a["member"] = person["lab"]
         for a in pub["authors"]:
             if a.get("etal"):
                 continue
-            a["key"] = f"{ascii_key(a['last'])}|{a['initials'][0].lower()}" if a["initials"] else None
-            a["member"] = a["key"] in keys
-            a["slug"] = profile_slugs.get(a["key"])  # lets a paper's page link the author to their profile
             roles = [(a["member"], "member", "lab member"), (a.get("cofirst"), "cofirst", "co-first author"),
                      (a.get("corresponding"), "corr", "corresponding author")]
             a["classes"] = " ".join(f"au-{css}" for on, css, _ in roles if on)
@@ -1049,12 +1120,9 @@ def load_site(content_dir, root, problems, today=None):
         problems,
     )
 
-    style_authors(publications, people)
+    link_authors(publications, people, problems)
     for person in people:  # each profile page lists the person's own papers (newest first, as loaded)
-        person["author_key"] = person_key(person["name"])
-        person["publications"] = [
-            pub for pub in publications if person["author_key"] and any(a.get("key") == person["author_key"] for a in pub["authors"])
-        ]
+        person["publications"] = [pub for pub in publications if any(a.get("person") == person["slug"] for a in pub["authors"])]
     people_groups, alumni = group_people(people)
     return {
         "content_dir": content_dir,

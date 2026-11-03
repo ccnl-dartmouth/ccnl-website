@@ -1,5 +1,7 @@
 """Page designs: hero, publication abstracts and thumbnails, people layouts, fonts, accessibility hooks."""
 
+import re
+
 from conftest import image_bytes, person_md
 
 HERO_HEADER = "---\nheadline: How do brains learn and decide?\nhero_image: lab.jpg\n{alt}---\n"
@@ -332,6 +334,6 @@ def test_alumni_subsections_are_newest_first_and_empty_ones_are_not_shown(sandbo
 
 def test_no_alumni_means_no_alumni_section(sandbox):
     for path in sandbox.dir.joinpath("people").glob("*.md"):
-        if "status: alumni" in path.read_text():
+        if re.search(r"^roles:.*alumni", path.read_text(), re.M):
             path.unlink()
     assert "<h2>Alumni</h2>" not in sandbox.build().page("people/index.html")

@@ -1,7 +1,6 @@
 ---
 name: Alireza Soltani
-role: pi
-status: current
+roles: [pi]
 degrees: Ph.D.
 ---
 Currently, I am an Associate Professor (with tenure) of Psychological and Brain Sciences at Dartmouth College. I am a neuroscientist with training in computational and cognitive neuroscience and theoretical physics. I hold a B.Sc. and M.Sc. in Physics from Sharif University of Technology. I obtained my Ph.D. in Physics with a focus in Computational Neuroscience from Brandeis University working with [Xiao-Jing Wang](https://www.cns.nyu.edu/wanglab/). Following my Ph.D., I have done postdoctoral research with [Christof Koch](https://en.wikipedia.org/wiki/Christof_Koch) at Caltech, [Read Montague](https://fbri.vtc.vt.edu/people-directory/primary-faculty/montague.html) at Baylor College of Medicine, and [Tirin Moore](https://www.moorelabstanford.com/) at Stanford University.

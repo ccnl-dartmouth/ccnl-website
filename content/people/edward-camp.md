@@ -1,7 +1,6 @@
 ---
 name: Edward Camp
-role: undergrad
-status: alumni
-start: 2017
-end: 2019
+roles: [undergrad, alumni]
+start: 2016
+end: 2018
 ---

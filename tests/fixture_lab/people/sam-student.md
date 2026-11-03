@@ -1,7 +1,6 @@
 ---
 name: Sam Student
-role: grad
-status: current
+roles: [grad]
 start: 2022
 degrees: M.S.
 ---
