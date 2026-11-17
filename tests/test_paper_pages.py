@@ -174,6 +174,53 @@ def test_every_real_paper_file_lists_all_the_optional_fields(sandbox=None):
         assert all(re.search(rf"^\s*{f}\s*=", text, re.M) for f in OPTIONAL_FIELDS), path.name
 
 
+def test_research_citations_are_numbered_by_first_appearance_and_link_to_the_paper_pages(sandbox):
+    sandbox.write("publications/first-paper.bib", bib("a2024", title="First paper"))
+    sandbox.write("publications/second-paper.bib", bib("b2024", title="Second paper"))
+    sandbox.write(
+        "research/learning.md",
+        "---\ntitle: Adaptive learning\norder: 1\n---\nWe found **this** [@second-paper, @first-paper] and later [@first-paper, @~in-prep].\n",
+    )
+    html = sandbox.build().page("research/index.html")
+    assert '[<a href="/publications/second-paper/">1</a>, <a href="/publications/first-paper/">2</a>]' in html
+    assert '[<a href="/publications/first-paper/">2</a>, 3]' in html  # a `~` name has a number and no link
+    assert "<strong>this</strong>" in html and "__PUBLICATIONS__" not in html
+
+
+def test_research_citation_of_an_unknown_paper_names_the_file_and_the_fix(sandbox):
+    sandbox.write("research/learning.md", "---\ntitle: Adaptive learning\norder: 1\n---\nText [@no-such-paper].\n")
+    assert sandbox.build().has_error("learning.md", "the citation `no-such-paper` does not match any paper")
+
+
+def test_real_research_tags_match_the_papers_each_theme_cites():
+    """A theme's "N related papers" are exactly the papers its text cites: tag a paper when you cite it, and untag it when you drop it."""
+    import re
+    for theme in (ROOT / "content" / "research").glob("*.md"):
+        cited = {
+            key.strip().lstrip("@")
+            for group in re.findall(r"\[@([^\]\n]*)\]", theme.read_text(encoding="utf-8"))
+            for key in group.split(",")
+            if key.strip() and not key.strip().lstrip("@").startswith("~")
+        }
+        tagged = set()
+        for bib_file in (ROOT / "content" / "publications").glob("*.bib"):
+            keywords = re.search(r"^\s*keywords\s*=\s*\{([^}\n]*)\}", bib_file.read_text(encoding="utf-8"), re.M)
+            if keywords and theme.stem in [k.strip().lower() for k in re.split(r"[,;]", keywords.group(1))]:
+                tagged.add(bib_file.stem)
+        assert tagged == cited, f"{theme.name}: tagged but not cited {sorted(tagged - cited)}; cited but not tagged {sorted(cited - tagged)}"
+
+
+def test_every_unlinked_research_citation_is_listed_as_pending():
+    """`[@~name]` citations have no paper page yet; docs/maintainers/PENDING-PAPERS.md keeps track so they get filled in."""
+    import re
+    pending = (ROOT / "docs" / "maintainers" / "PENDING-PAPERS.md").read_text(encoding="utf-8")
+    for theme in (ROOT / "content" / "research").glob("*.md"):
+        for group in re.findall(r"\[@([^\]\n]*)\]", theme.read_text(encoding="utf-8")):
+            for key in (k.strip().lstrip("@") for k in group.split(",")):
+                if key.startswith("~"):
+                    assert f"`{key}`" in pending, f"{theme.name}: {key} is not listed in docs/maintainers/PENDING-PAPERS.md"
+
+
 def test_research_topic_links_to_papers_tagged_with_its_file_name(sandbox):
     sandbox.write("publications/tagged-a.bib", bib("a2024", title="Tagged A", keywords="reward; models"))
     sandbox.write("publications/tagged-b.bib", bib("b2024", title="Tagged B", keywords="Models, other"))

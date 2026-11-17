@@ -92,7 +92,8 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
       and entry key but not a line number (the parser does not report them).
 - [~] 7e Design round 5 and content (Oct 2026, built, tested and pushed): Research page rewritten as four topic summaries
       (abstract-style paragraphs, block-justified on wide screens) with one generated schematic per topic
-      (`scripts/make_*_image.py`, Pillow only, deterministic; alt text in each research file) and a "N related papers"
+      (`scripts/make_*_image.py`, Pillow only, deterministic; alt text in each research file; replaced in Nov 2026
+      by three text-only cards with numbered citations, see STRUCTURE.md, and the scripts deleted) and a "N related papers"
       link to the Publications search by topic keyword (the topic tags are the research file names; papers carry
       them in `keywords`; see STRUCTURE.md); Contact page in two columns (details | "Join us" openings built from
       the `openings` list in `join.md`, no recruiting switch); centered page titles on a full-width yellow line;
@@ -101,6 +102,11 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
       keywords from PubMed were kept (OpenAlex's generated ones were removed, except the topic tags). 245 tests.
       Docs brought up to date for all of this (STRUCTURE.md "Visual design", the site-text guide). Titles corrected from Crossref where the old page differed (Gu 2015, Soltani 2021, Song 2024); the Duggins
       paper is 2025; the unpublished "theory of mind in children" preprint was removed.
+- [~] 7g Research page from the PI's blurb (Nov 2026, edited only: not built, tested or pushed): three text-only theme
+      cards (files `complex-environments`, `uncertainty-and-change`, `attention-bias-decision-making`), bold key terms in the
+      card color, in-text citations `[@paper-file-name]` numbered per theme and linked to the paper pages (`~name` for
+      papers without a page), old text and figures deleted (git history). Tests and docs updated; to do: build, run tests,
+      check the page in light/dark and on a phone, then commit. Open item: eight in-prep papers are cited without links, see PENDING-PAPERS.md.
 - [~] 7f People roles and author linking (Nov 2026, built and tested locally, not pushed): each person has a `roles:` tag list
       (replaces `role` + `status`; `alumni` is a tag; fixed vocabulary and global rules in `ccnl/content.py`, see STRUCTURE.md
       "Roles and author matching"); papers carry only author roles (`cofirst`, `corresponding`, new `senior`, filled from the

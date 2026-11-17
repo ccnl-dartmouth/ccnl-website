@@ -264,14 +264,17 @@ def test_svg_footer_logos_are_published_unchanged(sandbox):
 # ----- research layout
 
 
-def test_research_themes_alternate_with_a_figure_each(sandbox):
+def test_research_themes_are_cards_with_repeating_accent_colors(sandbox):
     html = sandbox.build().page("research/index.html")
-    assert html.count('class="theme"') == 4 and html.count('class="theme-fig"') == 4
+    assert html.count('<section class="theme ') == 4 and html.count('class="theme-fig"') == 4
+    assert [c for c in ("theme-c1", "theme-c2", "theme-c3") if f'class="theme {c}"' in html] == ["theme-c1", "theme-c2", "theme-c3"]
+    assert html.count('class="theme theme-c1"') == 2  # the fourth card starts the colors again
 
 
-def test_stylesheet_alternates_research_figures_and_centers_the_intro(sandbox):
+def test_stylesheet_colors_research_cards_and_centers_the_intro(sandbox):
     css = (sandbox.build() and (sandbox.out / "static" / "style.css")).read_text()
-    assert ".theme:nth-of-type(even) .theme-fig { order: 2; }" in css
+    assert ".theme .prose strong { color: var(--accent); }" in css
+    assert "--theme-1:" in css and "--theme-3:" in css
     assert "text-align: center" in css.split(".intro {")[1].split("}")[0]
 
 

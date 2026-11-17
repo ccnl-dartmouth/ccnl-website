@@ -27,7 +27,8 @@ def test_real_content_builds(tmp_path):
     assert not problems.errors
     assert (tmp_path / "site" / "index.html").is_file()
     research = (tmp_path / "site" / "research" / "index.html").read_text()
-    assert research.count('class="theme-fig"') == research.count('class="theme"') >= 1  # every theme has its image
+    assert research.count('<section class="theme ') == 3  # the three themes, each a card
+    assert 'class="cites"' in research and "__PUBLICATIONS__" not in research  # citations link to the paper pages
 
 
 def test_fixture_lab_is_clean(sandbox):

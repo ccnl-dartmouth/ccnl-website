@@ -2,16 +2,15 @@
 {% block title %}Research &middot; {{ lab.name }}{% endblock %}
 {% block content %}
 <h1 class="page-title"><span>Research</span></h1>
+{# each theme is a card; its accent color (class theme-c1 to theme-c3, repeating) colors the bold key terms in its text #}
 {% for t in site.research %}
-<section class="theme" id="{{ t.slug }}">
+<section class="theme theme-c{{ loop.index0 % 3 + 1 }}" id="{{ t.slug }}">
+  <h2>{{ t.title }}</h2>
   {% if t.image %}<img class="theme-fig" src="{{ url('images/' ~ t.image) }}" alt="{{ t.image_alt }}" loading="lazy">{% endif %}
-  <div class="theme-text">
-    <h2>{{ t.title }}</h2>
-    {% set link %}<a class="theme-papers-link" href="{{ url('publications/') }}?q={{ t.slug|urlencode }}">{{ t.paper_count }} related paper{{ 's' if t.paper_count != 1 }}<span aria-hidden="true"> &rarr;</span></a>{% endset %}
-    {# the link ends the last paragraph, so it sits inside the justified text #}
-    {% set body = t.html|trim %}
-    <div class="prose">{% if t.paper_count and body.endswith('</p>') %}{{ body[:-4]|safe }} {{ link }}</p>{% else %}{{ body|safe }}{% if t.paper_count %}<p>{{ link }}</p>{% endif %}{% endif %}</div>
-  </div>
+  {% set link %}<a class="theme-papers-link" href="{{ url('publications/') }}?q={{ t.slug|urlencode }}">{{ t.paper_count }} related paper{{ 's' if t.paper_count != 1 }}<span aria-hidden="true"> &rarr;</span></a>{% endset %}
+  {# citations in the text link to the paper pages; the link ends the last paragraph, so it sits inside the justified text #}
+  {% set body = t.html|replace('__PUBLICATIONS__', url('publications/'))|trim %}
+  <div class="prose">{% if t.paper_count and body.endswith('</p>') %}{{ body[:-4]|safe }} {{ link }}</p>{% else %}{{ body|safe }}{% if t.paper_count %}<p>{{ link }}</p>{% endif %}{% endif %}</div>
 </section>
 {% else %}
 <p>Research themes will appear here.</p>

@@ -11,12 +11,15 @@
   --line: #d6ddd8;
   --amber: #f2a900;
   --au-member: #1a5fb4;
+  --theme-1: #1a5fb4;  /* accent colors of the research cards, in order (the first three repeat) */
+  --theme-2: #00693e;
+  --theme-3: #a35200;
   --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --wrap: 70rem;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #151815; --ink: #ececec; --muted: #a9aea9; --green: #5fc08f; --on-green: #0b1a12; --soft: #1e231f; --line: #394039; --au-member: #7fb2f0; }
+  :root { --bg: #151815; --ink: #ececec; --muted: #a9aea9; --green: #5fc08f; --on-green: #0b1a12; --soft: #1e231f; --line: #394039; --au-member: #7fb2f0; --theme-1: #7fb2f0; --theme-2: #5fc08f; --theme-3: #f0a860; }
 }
 
 * { box-sizing: border-box; }
@@ -162,14 +165,18 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 #pub-count { margin: 0 0 .75rem; min-height: 1.4em; }
 
 /* ---- research ---- */
-.theme { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 1.5rem 3rem; align-items: center; margin: 3rem 0; }
-.theme:nth-of-type(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
-.theme:nth-of-type(even) .theme-fig { order: 2; }
-.theme-fig { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
-.theme-text h2 { margin-top: 0; font-size: clamp(1.05rem, 2.1vw, 1.5rem); }  /* shrinks with the window so each topic title stays on one line */
-@media (min-width: 56.01rem) { .theme-text .prose { text-align: justify; hyphens: auto; } }  /* justified only where the lines are long enough to avoid wide gaps */
+/* each theme is a card with a colored top edge; the same color marks the bold key terms in its text */
+.theme { --accent: var(--theme-1); background: var(--soft); border: 1px solid var(--line); border-top: 5px solid var(--accent); border-radius: 8px; padding: 1.25rem 1.75rem 1.6rem; margin: 2rem 0; }
+.theme-c2 { --accent: var(--theme-2); }
+.theme-c3 { --accent: var(--theme-3); }
+.theme h2 { margin-top: 0; font-size: clamp(1.15rem, 2.4vw, 1.5rem); }
+.theme .prose { max-width: none; }
+.theme .prose strong { color: var(--accent); }
+.theme-fig { display: block; width: 100%; max-width: 36rem; margin: 0 auto 1rem; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
+.cites a { text-decoration: none; font-variant-numeric: tabular-nums; }  /* numbers in the text link to the paper pages */
+@media (min-width: 56.01rem) { .theme .prose { text-align: justify; hyphens: auto; } }  /* justified only where the lines are long enough to avoid wide gaps */
+@media (max-width: 40rem) { .theme { padding: 1rem 1.1rem 1.25rem; } }
 .theme-papers-link { font-weight: 600; white-space: nowrap; }
-.theme:not(:has(.theme-fig)) { grid-template-columns: minmax(0, 1fr); }
 
 /* ---- collapsible sections (Resources page) ---- */
 .fold { border-top: 1px solid var(--line); margin-top: 1.5rem; max-width: 50rem; }
@@ -193,11 +200,6 @@ main { min-height: 60vh; padding-bottom: 3rem; }
 .stack { list-style: none; padding: 0; display: grid; gap: 1rem; max-width: 50rem; }
 .card { border: 1px solid var(--line); border-radius: 4px; padding: 1rem 1.25rem; background: var(--soft); font-style: normal; }
 .card h3 { margin-top: 0; font-size: 1.25rem; }
-
-@media (max-width: 56rem) {  /* research topics stack earlier than other pages, so the titles keep room */
-  .theme, .theme:nth-of-type(even) { grid-template-columns: minmax(0, 1fr); }
-  .theme:nth-of-type(even) .theme-fig { order: 0; }
-}
 @media (max-width: 44rem) {
   .profile { grid-template-columns: minmax(0, 1fr); }
   .pub-thumb-box { max-width: 6rem; }

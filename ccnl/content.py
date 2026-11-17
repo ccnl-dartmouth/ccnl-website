@@ -490,6 +490,41 @@ RESEARCH_SPEC = {
 }
 
 
+CITATION = re.compile(r"\[@([^\]\n]*)\]")
+PUBLICATIONS_URL = "__PUBLICATIONS__"  # research.html swaps this for the real address of the Publications folder
+
+
+def number_citations(body, paper_names, where, problems):
+    """Turn `[@paper-file-name, @other-paper]` in a theme's text into numbered links such as `[1, 2]`.
+
+    Numbers count up from 1 in the order the papers first appear in this theme's text. A name that starts with `~`
+    (for a paper without a page, such as one in preparation) gets a number but no link.
+    """
+    numbers = {}
+
+    def replace(match):
+        items = []
+        for key in (part.strip().lstrip("@").strip() for part in match.group(1).split(",")):
+            if not key:
+                continue
+            number = numbers.setdefault(key, len(numbers) + 1)
+            if key.startswith("~"):
+                items.append(str(number))
+            elif key in paper_names:
+                items.append(f'<a href="{PUBLICATIONS_URL}{key}/">{number}</a>')
+            else:
+                problems.error(
+                    where,
+                    f"the citation `{key}` does not match any paper. Write the paper's file name from content/publications/ "
+                    "without `.bib` (for example `[@2017-farashahi-feature-based-learning]`), or put `~` in front of a name for "
+                    "a paper that has no page yet (for example `[@~lisitsyn-in-prep]`).",
+                )
+                items.append(str(number))
+        return '<span class="cites">[' + ", ".join(items) + "]</span>" if items else match.group(0)
+
+    return CITATION.sub(replace, body)
+
+
 def load_research(content_dir, root, problems, images):
     folder = Path(content_dir) / "research"
     themes = []
@@ -516,7 +551,8 @@ def load_research(content_dir, root, problems, images):
                 "slug": path.stem,
                 "title": clean["title"] or path.stem,
                 "order": clean["order"] if clean["order"] is not None else 1000,
-                "html": render_markdown(body),
+                "body": body,
+                "html": "",  # filled in once the papers are known (see number_citations)
                 "image_src": image_src,
                 "image_name": clean["image"],
                 "image": None,
@@ -1089,8 +1125,10 @@ def load_site(content_dir, root, problems, today=None):
         person["affiliation"] = person["current_position"] or (
             (lab.get("institution") or "") if person["status"] == "current" and person["role"] != "collaborator" else "")
     publications = load_publications(content_dir, root, problems, images)
+    paper_names = {pub["slug"] for pub in publications}
     for theme in research:  # papers whose keywords include the theme's file name are linked from the Research page
         theme["paper_count"] = sum(theme["slug"] in [k.lower() for k in pub["keywords"]] for pub in publications)
+        theme["html"] = render_markdown(number_citations(theme["body"], paper_names, theme["where"], problems))
     resources = load_resources(content_dir, root, problems)
     teaching = load_teaching(content_dir, root, problems, today)
 

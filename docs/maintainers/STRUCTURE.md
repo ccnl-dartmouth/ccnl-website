@@ -155,11 +155,15 @@ One standard BibTeX entry per file (paste from Google Scholar or the journal). O
 ---
 title: Adaptive learning and decision making
 order: 1                 # lower first
-image_alt: Diagram of ...  # describe the figure (screen readers); the build warns if missing
-# The figure is content/images/<this file's name>.jpg; an optional `image: other.jpg` line names a different file there.
+# Optional figure (none at present): content/images/<this file's name>.jpg, with `image_alt:` describing it.
 ---
-Short description in Markdown. Link to papers by BibTeX key if wanted.
+Text in Markdown, as many paragraphs as needed. **Bold** marks a key term (shown in the card's color).
+Cite papers with their file names: [@2017-farashahi-feature-based-learning, @2018-farashahi-influence-learning-strategy].
 ```
+
+Citations become numbers, counted from 1 in order of first appearance within the theme, each linking to the paper's page:
+`[1, 2]`. A name starting with `~` (`[@~lisitsyn-in-prep]`) is for a paper that has no page yet: it gets a number and no
+link. An unknown name stops the build and the message says how to fix it (`number_citations` in `ccnl/content.py`).
 
 ### Resources: `content/resources/<slug>.md`
 
@@ -261,13 +265,15 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 - **Page titles:** Research, People, Publications, Resources and Contact start with a centered serif title on a 3 px
   amber line that spans the content area (class `page-title`; the text sits on top of the line with the page
   background behind it).
-- **Research:** one section per theme: an abstract-style paragraph (block-justified from 56 rem up, left-aligned on
-  narrower screens, with the "N related papers" link ending the paragraph) beside a figure that alternates left/right
-  (stacked below 56 rem). Titles use a fluid size so they stay on one line. The four figures are generated schematics
-  (`scripts/make_uncertainty_and_change_image.py`, `make_complex_environments_image.py`,
-  `make_attention_bias_decision_making_image.py`, `make_neural_synaptic_mechanisms_image.py`; Pillow only, fixed
-  seed, 1600x1000 PNG written to `content/images/<topic>.png`). To replace one with a real figure, delete the
-  generated PNG and upload the new file under the same name (the build refuses two images with the same name).
+- **Research:** text only, one card per theme (soft background, rounded, thick colored top edge). The card colors
+  (`--theme-1` blue, `--theme-2` green, `--theme-3` orange; the next theme starts over) also color the bold key terms
+  in that card's text. The paragraphs are block-justified from 56 rem up and left-aligned on narrower screens, and the
+  "N related papers" link ends the last paragraph. In-text citations are numbered links to the papers' pages (see
+  "Research themes" above). A theme can still have a figure (`content/images/<theme file name>.jpg`), shown centered above
+  its text. The three themes are `complex-environments` (1), `uncertainty-and-change` (2) and
+  `attention-bias-decision-making` (3); their titles and text were rewritten in Nov 2026 and the earlier four-topic
+  version, with its generated figures, is in git history (before the commit that adds the cards). The old tag
+  `neural-synaptic-mechanisms` is now only a keyword on papers; it no longer has a theme.
 - **Header:** only a centered navigation bar (no lab name at the left); order Home, Research, People, Publications,
   Resources, Contact.
 - **Footer:** lab name and affiliation at the left; small SVG logos at the right (institution from
@@ -291,7 +297,7 @@ Every picture goes directly in `content/images/` (no subfolders) and is paired w
 |---|---|---|
 | Profile photo | `content/images/jane-doe.jpg` | `content/people/jane-doe.md` |
 | Paper thumbnail | `content/images/2026-doe-paper.jpg` | `content/publications/2026-doe-paper.bib` |
-| Research figure | `content/images/uncertainty-and-change.png` | `content/research/uncertainty-and-change.md` |
+| Research figure | `content/images/uncertainty-and-change.jpg` (optional; no theme has one at present) | `content/research/uncertainty-and-change.md` |
 | Logos, hero photo | any name | named in `lab.yaml` / `home.md` |
 
 - No `image:` line is needed when the names match. For papers and research themes an optional `image` line names
@@ -310,6 +316,6 @@ Every picture goes directly in `content/images/` (no subfolders) and is paired w
 
 - Publications are bordered cards with a minimum height (text left, thumbnail right); unlike people cards they are not wholly clickable, because each has several links and an abstract toggle.
 - Publications page: one search box (needs JavaScript; hidden without it) matching every word against every BibTeX field, no row of year links (the list follows the search box directly), big serif year headings with a rule, and condensed cards. The card's thumbnail is as tall as the card and 4 to 9rem wide, with a width of 8rem times the image's aspect ratio (`image_ratio`, computed at build time; a width that depended on the card height would make the text wrap twice and overflow), always on a white background so transparent logos stay readable in dark mode. Each year is a `section#year-YYYY`; years with no match are hidden while searching. Profile pages keep the smaller headings.
-- Research topics link to papers by keyword: a paper whose `keywords` include a research file's name (e.g. `uncertainty-and-change`) is counted in that topic's "N related papers" link, which opens `/publications/?q=<name>`. No separate field; tags are plain keywords, so students add them like any other keyword (the four current tags are listed in `_TEMPLATE.bib` and the paper guide).
+- Research topics link to papers by keyword: a paper whose `keywords` include a research file's name (e.g. `uncertainty-and-change`) is counted in that topic's "N related papers" link, which opens `/publications/?q=<name>`. No separate field; tags are plain keywords, so students add them like any other keyword (the three current tags are listed in `_TEMPLATE.bib` and the paper guide).
 - Paper pages: every `.bib` file also builds `publications/<file name>/` (template `publication.html`) from its fields. Shown: venue + date (`month` optional), title, authors (lab members link to profiles; legend as a small left-aligned footnote under the authors), one plain row of text links (DOI, PDF, preprint, data, ...), full abstract, `keywords` chips (each searches the Publications page via `?q=`), a generated plain-text citation, DOI/PubMed ID, copyable BibTeX, a "Corresponding author" row under the PubMed ID (names, linked to profiles for lab members; no email on the paper page, the profile holds it), and `citation_*` meta tags for Google Scholar. Layout: a main column plus a 13rem side column holding the image, centered in a white frame (it moves above the text on phones); there is no generic filler on the page. List cards open the page through a stretched title link; the cards carry no link buttons, and the abstract toggle moved from the cards to the page. Skipped on purpose: automatic topic/approach tagging, citation counts, a personal reading list. New optional fields: `month`, `pmid`, `keywords`, and extra link fields (`preprint`, `video`, `slides`, `poster`).
 - `content/publications/_TEMPLATE.bib` (ignored by the build, like `people/_TEMPLATE.md`) lists every supported field with comments; every paper file carries the same blank optional lines (`field = {}`), which the loader ignores and the page's BibTeX view hides, so students fill in values without looking fields up. A test checks the template and all real paper files list every optional field, so a new field means adding it to `OPTIONAL_FIELDS` in `tests/test_paper_pages.py`, the template and the files.

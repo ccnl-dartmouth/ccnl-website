@@ -27,18 +27,26 @@ The text below the settings is the intro paragraphs. The department and college 
 
 ## Research topics: `content/research/<topic>.md`
 
-One file per topic. `title` is the heading, `order` sets the sequence (lowest first), the text below is the summary,
-and `image_alt` describes the picture for screen readers. The picture is `content/images/<topic>.jpg`, with the same
-name as the topic's file. To add a topic, add a new file; to remove one, delete its file.
+One file per topic, shown as a card on the Research page. `title` is the heading, `order` sets the sequence (lowest
+first), and the text below the second `---` line is the topic's text. To add a topic, add a new file; to remove one,
+delete its file. The cards use three colors in turn.
 
-The four current pictures are generated drawings (`.png`). To use a real figure instead, first delete the existing
-picture in `content/images/`, then upload yours under the same name (for example `uncertainty-and-change.jpg`). Two
-pictures with the same name make the build stop, so one has to go first.
-
-Each topic ends with a link such as "12 related papers" that opens the Publications page searched for the topic's file
-name (for `uncertainty-and-change.md` it searches `uncertainty-and-change`). A paper is included when its `keywords` line contains
-that tag, so tagging a paper is one word in its `.bib` file (see [Add or fix a paper](ADD-A-PAPER.md)). For a new
-topic, choose the file name once and use it as the tag.
+- **Key terms:** put `**two asterisks**` around a term to make it bold in the card's color.
+- **Citing papers:** write the paper's file name from `content/publications/` (without `.bib`) in square brackets with
+  an `@` in front, for example `[@2017-farashahi-feature-based-learning]`. Several papers go in one bracket, separated
+  by commas: `[@2017-farashahi-feature-based-learning, @2018-farashahi-influence-learning-strategy]`. The website turns
+  them into numbers (`[1, 2]`) counted from 1 within each topic in the order they first appear, and each number links to
+  that paper's page. For a paper that has no page yet (in preparation), put `~` before a name you make up, for example
+  `[@~lisitsyn-in-prep]`: it gets a number but no link. Such papers are listed in
+  `docs/maintainers/PENDING-PAPERS.md` and should be linked once they are posted online. If a name does not match a paper, the build stops and names the
+  file and the citation.
+- **Related papers:** each topic ends with a link such as "12 related papers" that opens the Publications page searched
+  for the topic's file name (for `uncertainty-and-change.md` it searches `uncertainty-and-change`). A paper is included
+  when its `keywords` line contains that tag, so tagging a paper is one word in its `.bib` file (see
+  [Add or fix a paper](ADD-A-PAPER.md)). Keep the two in step: tag each paper the topic's text cites, and no others
+  (a test checks this), so the number matches the citations. For a new topic, choose the file name once and use it as the tag.
+- **A picture (optional):** upload `content/images/<topic>.jpg`, with the same name as the topic's file, and add an
+  `image_alt:` line describing it for screen readers. It is shown above the text. Topics have none at present.
 
 ## Resources: `content/resources/<name>.md`
 
