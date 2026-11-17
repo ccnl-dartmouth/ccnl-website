@@ -1126,8 +1126,7 @@ def load_site(content_dir, root, problems, today=None):
             (lab.get("institution") or "") if person["status"] == "current" and person["role"] != "collaborator" else "")
     publications = load_publications(content_dir, root, problems, images)
     paper_names = {pub["slug"] for pub in publications}
-    for theme in research:  # papers whose keywords include the theme's file name are linked from the Research page
-        theme["paper_count"] = sum(theme["slug"] in [k.lower() for k in pub["keywords"]] for pub in publications)
+    for theme in research:  # the text may cite papers by file name; the citations become numbered links to their pages
         theme["html"] = render_markdown(number_citations(theme["body"], paper_names, theme["where"], problems))
     resources = load_resources(content_dir, root, problems)
     teaching = load_teaching(content_dir, root, problems, today)

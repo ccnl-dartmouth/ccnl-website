@@ -192,24 +192,6 @@ def test_research_citation_of_an_unknown_paper_names_the_file_and_the_fix(sandbo
     assert sandbox.build().has_error("learning.md", "the citation `no-such-paper` does not match any paper")
 
 
-def test_real_research_tags_match_the_papers_each_theme_cites():
-    """A theme's "N related papers" are exactly the papers its text cites: tag a paper when you cite it, and untag it when you drop it."""
-    import re
-    for theme in (ROOT / "content" / "research").glob("*.md"):
-        cited = {
-            key.strip().lstrip("@")
-            for group in re.findall(r"\[@([^\]\n]*)\]", theme.read_text(encoding="utf-8"))
-            for key in group.split(",")
-            if key.strip() and not key.strip().lstrip("@").startswith("~")
-        }
-        tagged = set()
-        for bib_file in (ROOT / "content" / "publications").glob("*.bib"):
-            keywords = re.search(r"^\s*keywords\s*=\s*\{([^}\n]*)\}", bib_file.read_text(encoding="utf-8"), re.M)
-            if keywords and theme.stem in [k.strip().lower() for k in re.split(r"[,;]", keywords.group(1))]:
-                tagged.add(bib_file.stem)
-        assert tagged == cited, f"{theme.name}: tagged but not cited {sorted(tagged - cited)}; cited but not tagged {sorted(cited - tagged)}"
-
-
 def test_every_unlinked_research_citation_is_listed_as_pending():
     """`[@~name]` citations have no paper page yet; docs/maintainers/PENDING-PAPERS.md keeps track so they get filled in."""
     import re
@@ -221,10 +203,7 @@ def test_every_unlinked_research_citation_is_listed_as_pending():
                     assert f"`{key}`" in pending, f"{theme.name}: {key} is not listed in docs/maintainers/PENDING-PAPERS.md"
 
 
-def test_research_topic_links_to_papers_tagged_with_its_file_name(sandbox):
+def test_research_cards_have_no_related_papers_link(sandbox):
     sandbox.write("publications/tagged-a.bib", bib("a2024", title="Tagged A", keywords="reward; models"))
-    sandbox.write("publications/tagged-b.bib", bib("b2024", title="Tagged B", keywords="Models, other"))
-    sandbox.write("publications/untagged.bib", bib("c2024", title="Untagged", keywords="other"))
     page = sandbox.build().page("research/index.html")
-    assert '?q=models">2 related papers' in page
-    assert "?q=behavior" not in page  # a topic with no tagged paper shows no link
+    assert "related paper" not in page and "?q=" not in page  # the citations in the text are the links to papers

@@ -40,11 +40,6 @@ delete its file. The cards use three colors in turn.
   `[@~lisitsyn-in-prep]`: it gets a number but no link. Such papers are listed in
   `docs/maintainers/PENDING-PAPERS.md` and should be linked once they are posted online. If a name does not match a paper, the build stops and names the
   file and the citation.
-- **Related papers:** each topic ends with a link such as "12 related papers" that opens the Publications page searched
-  for the topic's file name (for `uncertainty-and-change.md` it searches `uncertainty-and-change`). A paper is included
-  when its `keywords` line contains that tag, so tagging a paper is one word in its `.bib` file (see
-  [Add or fix a paper](ADD-A-PAPER.md)). Keep the two in step: tag each paper the topic's text cites, and no others
-  (a test checks this), so the number matches the citations. For a new topic, choose the file name once and use it as the tag.
 - **A picture (optional):** upload `content/images/<topic>.jpg`, with the same name as the topic's file, and add an
   `image_alt:` line describing it for screen readers. It is shown above the text. Topics have none at present.
 

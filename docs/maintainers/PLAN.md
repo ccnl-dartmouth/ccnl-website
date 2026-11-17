@@ -93,7 +93,7 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
 - [~] 7e Design round 5 and content (Oct 2026, built, tested and pushed): Research page rewritten as four topic summaries
       (abstract-style paragraphs, block-justified on wide screens) with one generated schematic per topic
       (`scripts/make_*_image.py`, Pillow only, deterministic; alt text in each research file; replaced in Nov 2026
-      by three text-only cards with numbered citations, see STRUCTURE.md, and the scripts deleted) and a "N related papers"
+      by three text-only cards with numbered citations, see STRUCTURE.md, and the scripts deleted) and (later removed) a "N related papers"
       link to the Publications search by topic keyword (the topic tags are the research file names; papers carry
       them in `keywords`; see STRUCTURE.md); Contact page in two columns (details | "Join us" openings built from
       the `openings` list in `join.md`, no recruiting switch); centered page titles on a full-width yellow line;

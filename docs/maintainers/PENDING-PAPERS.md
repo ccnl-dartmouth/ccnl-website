@@ -24,6 +24,4 @@ the stable key. A test checks that every `~name` in the research files is listed
 1. When the paper is posted (bioRxiv, SSRN, journal), add its `.bib` file (see
    [Add or fix a paper](../guides/ADD-A-PAPER.md); for a preprint add `status = {preprint}` and the link).
 2. In the theme file, replace `[@~name]` by `[@file-name-of-the-bib]`, without `.bib`.
-3. Add the theme's tag (the theme file's name) to the new paper's `keywords`. A test fails if a paper cited in a theme
-   is not tagged with it, so the "N related papers" count stays equal to the citations.
-4. Delete the row above.
+3. Delete the row above.
