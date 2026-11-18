@@ -1,4 +1,4 @@
-from conftest import image_bytes, person_md
+from conftest import bib, image_bytes, person_md
 
 
 def test_new_person_appears_on_people_page_and_gets_profile(sandbox):
@@ -39,15 +39,34 @@ def test_the_highest_tag_decides_the_group_and_label_and_alumni_is_a_state(sandb
     assert (person["role"], person["role_label"], person["status"], person["lab"]) == ("grad", "Graduate Student", "alumni", True)
 
 
-def test_honors_shows_as_a_small_mark_on_current_cards_alumni_and_the_profile(sandbox):
+def test_honors_mark_is_on_the_profile_page_only_not_on_people_page_cards(sandbox):
     sandbox.write("people/honors-person.md", person_md(name="Honors Person", roles="[undergrad, honors]"))
     sandbox.write("people/honors-alumna.md", person_md(name="Honors Alumna", roles="[undergrad, honors, alumni]", start="2020", end="2022"))
     result = sandbox.build()
     index = result.page("people/index.html")
-    assert index.count('class="honors-mark"') == 2  # one on the current card, one in the alumni list
+    assert 'class="honors-mark"' not in index  # neither on the current card nor in the alumni list
     assert 'class="honors-mark"' in result.page("people/honors-person/index.html")
     assert "Honors Student" not in index
     assert 'class="author-key"' not in index  # no banner on the People page
+
+
+def test_undergraduate_alumni_are_listed_only_if_they_are_an_author_on_a_paper(sandbox):
+    sandbox.write("people/quiet-undergrad.md", person_md(name="Quiet Undergrad", role="undergrad", status="alumni", start=2019, end=2021))
+    sandbox.write("people/writing-undergrad.md", person_md(name="Writing Undergrad", role="undergrad", status="alumni", start=2019, end=2021))
+    sandbox.write("publications/with-undergrad.bib", bib("u2024", title="With an undergraduate", author="Undergrad, Writing and Investigator, Pat"))
+    result = sandbox.build()
+    alumni = result.page("people/index.html").split("<h2>Alumni</h2>")[1].split("</section>")[0]
+    assert "Writing Undergrad" in alumni and "Quiet Undergrad" not in alumni
+    assert "Quiet Undergrad" in [p["name"] for p in result.site["alumni"]]  # still a person, just not listed
+    assert "Quiet Undergrad" in result.page("people/quiet-undergrad/index.html")  # and their page is still built
+
+
+def test_other_alumni_are_listed_even_without_a_paper(sandbox):
+    sandbox.write("people/quiet-grad.md", person_md(name="Quiet Grad", role="grad", status="alumni", start=2015, end=2019))
+    sandbox.write("people/quiet-masters.md", person_md(name="Quiet Masters", role="masters", status="alumni", start=2015, end=2017))
+    sandbox.write("people/quiet-postdoc.md", person_md(name="Quiet Postdoc", role="postdoc", status="alumni", start=2015, end=2018))
+    alumni = sandbox.build().page("people/index.html").split("<h2>Alumni</h2>")[1].split("</section>")[0]
+    assert all(name in alumni for name in ("Quiet Grad", "Quiet Masters", "Quiet Postdoc"))
 
 
 def test_honors_is_listed_with_undergraduates_and_counts_as_lab(sandbox):

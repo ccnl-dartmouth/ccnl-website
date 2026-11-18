@@ -107,6 +107,10 @@ Gershman (Harvard). Sections are chosen in `docs/maintainers/STRUCTURE.md` and c
       card color, in-text citations `[@paper-file-name]` numbered per theme and linked to the paper pages (`~name` for
       papers without a page), old text and figures deleted (git history). Tests and docs updated; to do: build, run tests,
       check the page in light/dark and on a phone, then commit. Open item: eight in-prep papers are cited without links, see PENDING-PAPERS.md.
+- [~] 7h People page (Nov 2026, built and tested locally, not pushed): undergraduate/honors alumni who are not an author on any
+      paper are no longer listed (60 alumni, 25 listed; their profile pages still build); other alumni are unaffected; the
+      honors icon is gone from the cards (kept on profile pages; the `honors` tag is kept); Jean-Claude Dreher's file name
+      and `name:` were misspelled (`Derher`), now fixed so he links to his two papers. 263 tests.
 - [~] 7f People roles and author linking (Nov 2026, built and tested locally, not pushed): each person has a `roles:` tag list
       (replaces `role` + `status`; `alumni` is a tag; fixed vocabulary and global rules in `ccnl/content.py`, see STRUCTURE.md
       "Roles and author matching"); papers carry only author roles (`cofirst`, `corresponding`, new `senior`, filled from the

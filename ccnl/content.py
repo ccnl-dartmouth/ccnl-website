@@ -705,6 +705,11 @@ def group_alumni(alumni):
     return groups
 
 
+def listed_alumni(alumni):
+    """The alumni shown on the People page: everyone except undergraduate alumni who were never an author on a paper."""
+    return [p for p in alumni if p["role"] != "undergrad" or p["publications"]]
+
+
 def group_people(people):
     """Current people grouped by role in a fixed order; alumni as one list, newest first."""
     groups = []
@@ -1172,7 +1177,7 @@ def load_site(content_dir, root, problems, today=None):
         "people": people,
         "people_groups": people_groups,
         "alumni": alumni,
-        "alumni_groups": group_alumni(alumni),
+        "alumni_groups": group_alumni(listed_alumni(alumni)),
         "publications": publications,
         "resources": resources,
         "teaching": teaching,

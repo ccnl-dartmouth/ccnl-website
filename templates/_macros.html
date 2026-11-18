@@ -10,14 +10,14 @@
 {% else %}<span class="avatar avatar-{{ size }} placeholder" aria-hidden="true">{{ p.initials }}</span>{% endif %}
 {% endmacro %}
 
-{# Small mortarboard for an honors student, in place of words; the profile page explains it. #}
+{# Small mortarboard for an honors student, shown on the profile page only (not on the People page cards). #}
 {% macro honors_mark() %}<svg class="honors-mark" viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="honors"><path d="M12 3 1 9l11 6 9-4.9V17h2V9L12 3zM5 13.2V17c0 1.7 3.1 3 7 3s7-1.3 7-3v-3.8l-7 3.8-7-3.8z"/></svg>{% endmacro %}
 
 {% macro person_card(p) %}
 <li class="person-card">
   {{ avatar(p) }}
   <p class="person-name">{% if p.profile %}<a class="card-link" href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}</p>
-  <p class="meta">{{ p.role_label }}{% if p.honors %}{{ honors_mark() }}{% endif %}</p>
+  <p class="meta">{{ p.role_label }}</p>
   {% if p.affiliation %}<p class="meta">{{ p.affiliation }}</p>{% endif %}
   {% if not p.profile and p.links %}
   <p class="meta">{% for l in p.links %}<a href="{{ l.url }}">{{ l.label }}</a>{{ " &middot; "|safe if not loop.last }}{% endfor %}</p>
@@ -36,7 +36,7 @@
 
 {% macro alumnus(p) %}
 <li class="alumnus">
-  <span class="alumnus-name">{% if p.profile %}<a class="card-link" href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}{% if p.degrees %}, {{ p.degrees }}{% endif %}{% if p.honors %}{{ honors_mark() }}{% endif %}</span>
+  <span class="alumnus-name">{% if p.profile %}<a class="card-link" href="{{ url('people/' ~ p.slug ~ '/') }}">{{ p.name }}</a>{% else %}{{ p.name }}{% endif %}{% if p.degrees %}, {{ p.degrees }}{% endif %}</span>
   {% if p.affiliation %}<span class="meta">{{ p.affiliation }}</span>{% endif %}
 </li>
 {% endmacro %}

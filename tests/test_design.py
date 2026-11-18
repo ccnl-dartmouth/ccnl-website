@@ -2,7 +2,7 @@
 
 import re
 
-from conftest import image_bytes, person_md
+from conftest import bib, image_bytes, person_md
 
 HERO_HEADER = "---\nheadline: How do brains learn and decide?\nhero_image: lab.jpg\n{alt}---\n"
 
@@ -319,6 +319,7 @@ def test_script_opens_a_section_named_in_the_url_hash(sandbox):
 
 
 def test_alumni_are_split_into_subsections_by_role_in_the_same_order_as_current_members(sandbox):
+    sandbox.write("publications/blake.bib", bib("blake2024", title="By Blake", author="Alumnus, Blake and Investigator, Pat"))  # undergraduate alumni are listed only with a paper
     html = sandbox.build().page("people/index.html")
     alumni = html.split("<h2>Alumni</h2>")[1].split("</section>")[0]
     postdocs, grads, undergrads = (alumni.index(f'<h3 class="alumni-group">{t}</h3>') for t in

@@ -125,14 +125,14 @@ carries exceptions for the other.
 - **`roles`** is a list of tags with a fixed vocabulary (`ROLE_ORDER`, plus the state tag `alumni`). Unknown tags are build errors.
   The **highest** tag in `ROLE_ORDER` (pi, postdoc, grad, masters, undergrad, honors, collaborator) sets the person's card label and
   People-page group (`ROLE_GROUPS`: honors is listed with undergraduates); `alumni` moves the person to the
-  Alumni section under the same group. Adding a person or a tag changes no code; adding a new tag is one line in each table.
+  Alumni section under the same group, except that an undergraduate (or honors) alumnus who is not an author on any paper is not listed there (`listed_alumni` in `ccnl/content.py`; their profile page is still built, just not linked from the People page; postdoc, grad and master's alumni are always listed). Adding a person or a tag changes no code; adding a new tag is one line in each table.
 - **Lab authors** are people with any of `LAB_ROLES` (postdoc, grad, masters, undergrad, honors), past or present. The PI,
   collaborators are not "lab".
 - **Matching** (`link_authors`): last name (accents ignored) plus first name. If the paper spells the first name out, it must equal the
   person's first name or a nickname in parentheses (`Michael (Chong) Wang` accepts `Wang, Michael` and `Wang, Chong`); a different first
   name never matches (this separates namesakes). If the paper gives initials only and a People entry has the same last name and first initial,
   the build fails and says which name to spell out. Papers are the only place that needs fixing.
-- Honors: a person tagged `honors` shows a small mortarboard icon after the role on their card and profile (also in the alumni list; the People page has no legend banner for now, the profile card explains it); honors is not marked on the publications. Not yet shown: timelines of roles (start and end are free years).
+- Honors: a person tagged `honors` shows a small mortarboard icon after the role on their profile page only (no longer on the People page cards or alumni list; the tag itself is kept until the PI decides how to use it); honors is not marked on the publications. Not yet shown: timelines of roles (start and end are free years).
 
 ### Publications: `content/publications/<anything>.bib`
 
@@ -258,7 +258,7 @@ A weekly scheduled link check (separate from the build) reports dead links witho
 - **Home:** photo hero with the lab name and affiliation in a solid green card centered on the image, intro text,
   four entry cards. The hero uses a generated placeholder (`static/hero-default.svg`) until the lab adds a real photo.
 - **People:** current groups (PI, postdocs, grad students, undergraduates) sit side by side while they fit and
-  wrap onto new rows as they fill up; every listing is a fixed-size, fully clickable card (photo cards with first and last initials when there is no photo; compact text cards for alumni and collaborators; cards show role and affiliation, not years: the affiliation is `current_position` if set, otherwise the lab's institution for current members; years stay on the profile page, so rows align when fields are missing and no separator lines are needed); alumni in subsections by role (postdoctoral scholars, graduate students, undergraduates, in that order; empty ones are left out).
+  wrap onto new rows as they fill up; every listing is a fixed-size, fully clickable card (photo cards with first and last initials when there is no photo; compact text cards for alumni and collaborators; cards show role and affiliation, not years: the affiliation is `current_position` if set, otherwise the lab's institution for current members; years stay on the profile page, so rows align when fields are missing and no separator lines are needed); alumni in subsections by role (postdoctoral scholars, graduate students, master's students, undergraduates, in that order; empty ones are left out; undergraduate alumni appear only if they are an author on a paper).
   Profile page: details card (photo, role, years, links) beside the bio.
 - **Publications:** semi-dense list by year; each entry has the BibTeX-derived text on the left (authors styled by
   role, title, venue (no DOI/PDF links on the card: they are on the paper's page); no year after the authors since the list is grouped by year; the abstract is on the paper's own page) and a right-aligned thumbnail (own image, shown whole; none when the paper has no image).

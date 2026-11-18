@@ -113,7 +113,7 @@ Your email is shown with a spam-protected link. ORCID takes the number, and GitH
 
 **Moving on (graduating, or leaving):** add a tag, don't replace one. For example `roles: [grad]` becomes `roles: [grad, alumni]`, and
 when you finish a degree and stay, `[undergrad]` becomes `[undergrad, grad]`. When you add `alumni`, also write `end: 2029` (and `start:`
-if it is missing) and, if you like, `current_position: ...`. You'll move to the Alumni list automatically, and your page and papers stay.
+if it is missing) and, if you like, `current_position: ...`. You'll move to the Alumni list automatically, and your page and papers stay. Undergraduate alumni are listed on the People page only if they are an author on one of the lab's papers (their name written out in the paper's `.bib` file, see [Add or fix a paper](ADD-A-PAPER.md)); everyone else in the list is shown either way.
 
 ## Where it shows up
 
